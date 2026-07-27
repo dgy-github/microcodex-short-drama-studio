@@ -1,5 +1,0 @@
-Metadata-Version: 2.4
-Name: microcodex-story-campaign-adapter
-Version: 0.1.0a1
-Requires-Python: >=3.11
-Requires-Dist: campaign-muti-agent @ git+https://github.com/dgy-github/campaign-muti-agent.git@6f7d0030b127c699ec5b6324b77795ed3a2452e0
