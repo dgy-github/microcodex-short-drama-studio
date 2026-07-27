@@ -1,0 +1,8 @@
+pyproject.toml
+campaign_adapter/__init__.py
+campaign_adapter/protocol.py
+microcodex_story_campaign_adapter.egg-info/PKG-INFO
+microcodex_story_campaign_adapter.egg-info/SOURCES.txt
+microcodex_story_campaign_adapter.egg-info/dependency_links.txt
+microcodex_story_campaign_adapter.egg-info/requires.txt
+microcodex_story_campaign_adapter.egg-info/top_level.txt

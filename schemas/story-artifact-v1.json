@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-artifact-v1.json",
+  "title": "Story Artifact Reference v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "artifact_id", "artifact_type", "content_ref", "content_hash", "provenance"],
+  "properties": {
+    "schema": {"const": "story-artifact/v1"},
+    "artifact_id": {"type": "string", "minLength": 1},
+    "artifact_type": {"type": "string", "minLength": 1},
+    "content_ref": {"type": "string", "minLength": 1},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "supersedes": {"type": ["string", "null"]},
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "license_id", "usage"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "license_id": {"type": "string"},
+          "usage": {"type": "string"}
+        }
+      }
+    }
+  }
+}
+

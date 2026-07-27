@@ -1,0 +1,21 @@
+[workspace]
+members = [
+    "crates/story-core",
+    "crates/story-runtime",
+    "crates/story-storage",
+    "crates/story-provider",
+    "crates/story-eval",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0-alpha.1"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+

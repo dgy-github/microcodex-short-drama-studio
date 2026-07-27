@@ -1,0 +1,10 @@
+[project]
+name = "microcodex-story-campaign-adapter"
+version = "0.1.0a1"
+requires-python = ">=3.11"
+dependencies = [
+  "campaign-muti-agent @ git+https://github.com/dgy-github/campaign-muti-agent.git@6f7d0030b127c699ec5b6324b77795ed3a2452e0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["campaign_adapter"]
