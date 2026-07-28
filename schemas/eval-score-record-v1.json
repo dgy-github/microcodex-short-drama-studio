@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/eval-score-record-v1.json",
+  "title": "Evaluation Score Record v1",
+  "description": "One rater's scoring of one artifact. The same shape serves LLM judges, internal spot checks, and the professional panel, so engaging screenwriters requires no schema change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "record_id", "run_id", "case_id", "artifact_id", "rubric_version", "rater", "admission", "dimensions"],
+  "properties": {
+    "schema": {"const": "eval-score-record/v1"},
+    "record_id": {"type": "string"},
+    "run_id": {"type": "string"},
+    "case_id": {"type": "string"},
+    "artifact_id": {"type": "string"},
+    "artifact_content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "artifact_char_count": {
+      "type": ["integer", "null"],
+      "description": "Length confound control. Required for the length/score correlation report."
+    },
+    "rubric_version": {"type": "string"},
+
+    "rater": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rater_id", "rater_type"],
+      "properties": {
+        "rater_id": {"type": "string"},
+        "rater_type": {
+          "enum": ["llm_judge", "internal_spot_check", "professional"],
+          "description": "professional is reserved and unused in v1"
+        },
+        "model_id": {"type": ["string", "null"]},
+        "seed": {"type": ["integer", "null"]},
+        "sample_index": {"type": ["integer", "null"]},
+        "credential": {
+          "type": ["string", "null"],
+          "description": "Reserved for the professional panel; null in v1."
+        },
+        "blind_assignment_id": {"type": ["string", "null"]},
+        "rater_blinded": {"type": "boolean"}
+      }
+    },
+
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "failed_gates"],
+      "properties": {
+        "passed": {"type": "boolean"},
+        "failed_gates": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "dimensions": {
+      "type": "array",
+      "description": "Empty when admission failed. A score without a locatable span is invalid.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension_id", "score", "reason", "span_refs", "valid"],
+        "properties": {
+          "dimension_id": {"type": "string"},
+          "score": {"type": "number", "minimum": 1, "maximum": 5},
+          "reason": {"type": "string", "maxLength": 600},
+          "span_refs": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^[a-z-]+(/[a-z]+-[0-9]+)+$"}
+          },
+          "valid": {"type": "boolean"},
+          "invalid_reason": {"type": ["string", "null"]}
+        }
+      }
+    },
+
+    "located_defect_spans": {
+      "type": "array",
+      "description": "Spans this rater flagged as defective, scored against the seeded defect key for adversarial samples.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["span_ref", "problem_code"],
+        "properties": {
+          "span_ref": {"type": "string"},
+          "problem_code": {
+            "enum": ["HUMAN_GENERIC", "MOTIVE_EXPLICIT", "PLOT_CONVENIENCE", "VOICE_COLLAPSE", "EMOTION_UNEARNED", "HOOK_FAKE", "TROPE_STACK", "EXPOSITION", "CONTINUITY", "UNSHOOTABLE", "SOURCE_OVERLAP", "POLICY"]
+          },
+          "severity": {"enum": ["minor", "major", "critical"]}
+        }
+      }
+    },
+
+    "aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pillars": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        },
+        "geometric_mean": {"type": "number"},
+        "legacy_weighted_sum": {
+          "type": ["number", "null"],
+          "description": "Shadow metric only. Retained so the two aggregations can be compared on real data. Never gates."
+        },
+        "floors_passed": {"type": "boolean"},
+        "verdict": {"enum": ["reject", "consider", "pass"]}
+      }
+    },
+
+    "adjudication_required": {
+      "type": "boolean",
+      "description": "Set when critical dimensions differ by 2 or more across raters. Reserved; no adjudicator exists in v1."
+    },
+
+    "occurred_at": {"type": "string", "format": "date-time"}
+  }
+}

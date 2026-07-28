@@ -1,0 +1,47 @@
+{
+  "admission_checks": "pass",
+  "author_id": "claude-opus-5-stage0-narrow",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": -0.004034,
+    "dialogue_nodes_seeded": 2,
+    "dialogue_nodes_total": 12,
+    "dialogue_nodes_unseeded": 10,
+    "episodes_match": true,
+    "scene_count_match": true,
+    "seeded_share": 0.1667
+  },
+  "construction": "degradation",
+  "localisation_note": "Ten of twelve dialogue nodes are unseeded, so a cited span can miss. The first stage-0 pair seeded all twelve, which made defect_localisation constructively guaranteed and therefore uninformative.",
+  "masking_virtue": [
+    "stated_motive_clarity"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-motive-explicit-narrow-stage0",
+  "pair_id": "stage0-comedy-002-motive-explicit-narrow-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "MOTIVE_EXPLICIT",
+      "rationale": [
+        "原句用愤怒掩饰恐惧；改后直接说出恐惧，后面弟妹的反应失去依据",
+        "原句是全场枢纽——爷爷的策略全靠不说破；说破后整场戏的张力消失"
+      ],
+      "repair_cost": "scene_rewrite",
+      "spans": [
+        "story-package/scene-1/dialogue-1",
+        "story-package/scene-2/dialogue-3"
+      ],
+      "target_dimension": "dialogue_subtext"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

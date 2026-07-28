@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/eval-case-v1.json",
+  "title": "Evaluation Case v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "split",
+    "premise_family",
+    "genre",
+    "difficulty",
+    "hard_slice",
+    "input",
+    "constraints",
+    "required_elements",
+    "required_conditions",
+    "forbidden_elements",
+    "rights"
+  ],
+  "properties": {
+    "schema": {"const": "eval-case/v1"},
+    "case_id": {"type": "string", "pattern": "^[a-z_]+_[0-9]{3}$"},
+    "split": {"enum": ["dev", "train", "validation", "holdout", "challenge"]},
+    "premise_family": {
+      "type": "string",
+      "description": "Leakage control key for the underlying dramatic mechanism, not a prop or setting label. Cases sharing a family must stay in the same split, regardless of prompt wording."
+    },
+    "genre": {
+      "enum": ["family", "urban_romance", "revenge", "suspense", "workplace", "rural", "comedy", "historical", "cross_genre"]
+    },
+    "difficulty": {
+      "enum": ["ordinary", "ambiguous", "hard"],
+      "description": "The full evaluation set must cover ordinary, ambiguous, and hard within every genre. A scaled pilot slice with fewer than three cases cannot satisfy all three."
+    },
+    "hard_slice": {
+      "type": ["string", "null"],
+      "description": "The required hard slice this case covers, per the parent contract's genre table."
+    },
+    "input": {"type": "string", "minLength": 1},
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["episodes", "minutes_per_episode", "audience", "rating", "production_level"],
+      "properties": {
+        "episodes": {"type": "integer", "minimum": 1},
+        "minutes_per_episode": {"type": "number", "exclusiveMinimum": 0},
+        "audience": {"type": "string"},
+        "rating": {"type": "string"},
+        "production_level": {"enum": ["low_budget", "mid_budget", "high_budget"]},
+        "max_locations": {"type": ["integer", "null"], "minimum": 1},
+        "max_speaking_cast": {"type": ["integer", "null"], "minimum": 1}
+      }
+    },
+    "required_elements": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Deterministically detectable objects, records, locations, or named story elements required by the admission gate."
+    },
+    "required_conditions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Semantic story conditions assessed by the judge. These are not admission gates."
+    },
+    "forbidden_elements": {"type": "array", "items": {"type": "string"}},
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "license_id", "allowed_uses"],
+      "properties": {
+        "source": {"enum": ["commissioned", "internal_authored", "licensed", "public_domain", "user_declared", "redacted_consented"]},
+        "license_id": {"type": "string"},
+        "allowed_uses": {
+          "type": "array",
+          "items": {"enum": ["evaluation", "retrieval", "skill_derivation", "display", "training"]},
+          "minItems": 1
+        },
+        "expires_at": {"type": ["string", "null"], "format": "date-time"}
+      }
+    }
+  }
+}

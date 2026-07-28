@@ -1,0 +1,17 @@
+feature: artifact-span-addressing
+status: backend_implemented
+requirements:
+  - id: REQ-302
+    implementation:
+      - crates/story-core/src/lib.rs
+      - crates/story-policy/src/lib.rs
+    tests:
+      - TEST-304
+      - TEST-305
+tests:
+  - id: TEST-304
+    location: crates/story-core/src/lib.rs
+    proves: valid form-agnostic artifact spans parse and round-trip
+  - id: TEST-305
+    location: crates/story-policy/src/lib.rs
+    proves: a policy defect can carry a precise optional span

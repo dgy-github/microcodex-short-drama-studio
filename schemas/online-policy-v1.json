@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/online-policy-v1.json",
+  "title": "Online Policy v1",
+  "description": "Weights and rules for in-run decisions. Separate from eval manifests by design; see docs/ONLINE_POLICY_DESIGN.md. This config is a candidate change and is promoted through offline evaluation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policy_version", "hard_rules", "defect_weights", "severity_factors", "selection", "revision", "tie_break"],
+  "properties": {
+    "schema": {"const": "online-policy/v1"},
+    "policy_version": {"type": "string"},
+    "promoted_by_eval_run": {
+      "type": ["string", "null"],
+      "description": "Run id of the offline evaluation that promoted this config. Null means unpromoted and not permitted in production."
+    },
+
+    "hard_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Non-negotiable. Never expressed as weights, because a weight is a price and prices get paid.",
+      "required": ["reject_on_unresolved_critical_defect", "reviewer_fail_closed", "reject_on_missing_review"],
+      "properties": {
+        "reject_on_unresolved_critical_defect": {"const": true},
+        "reviewer_fail_closed": {"const": true},
+        "reject_on_missing_review": {"const": true},
+        "reject_on_policy_code": {"const": true}
+      }
+    },
+
+    "defect_weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Keyed on the shared failure vocabulary. SOURCE_OVERLAP and POLICY are absent on purpose: they are hard rules, not weighted terms.",
+      "properties": {
+        "HUMAN_GENERIC": {"type": "number", "minimum": 0},
+        "MOTIVE_EXPLICIT": {"type": "number", "minimum": 0},
+        "PLOT_CONVENIENCE": {"type": "number", "minimum": 0},
+        "VOICE_COLLAPSE": {"type": "number", "minimum": 0},
+        "EMOTION_UNEARNED": {"type": "number", "minimum": 0},
+        "HOOK_FAKE": {"type": "number", "minimum": 0},
+        "TROPE_STACK": {"type": "number", "minimum": 0},
+        "EXPOSITION": {"type": "number", "minimum": 0},
+        "CONTINUITY": {"type": "number", "minimum": 0},
+        "UNSHOOTABLE": {"type": "number", "minimum": 0}
+      }
+    },
+
+    "severity_factors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minor", "major"],
+      "properties": {
+        "minor": {"type": "number", "minimum": 0},
+        "major": {"type": "number", "minimum": 0},
+        "critical": {
+          "type": ["number", "null"],
+          "description": "Should stay null. Critical severity is handled by hard_rules; giving it a finite factor makes it purchasable."
+        }
+      }
+    },
+
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "D1: choosing among architecture candidates. Ranking only, no calibration implied.",
+      "required": ["base_signal_terms", "cost_term_enabled"],
+      "properties": {
+        "base_signal_terms": {
+          "type": "array",
+          "items": {"enum": ["completeness", "constraint_satisfaction", "evidence_coverage"]},
+          "description": "Deliberately weak. Taste judgement is not attempted online."
+        },
+        "cost_term_enabled": {"type": "boolean"},
+        "cost_term_weight": {"type": "number", "minimum": 0},
+        "cost_basis": {
+          "enum": ["projected_remaining"],
+          "description": "Sunk cost must not influence choice."
+        },
+        "retain_rejected_candidates": {
+          "const": true,
+          "description": "Required. Discarding losers makes proxy_fidelity permanently uncomputable."
+        }
+      }
+    },
+
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "D3 and D4.",
+      "required": ["max_rounds", "on_limit_exceeded"],
+      "properties": {
+        "max_rounds": {"type": "integer", "minimum": 0, "maximum": 2},
+        "on_limit_exceeded": {
+          "const": "input_required",
+          "description": "Never silently spend another round."
+        },
+        "repair_order": {"enum": ["severity_then_weight", "weight_then_severity"]},
+        "min_remaining_budget_ratio": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+
+    "tie_break": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keys"],
+      "description": "Determinism requirement: identical inputs must yield identical decisions across retries.",
+      "properties": {
+        "keys": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"enum": ["fewest_major_defects", "lowest_projected_cost", "candidate_id_lexicographic"]},
+          "description": "Applied in order. The last key must be total, so candidate_id_lexicographic belongs at the end."
+        }
+      }
+    },
+
+    "forbidden_inputs": {
+      "type": "array",
+      "items": {"enum": ["candidate_self_confidence", "chain_of_thought", "sunk_cost", "generator_identity"]},
+      "description": "Inputs the policy must not read. Self-report creates an unauditable incentive."
+    }
+  }
+}

@@ -1,0 +1,14 @@
+version: 1
+language: zh-CN
+mandatory_entry: project-init
+orchestrator: guided-product-development
+skills:
+  - name: project-init
+    layer: initialization
+    required_before: [all-development]
+  - name: guided-product-development
+    layer: orchestration
+    required_before: [cross-layer-feature]
+  - name: project-memory
+    layer: cross-cutting
+    produces: [reuse-candidates, memory-update]

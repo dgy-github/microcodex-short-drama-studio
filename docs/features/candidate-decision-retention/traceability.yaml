@@ -1,0 +1,23 @@
+feature: candidate-decision-retention
+status: backend_implemented
+requirements:
+  - id: REQ-301
+    design:
+      - docs/features/candidate-decision-retention/03-system-design.md
+      - docs/ONLINE_POLICY_DESIGN.md
+    implementation:
+      - crates/story-storage/src/lib.rs
+    tests:
+      - TEST-301
+      - TEST-302
+      - TEST-303
+tests:
+  - id: TEST-301
+    location: crates/story-storage/src/lib.rs
+    proves: a complete selected-plus-rejected trace passes validation
+  - id: TEST-302
+    location: crates/story-storage/src/lib.rs
+    proves: an incomplete or ambiguous selection trace is rejected
+  - id: TEST-303
+    location: crates/story-storage/src/lib.rs
+    proves: duplicate identity, rank and invalid score data are rejected

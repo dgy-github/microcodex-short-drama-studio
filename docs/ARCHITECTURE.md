@@ -11,6 +11,14 @@
 | Desktop presentation | Tauri + Svelte |
 | Candidate skill derivation | nanocodex offline |
 | Skill promotion | Frozen evaluation plus human blind review |
+| Offline quality measurement | `story-eval` — absolute, calibrated, gates versions |
+| In-run decisions | `story-policy` — relative, cheap, gates nothing permanent |
+
+`story-eval` and `story-policy` are separate crates on purpose. Offline
+evaluation is an instrument; online policy is a strategy it validates. The
+dependency runs one way: policy configuration is promoted through evaluation,
+and evaluation criteria never adapt to production outcomes. See
+`docs/ONLINE_POLICY_DESIGN.md`.
 
 ## Process model
 

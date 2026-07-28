@@ -1,0 +1,142 @@
+version: judge-v1
+scale: [1, 5]
+language: zh-CN
+
+# 同一份 rubric 供 llm_judge / internal_spot_check / professional 三类评分者使用。
+# 锚点用中文短剧的具体失败样态描述，不使用任何外部框架的专有术语或条目文本。
+
+protocol:
+  requires_reason: true
+  requires_span_citation: true
+  span_ref_format: "<artifact_type>/<node_path>"
+  reason_char_cap: 600
+  forbidden_inputs:
+    - split_name
+    - incumbent_artifact
+    - seeded_defect_key
+    - prior_scores
+  instruction: |
+    只依据给定产物与 case 约束打分。每个维度必须给出分数、理由，
+    以及理由所依据的 span_ref。找不到可定位 span 的分数视为无效。
+    不要奖励更长的文本，不要奖励更长的理由。
+
+dimensions:
+
+  - id: human_credibility
+    pillar: character_credibility
+    critical: true
+    name: 人的可信度
+    ask: 人物的选择是否来自其具体处境与自我欺骗，而不是剧情需要
+    anchors:
+      1: 人物只在需要推进剧情时行动；抽掉情节需求后其行为无法解释
+      3: 动机基本成立但似曾相识；换一个同类角色也能照做这些事
+      5: 选择暴露出具体的过往、当下压力与自我欺骗；换人则行为不成立
+
+  - id: character_distinction
+    pillar: character_credibility
+    critical: false
+    name: 人物区分度
+    ask: 遮住人名后是否还能分辨谁在说话、谁在行动
+    anchors:
+      1: 声音可互换；遮住人名无法分辨
+      3: 人物卡上的差异大于场景里的差异
+      5: 行为方式、语言习惯、回避与应对的模式各自稳定且不同
+
+  - id: dialogue_subtext
+    pillar: character_credibility
+    critical: false
+    name: 台词与潜台词
+    ask: 台词是在交换信息，还是在隐瞒、试探、争夺与保护
+    anchors:
+      1: 台词用于交代设定与口号；人物互相告知双方都已知道的事
+      3: 自然对白与说明性对白混杂
+      5: 说的与要的不一致；重要信息通过回避、转移与沉默显现
+    common_masking: 句句可截图的金句密度高，但全部出自同一个声音
+
+  - id: causal_coherence
+    pillar: structure_causality
+    critical: true
+    name: 因果一致性
+    ask: 每个转折是否来自压力、选择与后果的链条
+    anchors:
+      1: 事件之间没有因果，靠巧合与新信息推进
+      3: 主链成立但有缺口
+      5: 每次转折都能回溯到此前的压力与人物的选择
+    common_masking: 反转密集、节奏快，掩盖巧合解压
+
+  - id: continuity
+    pillar: structure_causality
+    critical: false
+    name: 连续性
+    ask: 事实、时间线、关系、埋伏笔与回收是否稳定
+    anchors:
+      1: 矛盾到影响理解
+      3: 存在可修复的小缺口
+      5: 事实、关系、设定与回收全程稳定
+    common_masking: 首尾呼应在字面上完整，但回收没有承接任何压力
+
+  - id: emotional_progression
+    pillar: viewing_drive
+    critical: false
+    name: 情感推进
+    ask: 情绪的克制、升级、反转与释放是否被挣来
+    anchors:
+      1: 情绪平直或强行拔高
+      3: 有若干有效段落但整体不连贯
+      5: 克制、升级、反转、释放各就其位且有前因
+    common_masking: 正面摊牌与高强度情绪被误读为推进
+
+  - id: short_drama_pacing
+    pillar: viewing_drive
+    critical: false
+    name: 短剧节奏
+    ask: 开场承诺、单集转折密度、集尾钩子与收束是否成立
+    product_specific: true
+    anchors:
+      1: 开场缓慢、无承诺；集尾无钩子
+      3: 节奏可用，但有若干集塌陷
+      5: 开场即给承诺，单集转折密集，钩子形态多样，结局被挣来
+    checks:
+      - 集尾钩子在下一集是否真的产生后果
+      - 钩子形态是否重复同一种
+    common_masking: 钩子数量达标但下一集不承接后果
+
+  - id: genre_fulfillment
+    pillar: viewing_drive
+    critical: false
+    name: 题材兑现
+    ask: 是否兑现了对观众的类型承诺
+    anchors:
+      1: 违背类型承诺
+      3: 类型可辨认
+      5: 兑现类型期待并在其上做出有效变形
+    common_masking: 类型标记堆砌被误读为兑现
+
+  - id: originality
+    pillar: originality_delivery
+    critical: true
+    name: 原创性
+    ask: 是可辨认的套路拼贴，还是具体的重组与非显然选择
+    anchors:
+      1: 可辨认的复制或套路拼贴
+      3: 熟悉的前提加上一些变化
+      5: 具体的重组与非显然的选择
+    note: 与来源重叠检查分离；重叠是准入门，此处只评创作层面
+
+  - id: producibility
+    pillar: originality_delivery
+    critical: false
+    name: 可制作性
+    ask: 戏剧价值是否来自能在预算内实现的调度
+    product_specific: true
+    anchors:
+      1: 超出所声明预算，无法拍摄
+      3: 基本可拍
+      5: 戏剧张力正是由可实现的场景、人数与调度产生
+
+# 以下不作为评分维度，在准入门以布尔条件处理
+not_scored:
+  - safety_policy
+  - rights_and_provenance
+  - source_overlap
+  - format_constraints

@@ -1,0 +1,9 @@
+[package]
+name = "story-policy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+story-core = { path = "../story-core" }

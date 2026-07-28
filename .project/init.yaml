@@ -1,0 +1,44 @@
+schema_version: 1
+required_reads:
+  - AGENTS.md
+  - docs/development/WORKFLOW.md
+  - docs/development/CODE_STANDARDS.md
+  - docs/development/TRACEABILITY.md
+  - docs/project-memory/README.md
+  - docs/project-memory/PROJECT_REGISTRY.yaml
+  - docs/skills/技能结构说明书.md
+  - docs/skills/SKILLS_INDEX.yaml
+  - contracts/openapi.yaml
+required_files:
+  - LICENSE
+  - CONTRIBUTING.md
+  - SECURITY.md
+  - CHANGELOG.md
+  - .github/CODEOWNERS
+  - .github/pull_request_template.md
+  - .github/workflows/governance.yml
+  - contracts/operation-status.yaml
+  - scripts/init_project.py
+  - scripts/generate_project_memory.py
+  - scripts/check_registry.py
+  - scripts/check_openapi.py
+  - scripts/check_traceability.py
+  - scripts/check_duplicate_owners.py
+  - scripts/check_code_structure.py
+  - crates/story-core/src/lib.rs
+  - crates/story-runtime/src/lib.rs
+  - crates/story-provider/src/lib.rs
+  - crates/story-storage/src/lib.rs
+  - sidecar/campaign_adapter/protocol.py
+  - .agents/skills/project-init/SKILL.md
+  - .agents/skills/guided-product-development/SKILL.md
+  - .agents/skills/project-memory/SKILL.md
+required_checks:
+  - project-memory
+  - registry
+  - openapi
+  - traceability
+  - ownership
+template_placeholders:
+  - "@project-maintainers"
+  - "Project API"

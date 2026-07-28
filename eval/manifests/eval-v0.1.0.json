@@ -1,0 +1,150 @@
+{
+  "schema": "eval-manifest/v1",
+  "eval_version": "eval-v0.1.0",
+  "status": "advisory",
+  "gates_production_promotion": false,
+  "notes": "v1 runs without a professional screenwriter panel. Thresholds are provisional and set from probe runs, not from principle. Parent gate 8 (screenwriter sign-off) is unsatisfiable in this version.",
+
+  "rubric": {
+    "judge_rubric": "rubrics/judge-v1.yaml",
+    "rubric_version": "judge-v1",
+    "scale": {"min": 1, "max": 5}
+  },
+
+  "admission_gates": [
+    "artifact_schema",
+    "format_constraints",
+    "required_elements",
+    "forbidden_elements",
+    "provenance_complete",
+    "source_overlap",
+    "safety_policy"
+  ],
+
+  "pillars": {
+    "character_credibility": {
+      "weight": 0.25,
+      "dimensions": ["human_credibility", "character_distinction", "dialogue_subtext"]
+    },
+    "structure_causality": {
+      "weight": 0.25,
+      "dimensions": ["causal_coherence", "continuity"]
+    },
+    "viewing_drive": {
+      "weight": 0.25,
+      "dimensions": ["emotional_progression", "short_drama_pacing", "genre_fulfillment"]
+    },
+    "originality_delivery": {
+      "weight": 0.25,
+      "dimensions": ["originality", "producibility"]
+    }
+  },
+
+  "aggregation": {
+    "within_pillar": "arithmetic_mean",
+    "across_pillars": "geometric_mean",
+    "shadow_metric": "legacy_weighted_sum",
+    "shadow_metric_gates": false
+  },
+
+  "floors": {
+    "pillar_minimum": 3.0,
+    "critical_dimensions": ["human_credibility", "originality", "causal_coherence"],
+    "critical_dimension_minimum": 3.0,
+    "reject_if_any_dimension_at_or_below": 1.0
+  },
+
+  "verdict": {
+    "pass_threshold": 3.5,
+    "tiers": ["reject", "consider", "pass"]
+  },
+
+  "judging": {
+    "judge_set": "../judges.json",
+    "samples_per_artifact": 3,
+    "aggregate_across_samples": "median",
+    "min_judge_models": 2,
+    "tie_breaker_model_required_when_pillar_delta_exceeds": 0.75,
+    "require_span_citation": true,
+    "invalid_score_retry_limit": 1,
+    "pointwise_and_pairwise_share_context": false,
+    "bias_controls": {
+      "pairwise_run_both_orders": true,
+      "order_flip_counts_as": "undecided",
+      "record_artifact_length": true,
+      "report_length_score_correlation": true,
+      "judge_generator_model_sets_disjoint": true,
+      "reasoning_char_cap": 600
+    }
+  },
+
+  "internal_spot_check": {
+    "enabled": true,
+    "case_sample_rate": 0.2,
+    "adversarial_sample_rate": 1.0,
+    "blind": true,
+    "rater_type": "internal_spot_check",
+    "is_ground_truth": false
+  },
+
+  "evaluator_metrics": {
+    "seeded_defect_detection": {
+      "target": 0.75,
+      "blocking": false,
+      "definition": "share of seeded pairs where the degraded artifact scores below its own unmodified baseline; measures within-pair direction, not quality ranking"
+    },
+    "defect_localisation": {"target": 0.5, "blocking": false},
+    "perturbation_sensitivity": {"target": 0.7, "blocking": false},
+    "perturbation_specificity": {
+      "target": 0.7,
+      "blocking": false,
+      "decision_view": "cross_pillar",
+      "views": {
+        "all": "share of every non-target dimension that does not drop; diagnoses whether the whole target pillar collapses",
+        "cross_pillar": "share of non-target dimensions outside the target pillar that do not drop; used for the P2 separability decision"
+      },
+      "compatibility": "legacy specificity and min_specificity fields alias the all view"
+    },
+    "self_consistency": {"target": null, "blocking": false},
+    "inter_model_agreement": {
+      "target": null,
+      "blocking": false,
+      "judge_set": "../judges.json",
+      "discount_note": "Read this metric down while every judge is a Chinese-native model family. Qwen and GLM likely share Chinese training corpora and RLHF preferences for Chinese prose, so agreement between them may reflect shared priors rather than independent confirmation. This is the same correlated-blind-spot argument that forbids LLM-generated hard negatives. Genuine independence needs a non-Chinese-native family or a human."
+    },
+    "spot_check_agreement": {"target": null, "blocking": false}
+  },
+
+  "evaluator_metrics_deferred": {
+    "pair_accuracy": {
+      "reason": "requires a hard positive; no available author can write one in v1",
+      "definition": "share of discrimination pairs where the hard positive outscores the hard negative"
+    }
+  },
+
+  "splits": {
+    "_note": "30-case pilot, allocated by eval/tools/split_cases.py in the parent contract's dev:train:validation:challenge ratio of 30:30:24:12. Cases sharing a premise_family are never separated.",
+    "dev": {"consumed_in_v1": true, "cases": 10},
+    "train": {"consumed_in_v1": true, "cases": 9, "allowed_uses": ["evaluation", "skill_derivation"]},
+    "validation": {"consumed_in_v1": true, "cases": 7},
+    "holdout": {"consumed_in_v1": false, "cases": 0, "reason": "no valid consumer without a professional panel; kept sealed and unallocated"},
+    "challenge": {"consumed_in_v1": true, "cases": 4, "hosts_adversarial_set": true}
+  },
+
+  "pillar_grouping_review": {
+    "trigger_after_scored_cases": 30,
+    "method": "dimension_correlation_matrix",
+    "merge_threshold": 0.8,
+    "note": "current grouping is a prior, not a finding"
+  },
+
+  "deferred_to_professional_version": [
+    "anchor_calibration",
+    "krippendorff_alpha_min_0.67",
+    "pairwise_preference_as_release_statistic",
+    "screenwriter_signoff",
+    "hard_positive_authoring",
+    "discrimination_pairs",
+    "pair_accuracy"
+  ]
+}

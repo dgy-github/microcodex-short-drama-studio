@@ -1,0 +1,115 @@
+version: 1
+capabilities:
+  - id: CAP-001
+    name: Story domain contracts
+    summary: Owns canonical story jobs, packages, artifacts and events.
+    keywords: [validation, story, schema]
+    owner: crates/story-core/src/lib.rs
+    interfaces: [IFACE-001]
+    reuse_rule: Extend story-core instead of defining parallel cross-process types.
+  - id: CAP-002
+    name: Runtime orchestration
+    summary: Owns asynchronous commands and append-only task events.
+    keywords: [state-machine, runtime, events]
+    owner: crates/story-runtime/src/lib.rs
+    interfaces: [IFACE-002]
+    reuse_rule: Extend the runtime task lifecycle; do not add a second orchestrator in UI or sidecar.
+  - id: CAP-003
+    name: Provider access
+    summary: Owns credentials and model-provider calls.
+    keywords: [authorization, configuration, retry, provider]
+    owner: crates/story-provider/src/lib.rs
+    interfaces: [IFACE-003]
+    reuse_rule: All production provider access goes through story-provider.
+  - id: CAP-004
+    name: Campaign sidecar protocol
+    summary: Defines typed requests and responses exposed to the Python sidecar.
+    keywords: [sidecar, protocol]
+    owner: sidecar/campaign_adapter/protocol.py
+    interfaces: [IFACE-004]
+    reuse_rule: Add typed capabilities here; never expose unrestricted shell access.
+  - id: CAP-005
+    name: Adversarial evaluator metrics
+    summary: Owns stage-0 sensitivity, dual specificity, consistency and localisation calculations.
+    keywords: [evaluation, specificity, metrics]
+    owner: eval/tools/run_stage0_probe.py
+    interfaces: [IFACE-005]
+    reuse_rule: Extend these metric helpers and manifest definitions instead of calculating competing probe metrics elsewhere.
+  - id: CAP-006
+    name: Candidate decision retention
+    summary: Owns atomic retention of selected and rejected online candidates with scores.
+    keywords: [storage, candidate, selection, proxy-fidelity]
+    owner: crates/story-storage/src/lib.rs
+    interfaces: [IFACE-006]
+    reuse_rule: Persist complete decision traces through this boundary; never retain only the selected candidate.
+  - id: CAP-007
+    name: Artifact span addressing
+    summary: Owns validated form-agnostic locations inside structured artifacts.
+    keywords: [artifact, span, revision, defect]
+    owner: crates/story-core/src/lib.rs
+    interfaces: [IFACE-007]
+    reuse_rule: Use ArtifactSpanRef for defects, revisions and citations instead of defining local path strings.
+interfaces:
+  - id: IFACE-001
+    name: story-core public types
+    kind: Rust crate API
+    location: crates/story-core/src/lib.rs
+    purpose: Share trusted story domain values across Rust owners.
+    inputs: [typed domain values]
+    outputs: [validated domain values]
+    errors: [validation errors]
+    side_effects: []
+  - id: IFACE-002
+    name: story-runtime public API
+    kind: Rust crate API
+    location: crates/story-runtime/src/lib.rs
+    purpose: Execute task lifecycle transitions and emit events.
+    inputs: [commands]
+    outputs: [events]
+    errors: [runtime errors]
+    side_effects: [task state changes]
+  - id: IFACE-003
+    name: story-provider public API
+    kind: Rust crate API
+    location: crates/story-provider/src/lib.rs
+    purpose: Invoke configured model providers inside trusted boundaries.
+    inputs: [provider request]
+    outputs: [provider response]
+    errors: [provider errors]
+    side_effects: [network requests, budget consumption]
+  - id: IFACE-004
+    name: campaign sidecar protocol
+    kind: Python protocol
+    location: sidecar/campaign_adapter/protocol.py
+    purpose: Exchange typed capabilities with the campaign dependency.
+    inputs: [typed request]
+    outputs: [typed response]
+    errors: [protocol errors]
+    side_effects: [sidecar request handling]
+  - id: IFACE-005
+    name: stage-0 probe result
+    kind: JSON artifact contract
+    location: eval/tools/run_stage0_probe.py
+    purpose: Report judge-level and aggregate adversarial evaluator measurements.
+    inputs: [baseline scores, negative scores, rubric pillars, target dimension]
+    outputs: [sensitivity, specificity_all, specificity_cross_pillar, consistency]
+    errors: [missing dimension, missing pillar]
+    side_effects: [judge result and probe summary writes]
+  - id: IFACE-006
+    name: candidate decision store
+    kind: Rust crate API
+    location: crates/story-storage/src/lib.rs
+    purpose: Atomically retain every ranked candidate from one online decision.
+    inputs: [validated candidate decision trace]
+    outputs: [idempotent persistence result]
+    errors: [storage errors]
+    side_effects: [durable candidate decision write]
+  - id: IFACE-007
+    name: artifact span reference
+    kind: Rust value type
+    location: crates/story-core/src/lib.rs
+    purpose: Validate stable form-agnostic locations inside an artifact.
+    inputs: [artifact kind and indexed node path]
+    outputs: [validated ArtifactSpanRef]
+    errors: [missing node, invalid kind, invalid index]
+    side_effects: []

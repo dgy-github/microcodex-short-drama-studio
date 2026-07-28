@@ -1,0 +1,1 @@
+{"baseline_scores":[5,5],"generator_judge_disjoint":true,"judge_model":"qwen3-vl-plus","negative_lower_in_both_orders":true,"negative_scores":[1,1],"order_consistent":true,"pair_id":"stage0-comedy-002-motive-explicit-001","schema":"stage0-probe-result/v1","seeded_defect_localized":false,"status":"probe_failed"}

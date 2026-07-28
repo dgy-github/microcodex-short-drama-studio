@@ -86,6 +86,17 @@ dependencies = [
 [[package]]
 name = "story-eval"
 version = "0.1.0-alpha.1"
+dependencies = [
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "story-policy"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "story-core",
+]
 
 [[package]]
 name = "story-provider"

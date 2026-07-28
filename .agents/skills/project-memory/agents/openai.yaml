@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目记忆"
+  short_description: "查询并维护能力、模块、接口和业务规则所有权"
+  default_prompt: "使用 $project-memory 在实现前查找已有项目能力。"

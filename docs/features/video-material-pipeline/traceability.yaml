@@ -1,0 +1,22 @@
+feature: video-material-pipeline
+status: deferred_out_of_current_scope
+requirements:
+  - id: REQ-201
+    design:
+      - docs/features/video-material-pipeline/03-system-design.md
+      - docs/adr/ADR-0001-rust-video-material-pipeline.md
+    implementation: []
+    tests:
+      - TEST-201
+      - TEST-202
+      - TEST-203
+tests:
+  - id: TEST-201
+    location: planned
+    proves: invalid or unlicensed input is rejected before extraction
+  - id: TEST-202
+    location: planned
+    proves: timeout and cancellation reap FFmpeg and remove partial output
+  - id: TEST-203
+    location: planned
+    proves: a fixture produces deterministic probe, audio and bounded keyframes

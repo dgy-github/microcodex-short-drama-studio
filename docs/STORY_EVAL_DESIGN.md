@@ -17,10 +17,10 @@ One case contains:
 
 ```json
 {
-  "case_id": "family_001",
+  "case_id": "example_family_001",
   "split": "holdout",
   "genre": "family",
-  "input": "母亲卖掉老房子后，三个成年子女第一次回家吃饭。",
+  "input": "兄妹接手一家即将停业的社区照相馆，却只允许保留一个人的经营方案。",
   "constraints": {
     "episodes": 8,
     "minutes_per_episode": 2,
@@ -28,7 +28,7 @@ One case contains:
     "rating": "general",
     "production_level": "low_budget"
   },
-  "required_elements": ["old house", "shared meal"],
+  "required_elements": ["photo studio", "business plan"],
   "forbidden_elements": ["梦醒", "失忆解决一切"],
   "rights": {
     "source": "commissioned",
@@ -92,7 +92,7 @@ This is the highest-value learning signal:
 ```json
 {
   "draft_id": "draft-...",
-  "case_id": "family_001",
+  "case_id": "example_family_001",
   "before": {"artifact_ref": "..."},
   "after": {"artifact_ref": "..."},
   "edits": [

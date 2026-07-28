@@ -1,0 +1,4 @@
+interface:
+  display_name: "项目初始化"
+  short_description: "初始化并验证治理、记忆、契约、测试和 CI 基础"
+  default_prompt: "使用 $project-init 在开始开发前初始化并验证这个项目。"

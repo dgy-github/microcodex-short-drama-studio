@@ -1,0 +1,7 @@
+# Replace or extend these owners when dedicated teams exist.
+* @dgy-github
+/contracts/ @dgy-github
+/schemas/ @dgy-github
+/docs/project-memory/ @dgy-github
+/crates/story-provider/ @dgy-github
+/crates/story-storage/ @dgy-github

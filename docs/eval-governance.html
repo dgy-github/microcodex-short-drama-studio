@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>评测如何治理模型输出质量 — 短剧工作室评测体系设计</title>
+<style>
+:root{
+  --bg:#faf9f7; --surface:#ffffff; --surface-2:#f3f1ec;
+  --text:#1f1e1c; --text-2:#5f5e5a; --text-3:#888780;
+  --border:#e3e0d8; --border-strong:#c9c5ba;
+  --accent:#534ab7; --accent-bg:#eeedfe;
+  --teal:#0f6e56; --teal-bg:#e1f5ee;
+  --amber:#854f0b; --amber-bg:#faeeda;
+  --red:#a32d2d; --red-bg:#fcebeb;
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+:root{
+  --bg:#191917; --surface:#232320; --surface-2:#2c2c2a;
+  --text:#f1efe8; --text-2:#b4b2a9; --text-3:#888780;
+  --border:#3a3a36; --border-strong:#4d4d47;
+  --accent:#afa9ec; --accent-bg:#3c3489;
+  --teal:#5dcaa5; --teal-bg:#085041;
+  --amber:#efa027; --amber-bg:#633806;
+  --red:#f09595; --red-bg:#791f1f;
+}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:3rem 1.5rem 6rem}
+h1{font-size:28px;font-weight:500;line-height:1.35;margin:0 0 .5rem}
+h2{font-size:20px;font-weight:500;margin:3.5rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+h3{font-size:16px;font-weight:500;margin:2rem 0 .5rem}
+p{margin:0 0 1rem}
+.lede{color:var(--text-2);font-size:15px;margin:0 0 2rem}
+.meta{font-size:13px;color:var(--text-3);margin:0 0 2.5rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:14px;table-layout:fixed}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;word-break:break-word}
+th{font-weight:500;color:var(--text-2);font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;
+  background:var(--surface-2);padding:1px 5px;border-radius:4px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin:1.25rem 0}
+.grid{display:grid;gap:12px;margin:1.25rem 0}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
+.tile h4{margin:0 0 .35rem;font-size:14px;font-weight:500}
+.tile p{margin:0;font-size:13px;color:var(--text-2);line-height:1.6}
+.note{background:var(--amber-bg);border-radius:var(--radius);padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;line-height:1.7}
+.note strong{font-weight:500}
+.warn{background:var(--red-bg);border-radius:var(--radius);padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;line-height:1.7}
+.ok{background:var(--teal-bg);border-radius:var(--radius);padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;line-height:1.7}
+.pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;background:var(--accent-bg);color:var(--accent)}
+svg{display:block;max-width:100%;height:auto;margin:1.5rem 0}
+.sv-box{fill:var(--surface);stroke:var(--border-strong);stroke-width:.8}
+.sv-a{fill:var(--accent-bg);stroke:var(--accent);stroke-width:.8}
+.sv-t{fill:var(--teal-bg);stroke:var(--teal);stroke-width:.8}
+.sv-r{fill:var(--red-bg);stroke:var(--red);stroke-width:.8}
+.sv-line{stroke:var(--text-3);stroke-width:1;fill:none}
+text{font-family:inherit;fill:var(--text)}
+.tt{font-size:13px;font-weight:500}
+.ts{font-size:11.5px;fill:var(--text-2)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.srow{display:flex;align-items:center;gap:14px;margin:0 0 10px}
+.srow label{font-size:14px;color:var(--text-2);min-width:96px}
+.srow output{font-size:14px;font-weight:500;min-width:34px;text-align:right}
+.metric{background:var(--surface-2);border-radius:var(--radius);padding:.9rem 1rem}
+.metric .l{font-size:12px;color:var(--text-2);margin:0 0 4px}
+.metric .v{font-size:23px;font-weight:500;margin:0}
+.metric .s{font-size:12px;margin:4px 0 0}
+.pass{color:var(--teal)} .rej{color:var(--red)} .con{color:var(--amber)}
+ol,ul{margin:0 0 1rem;padding-left:1.4rem}
+li{margin:0 0 .4rem}
+.foot{margin-top:4rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:13px;color:var(--text-3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>评测如何治理模型输出质量</h1>
+<p class="lede">短剧工作室评测体系设计文档。从第一性问题出发，说明评测指标为什么能约束一个我们无法直接控制的生成过程，指标理论怎么搭，当前处在哪一阶段，以及后面几个版本各自解锁什么能力。</p>
+<p class="meta">配套契约文档：<code>STORY_EVAL_DESIGN.md</code>（目标态）、<code>STORY_EVAL_V1.md</code>（当前可执行版）、<code>STORY_EVAL_ADVERSARIAL.md</code>（对抗集构造）。本文解释理论，不覆盖那三份的规范性条款。</p>
+
+<h2>一、问题：我们无法直接控制模型输出</h2>
+
+<p>写一个函数时，质量是被直接构造出来的——你写下逻辑，逻辑就是结果。生成模型不是这样：我们能改的只有提示词、技能、智能体图、检索内容和模型选择，而输出质量是这些输入经过一个不透明过程之后的结果。中间那一步没有把手。</p>
+
+<p>这意味着质量只能被<strong>间接治理</strong>。治理的唯一机制是一个闭环：固定输入 → 生成 → 测量 → 归因 → 改动 → 再生成。评测在这个闭环里承担的角色不是"打分"，而是<strong>提供梯度</strong>——它是唯一能告诉你"这次改动是变好还是变坏、以及在哪个方向上变化"的信号源。</p>
+
+<p>由此推出本文档的核心命题：</p>
+
+<div class="ok"><strong>评测集不是质量的度量衡，是质量的控制器。</strong>度量衡错了，你得到一个错误的数字；控制器错了，整个系统会朝错误的方向被主动优化。后者的破坏力大一个数量级，因为它是被持续施加的。</div>
+
+<svg viewBox="0 0 800 330" role="img" aria-label="评测治理闭环">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.4" stroke-linecap="round"/></marker></defs>
+
+<rect class="sv-box" x="30" y="30" width="130" height="46" rx="5"/>
+<text class="tt" x="95" y="51" text-anchor="middle">评测用例</text>
+<text class="ts" x="95" y="67" text-anchor="middle">固定不变的输入</text>
+
+<rect class="sv-box" x="30" y="110" width="150" height="58" rx="5"/>
+<text class="tt" x="105" y="134" text-anchor="middle">生成产物</text>
+<text class="ts" x="105" y="152" text-anchor="middle">唯一的不透明环节</text>
+
+<rect class="sv-a" x="230" y="110" width="125" height="58" rx="5"/>
+<text class="tt" x="292" y="134" text-anchor="middle">准入门</text>
+<text class="ts" x="292" y="152" text-anchor="middle">布尔，不参与打分</text>
+
+<rect class="sv-a" x="405" y="110" width="135" height="58" rx="5"/>
+<text class="tt" x="472" y="134" text-anchor="middle">维度评分</text>
+<text class="ts" x="472" y="152" text-anchor="middle">十项，必须带证据</text>
+
+<rect class="sv-a" x="590" y="110" width="135" height="58" rx="5"/>
+<text class="tt" x="657" y="134" text-anchor="middle">缺陷归因</text>
+<text class="ts" x="657" y="152" text-anchor="middle">十二类稳定失败码</text>
+
+<rect class="sv-t" x="455" y="235" width="150" height="58" rx="5"/>
+<text class="tt" x="530" y="259" text-anchor="middle">改动方案</text>
+<text class="ts" x="530" y="277" text-anchor="middle">提示词 / 技能 / 图</text>
+
+<rect class="sv-t" x="230" y="235" width="150" height="58" rx="5"/>
+<text class="tt" x="305" y="259" text-anchor="middle">门槛比较</text>
+<text class="ts" x="305" y="277" text-anchor="middle">地板与回退双重</text>
+
+<line class="sv-line" x1="95" y1="76" x2="95" y2="108" marker-end="url(#ar)"/>
+<line class="sv-line" x1="180" y1="139" x2="228" y2="139" marker-end="url(#ar)"/>
+<line class="sv-line" x1="355" y1="139" x2="403" y2="139" marker-end="url(#ar)"/>
+<line class="sv-line" x1="540" y1="139" x2="588" y2="139" marker-end="url(#ar)"/>
+<path class="sv-line" d="M657 168 L657 264 L607 264" marker-end="url(#ar)"/>
+<line class="sv-line" x1="455" y1="264" x2="382" y2="264" marker-end="url(#ar)"/>
+<path class="sv-line" d="M230 264 L105 264 L105 170" marker-end="url(#ar)"/>
+
+<text class="ts" x="30" y="315">环路上任何一环失真，改动就退化为随机游走；失真而不自知，则退化为朝错误方向的定向优化。</text>
+</svg>
+
+<h2>二、治理的三层机制</h2>
+
+<p>"评测治理质量"这句话太粗。实际起作用的是三个机制，各自治理不同的东西、用不同的手段、有各自的失效模式。把它们混在一个加权总分里，是原设计最主要的问题。</p>
+
+<div class="grid g3">
+<div class="tile"><h4>第一层：准入门</h4><p><span class="pill">治理下限</span></p><p style="margin-top:.5rem">手段是布尔阻断。格式、集数、必需与禁用元素、权利、安全、来源重叠。不打分、不参与平均、不可交易。</p></div>
+<div class="tile"><h4>第二层：维度评分</h4><p><span class="pill">治理方向</span></p><p style="margin-top:.5rem">手段是归因。它的产品价值不是那个总分，而是告诉你"该改哪里"。没有维度，改动就没有靶子。</p></div>
+<div class="tile"><h4>第三层：门槛</h4><p><span class="pill">治理变化</span></p><p style="margin-top:.5rem">手段是比较。地板管绝对水平，回退阈值管相对变化。两者缺一不可。</p></div>
+</div>
+
+<h3>为什么合规必须放进第一层</h3>
+<p>原设计给安全合规 2% 的权重。权重意味着可交易：一个候选可以用 2% 的合规损失换 10% 的原创收益，加权总分反而上升。这不是理论风险，是加权求和的定义直接蕴含的。凡是"绝不允许"的条件，都不能有权重——有权重就等于标了价。</p>
+
+<h3>为什么第二层的分数本身几乎没用</h3>
+<p>一个总分 3.8 告诉不了你任何可执行的事。真正可执行的是"人物区分度 2 分，证据在 <code>sample-scenes/scene-2/dialogue-7</code>，失败码 <code>VOICE_COLLAPSE</code>"。所以评分协议里最硬的一条不是量表，而是<strong>每个分数必须附带理由和可定位的 span</strong>。没有 span 的分数不进入统计——它无法归因，因而无法治理任何东西。</p>
+
+<h2>三、指标理论：从维度到聚合</h2>
+
+<h3>3.1 维度不是越多越好，而是要正交</h3>
+<p>原设计有 11 个维度。问题不在数量，在于它们高度相关：人的可信度、人物区分度、台词与潜台词衡量的是同一件事的三个侧面。加权求和对相关维度会<strong>重复计权</strong>——名义上人的可信度占 20%，但由于三个相关维度共占 40%，实际权重远高于此。这使得权重表上的数字不再表达设计意图。</p>
+<p>处理方式不是删维度（细粒度对归因有价值），而是分组：相关维度合成一个支柱，权重加在支柱上，组内允许互相补偿，组间不允许。分组当前是<strong>先验</strong>，等 30 个 case 打完分后用维度相关矩阵复核，相关系数超过阈值的维度合并。</p>
+
+<div class="grid g4">
+<div class="tile"><h4>人物可信 25%</h4><p>可信度、区分度、台词潜台词</p></div>
+<div class="tile"><h4>结构因果 25%</h4><p>因果一致性、连续性</p></div>
+<div class="tile"><h4>观看驱动 25%</h4><p>情感推进、短剧节奏、题材兑现</p></div>
+<div class="tile"><h4>原创可交付 25%</h4><p>原创性、可制作性</p></div>
+</div>
+
+<div class="note"><strong>一个反直觉的点。</strong>"均衡加权"如果按字面理解成 11 个维度各占 1/11，人的可信度会从 20% 掉到 9%，与产品主张直接冲突。均衡必须发生在支柱层，不是维度层。分组之后人物可信反而升到 25%。</div>
+
+<h3>3.2 聚合方式决定了什么能被掩盖</h3>
+<p>加权求和是<strong>补偿式</strong>的：任一维度的低分都可以被其他维度的高分买回来。对短剧产品这是错的——人物垮掉时故事整体失败，不是扣分。这类要求在形式上是合取的，不能用求和表达。</p>
+<p>几何平均是常见的替代：任一支柱塌陷会把总分整体拉低。但下面的演示会显示它有多弱。</p>
+
+<div class="card">
+<p style="font-size:13px;color:var(--text-2);margin:0 0 1rem">拖动支柱分数，观察三种聚合的裁决差异</p>
+<div id="sl"></div>
+<div class="grid g3" style="margin-top:1.25rem">
+<div class="metric"><p class="l">加权求和（原设计）</p><p class="v" id="m1">—</p><p class="s" id="v1">—</p></div>
+<div class="metric"><p class="l">几何平均</p><p class="v" id="m2">—</p><p class="s" id="v2">—</p></div>
+<div class="metric"><p class="l">几何平均 + 地板</p><p class="v" id="m3">—</p><p class="s" id="v3">—</p></div>
+</div>
+<p id="co" style="font-size:14px;line-height:1.7;margin:1.25rem 0 0;padding:12px 14px;border-radius:var(--radius);background:var(--surface-2)">—</p>
+</div>
+
+<div class="warn"><strong>实测发现，必须记录。</strong>支柱 2.2 / 4.6 / 4.7 / 4.6 的几何平均是 3.85，仍高于 3.5 的通过线。在 1–5 量表上几何平均只有当某项接近 0 时才真正咬人，而评分下限是 1。<br><br>结论：真正拦住"人物垮掉但其他都好"的是<strong>地板，不是几何平均</strong>。几何平均只收窄了补偿窗口，没有关闭它。这条限制已固化为 <code>crates/story-eval</code> 里的测试 <code>geometric_mean_alone_does_not_reject_a_dead_pillar</code>，防止后人误以为换个聚合函数就解决了问题。</div>
+
+<h3>3.3 地板与回退阈值治理的是两件事</h3>
+<table>
+<tr><th style="width:22%">机制</th><th style="width:39%">拦得住</th><th style="width:39%">拦不住</th></tr>
+<tr><td>回退阈值<br><span style="font-size:12px;color:var(--text-3)">跌幅 ≤ 0.10</span></td><td>相对上一版本的退化</td><td>一直平庸——所有维度稳定在 3 分，永不回退，永远放行</td></tr>
+<tr><td>绝对地板<br><span style="font-size:12px;color:var(--text-3)">支柱 ≥ 3.0</span></td><td>任何单项塌陷，与历史无关</td><td>整体缓慢下滑但始终在地板之上</td></tr>
+</table>
+<p>原设计只有前者，所以存在一个洞：一个所有维度都是 3 分的候选，不回退就能通过全部门槛。v1 补上了后者，并把"均匀平庸"的产物落到<strong>待议</strong>而不是通过。</p>
+
+<h2>四、评测器自身可能是坏的</h2>
+
+<p>前三节默认了一件事：评分是可信的。这个假设没有依据。判官——无论是 LLM 还是未经校准的人——可能系统性地偏好某些表层特征：更长、更热闹、金句更多、动机说得更清楚。如果偏好存在，整个闭环会朝那些表层特征优化，而这些特征恰恰是短剧质量的<strong>反指标</strong>。</p>
+
+<p>所以评测体系必须包含一层<strong>自检</strong>：不测产物，测评测器。手段是构造已知答案的样本，看评测器能不能给出正确判断，以及是否<strong>因为正确的原因</strong>。</p>
+
+<h3>4.1 遮蔽配方</h3>
+<p>难负例的本质是：用一个会被加分的表层特征，掩盖一个应该被否决的深层缺陷。这个映射可以枚举。</p>
+<table>
+<tr><th style="width:32%">表层加分点</th><th style="width:26%">被掩盖的缺陷</th><th style="width:42%">为什么能骗过去</th></tr>
+<tr><td>每集悬念密集</td><td><code>HOOK_FAKE</code></td><td>自动检查只数钩子数量，不查下一集是否承接后果</td></tr>
+<tr><td>首尾呼应对称</td><td>假回收</td><td>埋伏笔与回收的引用完整性能过检，但回收无因果压力</td></tr>
+<tr><td>情绪浓烈、正面摊牌</td><td><code>EMOTION_UNEARNED</code></td><td>强度被读成推进</td></tr>
+<tr><td>句句可截图</td><td><code>VOICE_COLLAPSE</code></td><td>全是同一个声音，但金句密度被读成对白好</td></tr>
+<tr><td>动机陈述清晰</td><td><code>MOTIVE_EXPLICIT</code></td><td>清晰被读成可信——最反直觉，也最有效</td></tr>
+<tr><td>反转快而多</td><td><code>PLOT_CONVENIENCE</code></td><td>巧合解压被读成节奏好</td></tr>
+<tr><td>类型标记密集</td><td><code>TROPE_STACK</code></td><td>堆砌被读成题材兑现</td></tr>
+</table>
+
+<h3>4.2 难度是测出来的，不是写出来的</h3>
+<p>难负例不是"一个烂故事"，而是"判官给高分、内行给低分"的那个差值。所以它是构造之后<strong>测量</strong>出来的属性。人人都能看出烂的样本，是普通负例，不入集。</p>
+
+<div class="grid g2">
+<div class="tile" style="border-color:var(--teal)"><h4>判官高 / 人低</h4><p>入库为难负例。这是我们要的。</p></div>
+<div class="tile"><h4>判官高 / 人高</h4><p>缺陷不成立。回头质疑失败分类法本身。</p></div>
+<div class="tile"><h4>判官低 / 人低</h4><p>普通负例。只做健全性检查。</p></div>
+<div class="tile"><h4>判官低 / 人高</h4><p>构造失败，丢弃。</p></div>
+</div>
+
+<p>额外条件：至少一位评审独立<strong>定位到</strong>植入缺陷所在的 span。只给低分却说不出问题在哪，说明是别的原因导致的低分，样本不干净。这条把"蒙对"从统计里剔除出去。</p>
+
+<div class="note"><strong>v1 的能力边界。</strong>真正的判别对需要一个"难正例"——真的好但刻意不讨喜的产物。v1 没有职业编剧，写不出来。所以 v1 实际测的是<strong>植入缺陷检出率</strong>（<code>seeded_defect_detection</code>），不是<strong>质量判别力</strong>（<code>pair_accuracy</code>，已标记延后）。这两件事不能混为一谈，文档里已按此改正。</div>
+
+<h2>五、演进阶段</h2>
+
+<svg viewBox="0 0 800 220" role="img" aria-label="评测体系演进阶段">
+<line class="sv-line" x1="40" y1="46" x2="760" y2="46"/>
+<circle cx="105" cy="46" r="5" fill="var(--text-3)"/>
+<circle cx="285" cy="46" r="7" fill="var(--accent)"/>
+<circle cx="500" cy="46" r="5" fill="var(--text-3)"/>
+<circle cx="700" cy="46" r="5" fill="var(--text-3)"/>
+
+<rect class="sv-box" x="30" y="72" width="150" height="118" rx="5"/>
+<text class="tt" x="45" y="96">v0 设计态</text>
+<text class="ts" x="45" y="118">只有契约文档</text>
+<text class="ts" x="45" y="136">无产物、无分数</text>
+<text class="ts" x="45" y="154">治理能力：无</text>
+<text class="ts" x="45" y="176">已完成</text>
+
+<rect class="sv-a" x="210" y="72" width="150" height="118" rx="5"/>
+<text class="tt" x="225" y="96">v1 当前</text>
+<text class="ts" x="225" y="118">判官为主 + 抽查</text>
+<text class="ts" x="225" y="136">植入缺陷对</text>
+<text class="ts" x="225" y="154">治理：归因可信度</text>
+<text class="ts" x="225" y="176">进行中</text>
+
+<rect class="sv-box" x="425" y="72" width="150" height="118" rx="5"/>
+<text class="tt" x="440" y="96">v2 编剧接入</text>
+<text class="ts" x="440" y="118">盲评 + 判别对</text>
+<text class="ts" x="440" y="136">锚点校准、alpha</text>
+<text class="ts" x="440" y="154">治理：质量水平</text>
+<text class="ts" x="440" y="176">待编剧到位</text>
+
+<rect class="sv-box" x="625" y="72" width="150" height="118" rx="5"/>
+<text class="tt" x="640" y="96">v3 技能晋升</text>
+<text class="ts" x="640" y="118">离线技能派生</text>
+<text class="ts" x="640" y="136">签名注册表</text>
+<text class="ts" x="640" y="154">治理：自动改进</text>
+<text class="ts" x="640" y="176">依赖 v2</text>
+</svg>
+
+<h3>各阶段解锁与不解锁</h3>
+<table>
+<tr><th style="width:14%">阶段</th><th style="width:43%">解锁</th><th style="width:43%">仍然做不到</th></tr>
+<tr><td><strong>v1</strong></td><td>判官是否响应缺陷；rubric 维度是否可分离；维度相关矩阵；model-only 基线</td><td>任何关于质量水平的结论；发布放行；对齐人类品味</td></tr>
+<tr><td><strong>v2</strong></td><td>成对偏好作为发布统计量；锚点校准与一致性；真正的难正例与判别对</td><td>自动改进——仍需人工提出改动</td></tr>
+<tr><td><strong>v3</strong></td><td>从失败模式自动派生候选技能，经隐藏 holdout 盲评后签名晋升</td><td>脱离人类盲评的全自动晋升，这是明确的非目标</td></tr>
+</table>
+
+<div class="note"><strong>阶段不可跳过的原因。</strong>v2 的成对偏好统计要求判官或评审能稳定分辨；如果 v1 显示连植入缺陷都检不出，v2 的偏好数据就是噪声。v3 的技能晋升门槛写的是"validation 加权分 +3%、人味成对偏好 +5%"——这些数字只有在 v2 建立了可信测量之后才有意义。每一阶段都在为下一阶段提供其赖以成立的前提。</div>
+
+<h2>六、失效模式</h2>
+
+<div class="grid g2">
+<div class="tile"><h4>Goodhart</h4><p>指标一旦成为目标就不再是好指标。固定不变的负例集在几轮迭代后会被学成"避开这些具体样本"而非"避开这类缺陷"。对策是对抗集季度轮换，并把 holdout 负例的权限限制为仅评测、不得用于技能派生。</p></div>
+<div class="tile"><h4>判官与生成同源</h4><p>同一模型族既生成又评判会产生相关盲区，测出的数字无论高低都不可解释。对策是判官模型集与生成模型集不相交。</p></div>
+<div class="tile"><h4>长度混杂</h4><p>长度与判官分数正相关，是最常见的隐性混杂。若负例比正例短，测出的"判别力"可能只是长度识别。对策是配对样本长度匹配，并每轮报告长度与分数的相关系数。</p></div>
+<div class="tile"><h4>位置偏置</h4><p>成对比较中判官偏好某个位置。对策是两个顺序各跑一次取平均，顺序翻转即结果反转的样本记为未决，不计入胜负。</p></div>
+<div class="tile"><h4>对了但理由错</h4><p>方向判对却定位不到缺陷，说明判官响应的是弥散信号（长度、语气、流畅度）。这类判官的维度级分数不得用于归因。对策是检出率与定位率必须成对上报。</p></div>
+<div class="tile"><h4>挑最好的一次交</h4><p>生成有随机性，只报告最佳采样等于自欺。对策是每个产物固定三次采样取中位数，且候选不得自选最优输出。</p></div>
+</div>
+
+<h2>七、当前状态与下一步</h2>
+<p>已落地：准入门与四支柱的判定逻辑（<code>crates/story-eval</code>，九个测试）、rubric 与阈值清单、三份 schema（用例、评分记录、对抗对）、12 个原创中文种子用例、专业评审的接入位（评分记录已预留 <code>rater_type</code>、盲评编号、缺陷定位字段，以及判官分与人类分的逐产物配对留存）。</p>
+<p>未落地：任何产物——目前没有生成能力，provider 与 storage 都只有 trait 定义，Campaign 未接入。对抗集因此为空。</p>
+<p>下一步是定义 <code>story-package/v1</code> 的<strong>内容</strong> schema（现有的只是带哈希的引用壳，没有叶节点 ID）。它同时决定生成脚本的输出目标和 span 寻址能否落地，是当前所有未知项中挡在最前面、且靠决策而非实验就能解决的一项。</p>
+
+<p class="foot">本文档解释设计意图，规范性条款以 <code>STORY_EVAL_V1.md</code> 与 <code>eval/manifests/eval-v0.1.0.json</code> 为准。所有阈值均为占位值，来自探针运行而非原理推导，随评测集版本一同变更。</p>
+
+</div>
+
+<script>
+var P=[["人物可信",2.2],["结构因果",4.6],["观看驱动",4.7],["原创可交付",4.6]];
+var FLOOR=3.0,PASS=3.5;
+document.getElementById('sl').innerHTML=P.map(function(p,i){
+return '<div class="srow"><label for="r'+i+'">'+p[0]+'</label>'+
+'<input type="range" id="r'+i+'" min="1" max="5" step="0.1" value="'+p[1]+'">'+
+'<output id="q'+i+'">'+p[1].toFixed(1)+'</output></div>';}).join('');
+
+function cls(v){return v==='通过'?'s pass':v==='拒绝'?'s rej':'s con';}
+
+function calc(){
+var v=P.map(function(p,i){return parseFloat(document.getElementById('r'+i).value);});
+v.forEach(function(x,i){document.getElementById('q'+i).textContent=x.toFixed(1);});
+var a=(v[0]+v[1]+v[2]+v[3])/4;
+var g=Math.pow(v[0]*v[1]*v[2]*v[3],0.25);
+var ok=v.every(function(x){return x>=FLOOR;});
+var va=a>=PASS?'通过':'待议', vg=g>=PASS?'通过':'待议', vf=!ok?'拒绝':(g>=PASS?'通过':'待议');
+document.getElementById('m1').textContent=a.toFixed(2);
+document.getElementById('m2').textContent=g.toFixed(2);
+document.getElementById('m3').textContent=g.toFixed(2);
+document.getElementById('v1').textContent=va;document.getElementById('v1').className=cls(va);
+document.getElementById('v2').textContent=vg;document.getElementById('v2').className=cls(vg);
+document.getElementById('v3').textContent=vf;document.getElementById('v3').className=cls(vf);
+var lo=Math.min.apply(null,v),c=document.getElementById('co');
+if(!ok&&va==='通过'&&vg==='通过'){c.textContent='补偿效应现形：最低支柱只有 '+lo.toFixed(1)+'，加权求和与几何平均都判通过，只有地板拦住了它。这正是几何平均单独不够用的证据。';}
+else if(!ok){c.textContent='最低支柱 '+lo.toFixed(1)+' 低于地板 3.0，直接拒绝。地板是绝对值，与上一版本无关，堵住了原设计只防回退不设下限的洞。';}
+else if(vf==='待议'){c.textContent='四个支柱都过了地板，但总分未达 3.5。均匀平庸的产物落在待议而非通过——这正是原加权设计漏掉的那一类。';}
+else{c.textContent='四个支柱都过地板且总分达标。几何平均始终不高于加权求和，两者的差值就是被压掉的补偿空间。';}
+}
+P.forEach(function(p,i){document.getElementById('r'+i).addEventListener('input',calc);});
+calc();
+</script>
+</body>
+</html>

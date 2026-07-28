@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/genre-template-v1.json",
+  "title": "Genre Template v1",
+  "description": "A named binding of hard constraints, signed skills, and retrieval collections for one genre-and-style preset, within a single content form. Deliberately not a new first-class mechanism: every part of a template already has a home, and a template only names the combination. Templates are strategy, not instrument — they shape inputs and craft guidance, never acceptance criteria. See docs/ONLINE_POLICY_DESIGN.md for the one-way dependency they inherit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "template_id",
+    "display_name",
+    "genre",
+    "differentiation_axis",
+    "constraints",
+    "forbidden_elements",
+    "skills",
+    "retrieval_collections",
+    "rubric_overrides",
+    "content_form"
+  ],
+  "properties": {
+    "schema": {
+      "const": "genre-template/v1"
+    },
+    "template_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+-v[0-9]+$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "genre": {
+      "enum": [
+        "family",
+        "urban_romance",
+        "revenge",
+        "suspense",
+        "workplace",
+        "rural",
+        "comedy",
+        "historical",
+        "cross_genre"
+      ],
+      "description": "Same enum as eval-case-v1.json. Genre stays the evaluation quota and split axis; template is the product entry point. One genre may carry several templates."
+    },
+    "differentiation_axis": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What this template competes on. Required because the largest market lanes compete on beat density and emotional intensity, where this product's thesis — human credibility — is not the differentiator. A template that cannot state its axis is chasing volume in a lane with a sub-1% break-out rate."
+    },
+    "market_note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Why this template exists commercially. Cite the observation, not a forecast."
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episodes_range",
+        "minutes_per_episode",
+        "production_level"
+      ],
+      "description": "Hard. Enforced at the admission gate, never scored.",
+      "properties": {
+        "episodes_range": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "minutes_per_episode": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "max_locations": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "max_speaking_cast": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "production_level": {
+          "enum": [
+            "low_budget",
+            "mid_budget",
+            "high_budget"
+          ]
+        },
+        "audience": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "forbidden_elements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Hard. The lazy resolutions this template refuses, checked deterministically at admission."
+    },
+    "required_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Semantic obligations assessed by the judge. Never an admission gate — the gate must stay deterministic."
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+@[0-9]+\\.[0-9]+\\.[0-9]+$"
+      },
+      "description": "References into skills-registry/<name>/<semver>/, which only serves signed versions. Empty is legal and currently accurate: the registry holds nothing, so today a template binds constraints and retrieval only."
+    },
+    "retrieval_collections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rubric_overrides": {
+      "const": null,
+      "description": "Locked to null, and the field is required so the lock is visible rather than merely absent. Per-template rubric weights would destroy cross-genre comparability: scores would become relative to a template, and 'does the revenge template do better than the family template' would stop having an answer. Templates change inputs and craft guidance; they never change acceptance criteria."
+    },
+    "promoted_by_eval_run": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Run id of the offline evaluation that promoted this template. Null means unpromoted and not permitted in production. A template is a candidate change exactly like a prompt or a weight."
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "promoted",
+        "retired"
+      ],
+      "default": "draft"
+    },
+    "content_form": {
+      "enum": [
+        "scripted_short_drama"
+      ],
+      "description": "Which content form this template lives inside. Only the scripted-drama form is defined today; knowledge/explainer and real-creator forms need their own artifact schema and rubric before they can appear here. A template is parameterisation WITHIN a form, never across forms."
+    },
+    "content_form_note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

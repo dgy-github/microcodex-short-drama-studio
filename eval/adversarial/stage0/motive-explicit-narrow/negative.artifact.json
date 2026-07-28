@@ -1,0 +1,15 @@
+{
+  "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-motive-explicit-narrow-stage0",
+  "artifact_type": "story-package",
+  "content_hash": "sha256:b11da2804596d753afaabc96f978685ab27a2a9f4d4938d530d72fd22c4350e1",
+  "content_ref": "negative.story-package.json",
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "schema": "story-artifact/v1",
+  "supersedes": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42"
+}

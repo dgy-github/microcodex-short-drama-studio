@@ -1,0 +1,41 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "urban-women-growth-v1",
+  "display_name": "都市情感·女性成长",
+  "genre": "urban_romance",
+  "status": "draft",
+  "promoted_by_eval_run": null,
+  "differentiation_axis": "成长由具体处境中的选择构成，而非由感情关系的得失定义。都市情感是最大投流盘，但甜宠赛道竞争的是情绪浓度；本模板竞争的是「她的改变能不能从她的具体处境推导出来」，对应 human_credibility 与 emotional_progression。",
+  "market_note": "投流侧情感 24%、都市 17%，都市情感占内容备案 23.5%。「女性成长」被点名为 TGI 高、供给稀缺的细分；大女主题材已入抖音端 TOP15。",
+  "constraints": {
+    "episodes_range": [
+      10,
+      16
+    ],
+    "minutes_per_episode": 2,
+    "max_locations": 6,
+    "max_speaking_cast": 8,
+    "production_level": "low_budget",
+    "audience": "22-40"
+  },
+  "forbidden_elements": [
+    "霸总介入解决困境",
+    "闺蜜背叛作为主要转折",
+    "怀孕作为关系转折点",
+    "换装或改造后被重新看见",
+    "事业成功由贵人一次提携达成"
+  ],
+  "required_conditions": [
+    "主角的关键选择至少一次与恋爱线的利益相反",
+    "职业或处境有具体到可拍的细节，不是模糊的白领设定",
+    "成长的代价被写出来，而不只是收益"
+  ],
+  "skills": [],
+  "retrieval_collections": [
+    "licensed-story-patterns",
+    "human-detail-notes"
+  ],
+  "rubric_overrides": null,
+  "content_form": "scripted_short_drama",
+  "content_form_note": "Level 2 template inside one content form. Knowledge/explainer and real-creator forms need their own artifact schema and rubric; see the content-form section in HANDOFF.md. Do not treat this file as a cross-form template."
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "引导式产品开发"
+  short_description: "按门禁推进需求、设计、开发、联调和发布"
+  default_prompt: "使用 $guided-product-development 引导这个功能从需求推进到发布。"

@@ -1,0 +1,15 @@
+feature: eval-specificity
+requirements:
+  - id: REQ-101
+    implementation:
+      - eval/tools/run_stage0_probe.py
+    tests:
+      - TEST-101
+      - TEST-102
+tests:
+  - id: TEST-101
+    location: eval/tools/test_run_stage0_probe.py
+    proves: all-dimension and cross-pillar specificity are calculated together
+  - id: TEST-102
+    location: eval/tools/test_run_stage0_probe.py
+    proves: a target without pillar ownership is rejected

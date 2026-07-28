@@ -1,5 +1,20 @@
 # MicrocodeX Short Drama Studio Development Rules
 
+## Mandatory project initialization
+
+Before the first development task:
+
+1. Read `.agents/skills/project-init/SKILL.md`.
+2. Read `docs/skills/技能结构说明书.md`.
+3. Run `python scripts/init_project.py --check`.
+4. If uninitialized, run
+   `python scripts/init_project.py --name "MicrocodeX Short Drama Studio"`.
+5. Do not implement feature code while initialization checks fail.
+
+Before adding code or interfaces, query `docs/project-memory/PROJECT_REGISTRY.yaml`
+and generated catalogs. Cross-layer features follow
+`docs/development/WORKFLOW.md`; contracts and traceability precede implementation.
+
 ## Boundaries
 
 - This repository owns the short-drama writing product.
@@ -33,5 +48,6 @@ cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
 python -m unittest discover -s sidecar -p "test_*.py"
+python -m unittest discover -s eval/tools -p "test_*.py"
+python scripts/init_project.py --check
 ```
-

@@ -1,0 +1,2452 @@
+[
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "enum",
+    "name": "GenreMode",
+    "line": 8
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "struct",
+    "name": "StoryFormat",
+    "line": 14
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "struct",
+    "name": "StoryBudget",
+    "line": 20
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "struct",
+    "name": "ArtifactSpanRef",
+    "line": 28
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "enum",
+    "name": "ArtifactSpanError",
+    "line": 31
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "parse",
+    "line": 41
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "as_str",
+    "line": 63
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "valid_kind",
+    "line": 68
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "fmt",
+    "line": 76
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "deserialize",
+    "line": 82
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "struct",
+    "name": "StoryJob",
+    "line": 92
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "enum",
+    "name": "ValidationError",
+    "line": 105
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "validate",
+    "line": 115
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "job",
+    "line": 132
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "valid_job_passes",
+    "line": 155
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "blank_input_fails",
+    "line": 160
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-core/src/lib.rs",
+    "kind": "fn",
+    "name": "artifact_span_is_form_agnostic_and_validated",
+    "line": 167
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "const",
+    "name": "DIMENSION_HARD_FLOOR",
+    "line": 30
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "const",
+    "name": "DEFAULT_FLOOR",
+    "line": 32
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "const",
+    "name": "DEFAULT_PASS_THRESHOLD",
+    "line": 34
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "enum",
+    "name": "RubricError",
+    "line": 37
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "PillarSpec",
+    "line": 50
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "RubricSpec",
+    "line": 57
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "new",
+    "line": 63
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "from_manifest",
+    "line": 82
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "pillars",
+    "line": 123
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "critical_dimensions",
+    "line": 127
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "pillar_count",
+    "line": 131
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "dimension_ids",
+    "line": 137
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "DimensionScores",
+    "line": 151
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "get",
+    "line": 154
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "insert",
+    "line": 157
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "values",
+    "line": 161
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "is_empty",
+    "line": 165
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "from_iter",
+    "line": 172
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "pillar_from_dimensions",
+    "line": 186
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "PillarScores",
+    "line": 196
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "from_scores",
+    "line": 199
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "from_values",
+    "line": 215
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "as_slice",
+    "line": 219
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "len",
+    "line": 223
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "is_empty",
+    "line": 227
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "geometric_mean",
+    "line": 236
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "legacy_arithmetic_mean",
+    "line": 249
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "lowest",
+    "line": 255
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "floors_pass",
+    "line": 259
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "critical_dimensions_pass",
+    "line": 264
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "enum",
+    "name": "Verdict",
+    "line": 284
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "Thresholds",
+    "line": 291
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "default",
+    "line": 298
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "from_manifest",
+    "line": 308
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "struct",
+    "name": "Assessment",
+    "line": 327
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "new",
+    "line": 335
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "has_hard_floor_breach",
+    "line": 350
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "floors_pass",
+    "line": 355
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "verdict",
+    "line": 366
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "const",
+    "name": "EPSILON",
+    "line": 383
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "drama_spec",
+    "line": 387
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "uniform",
+    "line": 423
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "scored",
+    "line": 430
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "one_low_critical_dimension_blocks_promotion",
+    "line": 440
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "geometric_mean_never_exceeds_arithmetic_mean",
+    "line": 447
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "geometric_mean_alone_does_not_reject_a_dead_pillar",
+    "line": 459
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "uniformly_mediocre_artifact_lands_in_consider_not_pass",
+    "line": 484
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "single_dimension_at_one_rejects_despite_healthy_pillars",
+    "line": 495
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "failed_admission_rejects_before_any_score_matters",
+    "line": 506
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "strong_artifact_passes",
+    "line": 517
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "pillar_mean_of_empty_dimension_set_is_none",
+    "line": 528
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "malformed_non_positive_pillar_yields_zero_not_nan",
+    "line": 535
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "rubric_shape_loads_from_the_repository_manifest",
+    "line": 543
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "a_three_pillar_form_aggregates_without_touching_this_crate",
+    "line": 560
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "a_missing_dimension_score_is_an_error_not_a_silent_zero",
+    "line": 598
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-eval/src/lib.rs",
+    "kind": "fn",
+    "name": "a_pillar_with_no_dimensions_is_rejected_at_construction",
+    "line": 614
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "enum",
+    "name": "ProblemCode",
+    "line": 20
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "is_hard_rule",
+    "line": 37
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "enum",
+    "name": "Severity",
+    "line": 43
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "Defect",
+    "line": 50
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "DefectWeights",
+    "line": 58
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "weight",
+    "line": 73
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "default",
+    "line": 93
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "SeverityFactors",
+    "line": 110
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "default",
+    "line": 116
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "Policy",
+    "line": 125
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "Candidate",
+    "line": 133
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "enum",
+    "name": "Ineligible",
+    "line": 143
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "ineligibility",
+    "line": 150
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "major_defect_count",
+    "line": 163
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "penalty",
+    "line": 170
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "score",
+    "line": 185
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "struct",
+    "name": "Selected",
+    "line": 192
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "enum",
+    "name": "Selection",
+    "line": 198
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "select",
+    "line": 208
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "candidate",
+    "line": 235
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "defect",
+    "line": 244
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "chosen_id",
+    "line": 252
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "critical_defect_is_a_rule_not_a_price",
+    "line": 261
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "hard_rule_code_rejects_even_at_minor_severity",
+    "line": 278
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "ordinary_defects_compensate_against_a_stronger_base_signal",
+    "line": 294
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "major_severity_outweighs_several_minor_defects",
+    "line": 310
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "identical_candidates_break_ties_deterministically",
+    "line": 330
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "projected_cost_shifts_the_choice_when_quality_is_equal",
+    "line": 342
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "all_critical_pool_rejects_rather_than_picking_the_least_bad",
+    "line": 360
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "hard_rule_codes_have_no_weight",
+    "line": 378
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "empty_pool_rejects",
+    "line": 386
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-policy/src/lib.rs",
+    "kind": "fn",
+    "name": "defect_can_target_a_stable_artifact_span",
+    "line": 391
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/lib.rs",
+    "kind": "struct",
+    "name": "Usage",
+    "line": 4
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/lib.rs",
+    "kind": "trait",
+    "name": "StructuredTextProvider",
+    "line": 8
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/lib.rs",
+    "kind": "type",
+    "name": "Error",
+    "line": 10
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/lib.rs",
+    "kind": "fn",
+    "name": "generate",
+    "line": 11
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "const",
+    "name": "EVENT_PROTOCOL",
+    "line": 5
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "struct",
+    "name": "EventEnvelope",
+    "line": 9
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "enum",
+    "name": "EventError",
+    "line": 26
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "validate",
+    "line": 36
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "deduplication_key",
+    "line": 49
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "struct",
+    "name": "SequenceCursor",
+    "line": 56
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "accept",
+    "line": 62
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "last_event_id",
+    "line": 73
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "event",
+    "line": 82
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "duplicate_sequence_is_ignored",
+    "line": 102
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/src/lib.rs",
+    "kind": "fn",
+    "name": "invalid_zero_sequence_fails",
+    "line": 110
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "module",
+    "name": "lib",
+    "line": 1
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "trait",
+    "name": "ArtifactStore",
+    "line": 4
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "type",
+    "name": "Error",
+    "line": 6
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "put_if_absent",
+    "line": 7
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "get",
+    "line": 9
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "enum",
+    "name": "CandidateDisposition",
+    "line": 13
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "struct",
+    "name": "CandidateDecisionEntry",
+    "line": 19
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "struct",
+    "name": "CandidateDecisionTrace",
+    "line": 29
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "enum",
+    "name": "CandidateTraceError",
+    "line": 39
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "validate",
+    "line": 53
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "trait",
+    "name": "CandidateDecisionStore",
+    "line": 109
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "type",
+    "name": "Error",
+    "line": 110
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "put_if_absent",
+    "line": 111
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "entry",
+    "line": 118
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "trace",
+    "line": 128
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "complete_trace_is_valid",
+    "line": 144
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "exactly_one_candidate_must_be_selected",
+    "line": 149
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "candidate_ids_must_be_unique",
+    "line": 156
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "ranks_must_be_unique_and_contiguous",
+    "line": 166
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/lib.rs",
+    "kind": "fn",
+    "name": "scores_must_be_finite",
+    "line": 180
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "module",
+    "name": "archive_baselines",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "sha256",
+    "line": 37
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "load",
+    "line": 41
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "collect",
+    "line": 45
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "build_index",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "write",
+    "line": 92
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "verify",
+    "line": 104
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 121
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit.py",
+    "kind": "module",
+    "name": "build_stage0_motive_explicit",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit.py",
+    "kind": "FunctionDef",
+    "name": "iter_node_refs",
+    "line": 47
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit.py",
+    "kind": "FunctionDef",
+    "name": "build",
+    "line": 68
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 135
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "module",
+    "name": "build_stage0_motive_explicit_narrow",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "load",
+    "line": 54
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "apply_edits",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "assert_only_edits_changed",
+    "line": 77
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "dialogue_nodes",
+    "line": 95
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "char_count",
+    "line": 104
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "write_json",
+    "line": 108
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage0_motive_explicit_narrow.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 116
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/compute_evaluator_metrics.py",
+    "kind": "module",
+    "name": "compute_evaluator_metrics",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "load",
+    "line": 39
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "result_files",
+    "line": 43
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "observations",
+    "line": 51
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 85
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "module",
+    "name": "generate_baselines",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "ClassDef",
+    "name": "ProviderConfig",
+    "line": 43
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "load_json",
+    "line": 52
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "load_cases",
+    "line": 59
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "build_prompt",
+    "line": 71
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "extract_content",
+    "line": 87
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "request_model",
+    "line": 99
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "canonical_bytes",
+    "line": 135
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "atomic_write",
+    "line": 142
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "prepare_package",
+    "line": 156
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "normalize_span_refs",
+    "line": 189
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "normalize_node_ids",
+    "line": 219
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "reconcile_scene_locations",
+    "line": 234
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "canonicalize_scene_line_ids",
+    "line": 268
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "validate_package",
+    "line": 301
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "make_wrapper",
+    "line": 424
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "generate_one",
+    "line": 440
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "select_cases",
+    "line": 473
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "parse_args",
+    "line": 485
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 501
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "replace",
+    "line": 287
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "collect_refs",
+    "line": 334
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "collect_natural_text",
+    "line": 374
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "module",
+    "name": "probe_metrics",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "median_scores",
+    "line": 9
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "spans_for",
+    "line": 20
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "self_consistency",
+    "line": 29
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "consistency_metrics",
+    "line": 43
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "specificity_metrics",
+    "line": 61
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "median_pair_scores",
+    "line": 113
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "module",
+    "name": "run_stage0_probe",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "load",
+    "line": 65
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "atomic_write",
+    "line": 72
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "load_rubric",
+    "line": 86
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "build_system",
+    "line": 91
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "valid_line_spans",
+    "line": 103
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "resolve_route",
+    "line": 131
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "request",
+    "line": 152
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "validate_judgment",
+    "line": 208
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "normalize_owned_field_spans",
+    "line": 238
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "request_validated",
+    "line": 281
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "check_connectivity",
+    "line": 329
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "parse_args",
+    "line": 388
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "select_judges",
+    "line": 404
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "resolve_pair_dir",
+    "line": 426
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "saved_result_is_reusable",
+    "line": 433
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "refresh_saved_summary",
+    "line": 449
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "collect_samples",
+    "line": 465
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "summarize_judge",
+    "line": 491
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "run_judge",
+    "line": 531
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "build_probe_summary",
+    "line": 578
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 613
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "module",
+    "name": "split_cases",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "FunctionDef",
+    "name": "load_all",
+    "line": 85
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "FunctionDef",
+    "name": "assign",
+    "line": 96
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "FunctionDef",
+    "name": "check_families",
+    "line": 123
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "FunctionDef",
+    "name": "write",
+    "line": 135
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/split_cases.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 149
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "module",
+    "name": "test_archive_baselines",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "archives",
+    "line": 11
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "ClassDef",
+    "name": "ArchiveIntegrityTests",
+    "line": 15
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "ClassDef",
+    "name": "PairArchiveConsistencyTests",
+    "line": 63
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_at_least_one_run_is_archived",
+    "line": 16
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_every_archived_package_matches_its_recorded_hash",
+    "line": 21
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_every_wrapper_agrees_with_its_package",
+    "line": 30
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_index_records_generation_parameters",
+    "line": 41
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_no_provider_responses_were_archived",
+    "line": 50
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_all_run_cases_are_covered",
+    "line": 56
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_archive_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_pair_baseline_matches_the_archived_baseline",
+    "line": 64
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "module",
+    "name": "test_compute_evaluator_metrics",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "ClassDef",
+    "name": "ResultDiscoveryTests",
+    "line": 7
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "ClassDef",
+    "name": "ObservationTests",
+    "line": 14
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "ClassDef",
+    "name": "ReportTests",
+    "line": 38
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_invalid_span_files_are_excluded",
+    "line": 8
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_direction_is_measured_within_the_pair",
+    "line": 15
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_citation_off_the_seeded_spans_is_not_localised",
+    "line": 27
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 39
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_stability_rerun_is_not_counted_as_a_third_judge",
+    "line": 42
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_localisation_is_flagged_as_constructively_guaranteed",
+    "line": 47
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_single_pair_resolution_is_disclosed",
+    "line": 54
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_uncomputable_metrics_are_named_with_reasons",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "module",
+    "name": "test_generate_baselines",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "valid_package",
+    "line": 24
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "ClassDef",
+    "name": "GenerateBaselinesTests",
+    "line": 127
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 128
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_generate_one_writes_content_and_wrapper",
+    "line": 136
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_existing_artifact_is_not_overwritten",
+    "line": 161
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_unknown_case_selection_is_rejected",
+    "line": 182
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_json_tree_span_is_canonicalized",
+    "line": 186
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_parent_prefix_is_removed_from_node_id",
+    "line": 192
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_scene_location_refines_declared_location",
+    "line": 201
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_generate_baselines.py",
+    "kind": "FunctionDef",
+    "name": "test_scene_lines_are_numbered_by_kind",
+    "line": 209
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "module",
+    "name": "test_run_stage0_probe",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "sample",
+    "line": 23
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "RubricTests",
+    "line": 31
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "JudgeConfigTests",
+    "line": 42
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "ValidationTests",
+    "line": 76
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "AggregationTests",
+    "line": 135
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "PairSelfContainmentTests",
+    "line": 197
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "ClassDef",
+    "name": "RouteTests",
+    "line": 228
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_rubric_has_ten_dimensions",
+    "line": 32
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_system_prompt_names_every_dimension",
+    "line": 35
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 43
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_generator_family_is_disjoint_from_judges",
+    "line": 46
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_at_least_two_judge_families",
+    "line": 50
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_no_secret_material_in_tracked_config",
+    "line": 54
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_temperature_permits_variance",
+    "line": 69
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 77
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_full_dimension_set_passes",
+    "line": 83
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_missing_dimension_is_rejected",
+    "line": 87
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_span_outside_the_artifact_is_rejected",
+    "line": 92
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_real_beat_span_is_accepted",
+    "line": 97
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_owned_field_span_normalizes_to_its_node",
+    "line": 101
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_production_fields_expand_to_real_source_nodes",
+    "line": 113
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_out_of_range_score_is_rejected",
+    "line": 127
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_median_ignores_a_single_outlier",
+    "line": 136
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_self_consistency_detects_disagreement",
+    "line": 145
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_consistency_metrics_cover_both_orders_and_sides",
+    "line": 153
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_specificity_reports_all_and_cross_pillar_views",
+    "line": 164
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_specificity_rejects_target_without_a_pillar",
+    "line": 192
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_both_members_live_in_the_pair_directory",
+    "line": 198
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_probe_does_not_read_the_ignored_run_directory",
+    "line": 204
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_saved_primary_and_narrow_results_have_both_specificity_views",
+    "line": 210
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 231
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_alternate_vendor_does_not_add_a_judge_family",
+    "line": 234
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_every_judge_uses_the_routes_shape",
+    "line": 240
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_resolve_route_requires_endpoint_and_key",
+    "line": 247
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_resolve_route_skips_a_blocked_route",
+    "line": 258
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "module",
+    "name": "test_validate_cases",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "ClassDef",
+    "name": "ValidateRecordsTests",
+    "line": 16
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "ClassDef",
+    "name": "ValidateCorpusTests",
+    "line": 54
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_every_split_file_is_valid",
+    "line": 17
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_duplicate_case_id_is_rejected",
+    "line": 23
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_record_in_the_wrong_directory_is_rejected",
+    "line": 30
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_train_requires_skill_derivation_rights",
+    "line": 36
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_invalid_json_reports_line_number",
+    "line": 46
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_repository_corpus_is_valid",
+    "line": 55
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_premise_family_split_across_splits_is_rejected",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_duplicate_licence_across_splits_is_rejected",
+    "line": 71
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_genre_quota_shortfall_is_reported",
+    "line": 78
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "module",
+    "name": "validate_cases",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "load_jsonl",
+    "line": 81
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "load_corpus",
+    "line": 100
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "validate_records",
+    "line": 109
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "validate_corpus",
+    "line": 177
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 233
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_code_structure.py",
+    "kind": "module",
+    "name": "check_code_structure",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_code_structure.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 11
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_duplicate_owners.py",
+    "kind": "module",
+    "name": "check_duplicate_owners",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_duplicate_owners.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 11
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_openapi.py",
+    "kind": "module",
+    "name": "check_openapi",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_openapi.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 11
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_registry.py",
+    "kind": "module",
+    "name": "check_registry",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_registry.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 12
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_traceability.py",
+    "kind": "module",
+    "name": "check_traceability",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/check_traceability.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 9
+  },
+  {
+    "language": "Python",
+    "path": "scripts/generate_project_memory.py",
+    "kind": "module",
+    "name": "generate_project_memory",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/generate_project_memory.py",
+    "kind": "FunctionDef",
+    "name": "symbols",
+    "line": 23
+  },
+  {
+    "language": "Python",
+    "path": "scripts/generate_project_memory.py",
+    "kind": "FunctionDef",
+    "name": "discover",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "scripts/generate_project_memory.py",
+    "kind": "FunctionDef",
+    "name": "render",
+    "line": 70
+  },
+  {
+    "language": "Python",
+    "path": "scripts/generate_project_memory.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 93
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "module",
+    "name": "init_project",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "load_manifest",
+    "line": 20
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "fingerprint",
+    "line": 24
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "missing",
+    "line": 30
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "placeholder_errors",
+    "line": 35
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "run_checks",
+    "line": 52
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "state_errors",
+    "line": 67
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "initialize",
+    "line": 81
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "check",
+    "line": 110
+  },
+  {
+    "language": "Python",
+    "path": "scripts/init_project.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 123
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/__init__.py",
+    "kind": "module",
+    "name": "__init__",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/protocol.py",
+    "kind": "module",
+    "name": "protocol",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/protocol.py",
+    "kind": "ClassDef",
+    "name": "DurableEvent",
+    "line": 14
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/protocol.py",
+    "kind": "FunctionDef",
+    "name": "make_event",
+    "line": 33
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/protocol.py",
+    "kind": "FunctionDef",
+    "name": "to_dict",
+    "line": 29
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/test_protocol.py",
+    "kind": "module",
+    "name": "test_protocol",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/test_protocol.py",
+    "kind": "ClassDef",
+    "name": "ProtocolTests",
+    "line": 6
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/test_protocol.py",
+    "kind": "FunctionDef",
+    "name": "test_event_uses_shared_protocol",
+    "line": 7
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/test_protocol.py",
+    "kind": "FunctionDef",
+    "name": "test_zero_sequence_is_rejected",
+    "line": 18
+  }
+]

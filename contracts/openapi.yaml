@@ -1,0 +1,19 @@
+openapi: 3.1.0
+info:
+  title: MicrocodeX Short Drama Studio API
+  version: 0.1.0-alpha.1
+  description: >
+    Trusted Rust HTTP surface. Add operations here before implementing cross-layer
+    calls. SSE event payloads continue to use the tracked JSON schemas.
+paths: {}
+components:
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string

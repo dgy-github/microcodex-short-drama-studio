@@ -1,0 +1,60 @@
+{
+  "schema": "judge-set/v1",
+  "note": "Judge configuration is tracked; secrets are not. Only environment variable names appear here. The manifest requires at least two judge models from different families, and the judge set must stay disjoint from the generator set.",
+  "generator": {
+    "model": "deepseek-v4-pro",
+    "family": "deepseek"
+  },
+  "judges": [
+    {
+      "model": "qwen3-vl-plus",
+      "family": "qwen",
+      "routes": [
+        {
+          "provider": "aliyun_bailian",
+          "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "api_key_env": "JUDGE_API_KEY",
+          "endpoint_verified": true,
+          "note": "Verified 2026-07-27 with a real Chat Completions request; qwen3-vl-plus honoured JSON mode and completed the full stage-0 probe."
+        }
+      ],
+      "note": "A vision-language variant was chosen without a recorded rationale; a text variant of the same family is the more obvious choice for prose."
+    },
+    {
+      "model": "glm-5.2",
+      "family": "zhipu",
+      "routes": [
+        {
+          "provider": "zhipu",
+          "endpoint": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+          "api_key_env": "JUDGE_API_KEY_GLM",
+          "endpoint_verified": true,
+          "blocked_on": "account_balance",
+          "note": "Probed 2026-07-27: Zhipu error 1113 (insufficient balance). That response proves the path is correct and the key authenticates — a wrong path returns 404 and a bad key returns 401."
+        },
+        {
+          "provider": "volcano_ark",
+          "endpoint": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+          "api_key_env": "JUDGE_API_KEY_GLM_ARK",
+          "endpoint_verified": true,
+          "model": "glm-5-2-260617",
+          "thinking": {
+            "type": "disabled"
+          },
+          "model_override_required": false,
+          "blocked_on": null,
+          "note": "Verified 2026-07-27 with a real Chat Completions request: the authenticated Ark route accepted model id glm-5-2-260617 and honoured JSON mode. Deep thinking is disabled for bounded stage-0 judge latency. The judge-level model remains glm-5.2 as the provider-neutral identity."
+        }
+      ],
+      "model_id_verified": true,
+      "routes_note": "Routes are alternate vendors for ONE model, tried in order. They are deliberately not separate judges: the same model behind two vendors would satisfy min_judge_models on paper while being one opinion counted twice."
+    }
+  ],
+  "sampling": {
+    "samples_per_artifact": 3,
+    "aggregate": "median",
+    "temperature": 0.7,
+    "temperature_note": "Deliberately not 0. The manifest aggregates three samples by median, which requires variance to exist. At temperature 0 self_consistency is trivially 1.0 and measures nothing."
+  },
+  "independence_caveat": "Both judges are Chinese-native model families with likely overlapping Chinese training corpora and similar RLHF preferences for Chinese prose. Agreement between them is weaker evidence than the metric name suggests: it may reflect shared priors rather than independent confirmation. Genuine independence requires a non-Chinese-native family or a human."
+}

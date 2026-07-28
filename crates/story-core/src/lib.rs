@@ -1,6 +1,7 @@
 //! Product-owned short-drama job and artifact contracts.
 
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -20,6 +21,71 @@ pub struct StoryBudget {
     pub max_tokens: u64,
     pub max_cny_fen: u64,
     pub deadline_seconds: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[serde(transparent)]
+pub struct ArtifactSpanRef(String);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+pub enum ArtifactSpanError {
+    #[error("artifact span must contain an artifact kind and at least one node")]
+    MissingNode,
+    #[error("artifact span contains an invalid kind")]
+    InvalidKind,
+    #[error("artifact span node must end in a positive index")]
+    InvalidIndex,
+}
+
+impl ArtifactSpanRef {
+    pub fn parse(value: impl Into<String>) -> Result<Self, ArtifactSpanError> {
+        let value = value.into();
+        let segments: Vec<&str> = value.split('/').collect();
+        if segments.len() < 2 {
+            return Err(ArtifactSpanError::MissingNode);
+        }
+        if !valid_kind(segments[0]) {
+            return Err(ArtifactSpanError::InvalidKind);
+        }
+        for segment in &segments[1..] {
+            let Some((kind, index)) = segment.rsplit_once('-') else {
+                return Err(ArtifactSpanError::InvalidIndex);
+            };
+            if !valid_kind(kind) {
+                return Err(ArtifactSpanError::InvalidKind);
+            }
+            if index.starts_with('0') || index.parse::<u32>().is_err() {
+                return Err(ArtifactSpanError::InvalidIndex);
+            }
+        }
+        Ok(Self(value))
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+fn valid_kind(value: &str) -> bool {
+    value.bytes().enumerate().all(|(index, byte)| {
+        byte.is_ascii_lowercase() || (index > 0 && (byte.is_ascii_digit() || byte == b'-'))
+    }) && !value.is_empty()
+}
+
+impl fmt::Display for ArtifactSpanRef {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(&self.0)
+    }
+}
+
+impl<'de> Deserialize<'de> for ArtifactSpanRef {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        Self::parse(value).map_err(serde::de::Error::custom)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -68,7 +134,7 @@ mod tests {
         StoryJob {
             schema: "story-job/v1".into(),
             job_id: "job_1".into(),
-            input: "母亲卖掉老房子后，三个成年子女第一次回家吃饭。".into(),
+            input: "两名维修工必须在商场开门前修好同一部故障电梯。".into(),
             genre_mode: GenreMode::Auto,
             allowed_genres: vec!["family".into()],
             audience: "25-45".into(),
@@ -95,5 +161,19 @@ mod tests {
         let mut value = job();
         value.input = " ".into();
         assert_eq!(value.validate(), Err(ValidationError::Blank));
+    }
+
+    #[test]
+    fn artifact_span_is_form_agnostic_and_validated() {
+        let span = ArtifactSpanRef::parse("story-package/scene-2/dialogue-7").unwrap();
+        assert_eq!(span.as_str(), "story-package/scene-2/dialogue-7");
+        assert_eq!(
+            ArtifactSpanRef::parse("story-package/scene-0"),
+            Err(ArtifactSpanError::InvalidIndex)
+        );
+        assert_eq!(
+            ArtifactSpanRef::parse("story-package"),
+            Err(ArtifactSpanError::MissingNode)
+        );
     }
 }

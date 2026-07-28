@@ -1,0 +1,109 @@
+{
+  "cases": [
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+      "case_id": "comedy_002",
+      "content_hash": "sha256:2b9912f708c2e8c7e9291b3c25ba9ae4a262dedc45febe7ce72dc547d260a66f",
+      "package": "comedy_002.story-package.json",
+      "wrapper": "comedy_002.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-family_001-seed-42",
+      "case_id": "family_001",
+      "content_hash": "sha256:272c07980fd05d96fe30c34abe4d45767da295202a5725bad828ba390a9f123c",
+      "package": "family_001.story-package.json",
+      "wrapper": "family_001.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-family_004-seed-42",
+      "case_id": "family_004",
+      "content_hash": "sha256:c1129355586e9e9b6d0aaec0dd2be56fd0bbcfeb0708e2ba4a5fec6eeb304438",
+      "package": "family_004.story-package.json",
+      "wrapper": "family_004.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-urban_romance_002-seed-42",
+      "case_id": "urban_romance_002",
+      "content_hash": "sha256:d982cda499576cb9ad8005b13d2cd8ae7700539adbe670e5797cb9dffe47b083",
+      "package": "urban_romance_002.story-package.json",
+      "wrapper": "urban_romance_002.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-revenge_001-seed-42",
+      "case_id": "revenge_001",
+      "content_hash": "sha256:0ae2ffa45712482acdc2540a7a97badb4b8426158f38c679d1972f4293513434",
+      "package": "revenge_001.story-package.json",
+      "wrapper": "revenge_001.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-revenge_002-seed-42",
+      "case_id": "revenge_002",
+      "content_hash": "sha256:a9a816ce24dd2a4a3a0b8f0ac7c3778538a812a365062e880acdb9cdd19b2274",
+      "package": "revenge_002.story-package.json",
+      "wrapper": "revenge_002.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-revenge_003-seed-42",
+      "case_id": "revenge_003",
+      "content_hash": "sha256:7287c23b6e0d6be3159161698b17662377fff8c3ef934f0e5bcf8ec97b104690",
+      "package": "revenge_003.story-package.json",
+      "wrapper": "revenge_003.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-revenge_004-seed-42",
+      "case_id": "revenge_004",
+      "content_hash": "sha256:d71d2469312a85b650f5730cbf50365c1f699611f638f9c851128c9479265d3c",
+      "package": "revenge_004.story-package.json",
+      "wrapper": "revenge_004.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-workplace_003-seed-42",
+      "case_id": "workplace_003",
+      "content_hash": "sha256:08a3c75f2aa2db5b914c27770d245e453189101eed32f0b8e55f9b14c3ba2e82",
+      "package": "workplace_003.story-package.json",
+      "wrapper": "workplace_003.artifact.json"
+    },
+    {
+      "artifact_id": "baseline-deepseek-v4-pro-20260727-rural_003-seed-42",
+      "case_id": "rural_003",
+      "content_hash": "sha256:8a0f126fe205565a1e6eef304a629028e14c2a10aa33ffce75d2ac75e35d39a9",
+      "package": "rural_003.story-package.json",
+      "wrapper": "rural_003.artifact.json"
+    }
+  ],
+  "created_at": "2026-07-27T11:32:41.897544+00:00",
+  "generator": {
+    "endpoint": "https://api.deepseek.com/chat/completions",
+    "endpoint_history": [
+      {
+        "case_ids": [
+          "comedy_002",
+          "family_001",
+          "family_004",
+          "urban_romance_002",
+          "revenge_001",
+          "revenge_002",
+          "revenge_003",
+          "revenge_004",
+          "workplace_003"
+        ],
+        "endpoint": "https://api.deepseek.com/beta/chat/completions"
+      },
+      {
+        "case_ids": [
+          "rural_003"
+        ],
+        "endpoint": "https://api.deepseek.com/chat/completions",
+        "reason": "DeepSeek official base URL migration"
+      }
+    ],
+    "kind": "model_only",
+    "model": "deepseek-v4-pro",
+    "seed": 42,
+    "temperature": 0.7
+  },
+  "note": "Artifacts archived from eval/runs/, which .gitignore excludes. Raw provider responses stay in the run directory: they are run telemetry, not evaluation inputs.",
+  "run_id": "baseline-deepseek-v4-pro-20260727",
+  "schema": "baseline-archive/v1",
+  "story_package_schema": "story-package/v1"
+}

@@ -5,6 +5,7 @@ members = [
     "crates/story-storage",
     "crates/story-provider",
     "crates/story-eval",
+    "crates/story-policy",
 ]
 resolver = "2"
 

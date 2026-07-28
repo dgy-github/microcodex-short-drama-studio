@@ -1,0 +1,41 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "family-ethics-v1",
+  "display_name": "家庭伦理",
+  "genre": "family",
+  "status": "draft",
+  "promoted_by_eval_run": null,
+  "differentiation_axis": "没有反派的道德冲突。家庭伦理是本产品主张最能发挥的题材——每个人都有站得住的理由，冲突来自不可兼得而非善恶对立，这种戏只能靠 human_credibility 和 dialogue_subtext 撑住，靠不了爽点。",
+  "market_note": "抖音端原生关联剧数 TOP3，投流侧细分第 4。报告点名「亲情」属 TGI 高但供给稀缺的细分。",
+  "constraints": {
+    "episodes_range": [
+      8,
+      12
+    ],
+    "minutes_per_episode": 2,
+    "max_locations": 4,
+    "max_speaking_cast": 7,
+    "production_level": "low_budget",
+    "audience": "25-50"
+  },
+  "forbidden_elements": [
+    "绝症反转",
+    "突然和解",
+    "隐藏身世",
+    "一场大雨化解矛盾",
+    "长辈临终遗言解决一切"
+  ],
+  "required_conditions": [
+    "至少三方各自有站得住的立场，不设置反派",
+    "核心矛盾源于资源、责任或时间的不可兼得",
+    "结局不要求任何一方承认自己错了"
+  ],
+  "skills": [],
+  "retrieval_collections": [
+    "licensed-story-patterns",
+    "human-detail-notes"
+  ],
+  "rubric_overrides": null,
+  "content_form": "scripted_short_drama",
+  "content_form_note": "Level 2 template inside one content form. Knowledge/explainer and real-creator forms need their own artifact schema and rubric; see the content-form section in HANDOFF.md. Do not treat this file as a cross-form template."
+}
