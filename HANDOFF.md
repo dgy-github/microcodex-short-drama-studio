@@ -5,7 +5,8 @@ date: 2026-07-27
 agent: Codex
 branch: main
 sealed_commit: 1cdc5c2
-working_tree: clean after P0 handoff commit
+p1_evidence_commit: 4cbd809
+working_tree: clean after this handoff update
 origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ## 接手必读
