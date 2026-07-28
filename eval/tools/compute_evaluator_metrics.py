@@ -30,8 +30,10 @@ import statistics
 from pathlib import Path
 from typing import Any
 
+from probe_metrics import krippendorff_alpha_interval
+
 ROOT = Path(__file__).parents[2]
-PAIR_DIR = ROOT / "eval" / "adversarial" / "stage0" / "motive-explicit"
+PAIR_DIR = ROOT / "eval" / "adversarial" / "stage0" / "motive-explicit-narrow"
 MANIFEST = ROOT / "eval" / "manifests" / "eval-v0.1.0.json"
 OUT = PAIR_DIR / "evaluator-metrics.json"
 
@@ -40,10 +42,10 @@ def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def result_files() -> list[Path]:
+def result_files(pair_dir: Path = PAIR_DIR) -> list[Path]:
     return sorted(
         p
-        for p in PAIR_DIR.glob("judge-*.result.json")
+        for p in pair_dir.glob("judge-*.result.json")
         if ".invalid-span." not in p.name
     )
 
@@ -85,19 +87,27 @@ def observations(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--pair-dir",
+        type=Path,
+        default=PAIR_DIR,
+        help="pair directory, relative to repository root or absolute",
+    )
     args = parser.parse_args()
+    pair_dir = args.pair_dir if args.pair_dir.is_absolute() else ROOT / args.pair_dir
+    out = pair_dir / "evaluator-metrics.json"
 
     manifest = load(MANIFEST)
     metrics = manifest["evaluator_metrics"]
     dimension_ids = [
         d for pillar in manifest["pillars"].values() for d in pillar["dimensions"]
     ]
-    pair = load(PAIR_DIR / "pair.json")
-    negative = load(PAIR_DIR / "negative.story-package.json")
+    pair = load(pair_dir / "pair.json")
+    negative = load(pair_dir / "negative.story-package.json")
     defect_spans = set(pair["seeded_defects"][0]["spans"])
 
     per_judge = []
-    for path in result_files():
+    for path in result_files(pair_dir):
         data = load(path)
         summary = data.get("summary", {})
         rows = observations(
@@ -135,6 +145,29 @@ def main() -> int:
     pairs_total = 1
     detected = int(all(j["pair_detected"] for j in primary))
     localised = int(all(j["pair_localised"] for j in primary))
+    agreement_rows = [
+        [
+            *[load(pair_dir / entry["source"])["summary"]["baseline_scores"][d]
+              for d in dimension_ids],
+            *[load(pair_dir / entry["source"])["summary"]["negative_scores"][d]
+              for d in dimension_ids],
+        ]
+        for entry in primary
+    ]
+    agreement = (
+        krippendorff_alpha_interval(agreement_rows)
+        if len(agreement_rows) >= 2
+        else None
+    )
+    fingerprints = sorted(
+        {
+            load(pair_dir / entry["source"])
+            .get("summary", {})
+            .get("input_fingerprint")
+            for entry in primary
+        }
+        - {None}
+    )
 
     # Localisation is only informative if some part of the artifact was left
     # unseeded. When every dialogue node carries a seeded defect, any citation
@@ -183,21 +216,35 @@ def main() -> int:
         },
         "judges_counted": [j["judge_model"] for j in primary],
         "reruns_excluded_from_headline": [j["source"] for j in reruns],
+        "input_fingerprints": fingerprints,
+        "all_inputs_fingerprinted": len(fingerprints) == 1
+        and all(
+            load(pair_dir / entry["source"])
+            .get("summary", {})
+            .get("input_fingerprint")
+            == fingerprints[0]
+            for entry in primary
+        ),
+        "inter_model_agreement": {
+            "method": "krippendorff_alpha_interval",
+            "value": agreement,
+            "items": len(dimension_ids) * 2,
+            "raters": len(primary),
+        },
         "per_judge": per_judge,
         "not_computable_here": {
-            "inter_model_agreement": "needs an agreement statistic over a shared rater set; scores exist but the estimator is not implemented",
             "spot_check_agreement": "needs the internal human spot check, which has never been run",
         },
     }
 
     if args.check:
-        if not OUT.exists():
+        if not out.exists():
             print("MISSING evaluator-metrics.json")
             return 1
         print("OK evaluator-metrics.json present")
         return 0
 
-    OUT.write_text(
+    out.write_text(
         json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )

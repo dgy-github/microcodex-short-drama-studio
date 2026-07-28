@@ -6,6 +6,15 @@ requirements:
     tests:
       - TEST-101
       - TEST-102
+  - id: REQ-102
+    implementation:
+      - eval/tools/run_stage0_probe.py
+      - eval/tools/probe_metrics.py
+      - eval/tools/compute_evaluator_metrics.py
+    tests:
+      - TEST-103
+      - TEST-104
+      - TEST-105
 tests:
   - id: TEST-101
     location: eval/tools/test_run_stage0_probe.py
@@ -13,3 +22,12 @@ tests:
   - id: TEST-102
     location: eval/tools/test_run_stage0_probe.py
     proves: a target without pillar ownership is rejected
+  - id: TEST-103
+    location: eval/tools/test_run_stage0_probe.py
+    proves: stale results without the current input fingerprint are rejected
+  - id: TEST-104
+    location: eval/tools/test_run_stage0_probe.py
+    proves: status applies specificity and stability thresholds
+  - id: TEST-105
+    location: eval/tools/test_compute_evaluator_metrics.py
+    proves: the narrow pair reports inter-model agreement and informative localisation

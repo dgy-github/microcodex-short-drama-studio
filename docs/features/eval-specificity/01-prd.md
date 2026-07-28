@@ -24,3 +24,12 @@ No provider request is required to upgrade complete saved judge samples.
 - This change does not choose a release threshold.
 - This change does not change the current probe status decision.
 - This change does not revise pillar membership.
+
+## REQ-102 — Calibrated probe integrity
+
+Every reusable judge result must carry one fingerprint over the pair artifacts,
+rubric, judge configuration and evaluator manifest. Probe status passes only
+when every judge meets sensitivity, cross-pillar specificity, order consistency
+and self-consistency thresholds. The report must include inter-model agreement.
+Transient provider failures use bounded retries, and long probes checkpoint
+each completed sample without exposing partial data as a final result.

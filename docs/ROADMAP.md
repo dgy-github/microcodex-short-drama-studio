@@ -42,13 +42,26 @@ negative. Once obtained, stop — do not keep optimising this pair.**
 2. ✅ Report both `specificity_all` and `specificity_cross_pillar`; use the
    cross-pillar view for the P2 separability decision and retain the all view
    for pillar-collapse diagnosis.
-3. Add an input fingerprint (artifact + rubric + judge config) to every judge
+3. ✅ Add an input fingerprint (artifact + rubric + judge config) to every judge
    result, so a stale result cannot be silently reused after an artifact edit.
-4. Give `status` a specificity and stability threshold. The present version
+4. ✅ Give `status` a specificity and stability threshold. The present version
    checks only sensitivity and order consistency, so a specificity of 0.11 still
    reports `measurable_gap`.
-5. Re-run the 12 scoring calls and recompute `compute_evaluator_metrics.py`.
-6. Implement the `inter_model_agreement` estimator.
+5. ✅ Re-run the 12 scoring calls and recompute `compute_evaluator_metrics.py`.
+6. ✅ Implement the `inter_model_agreement` estimator.
+
+### Latest calibrated reading — 2026-07-27
+
+All saved results share one verified input fingerprint. Qwen reached
+cross-pillar specificity `0.7143` and self-consistency `0.925`, but flipped with
+artifact order. GLM reached specificity `0.1429`, self-consistency `0.475`, and
+also flipped with order. Krippendorff interval alpha across both judges is
+`0.3312`; strict seeded-pair detection is `0.0`.
+
+The engineering checklist is complete but the P1 exit condition is not. P2
+therefore selected the `judge stability still poor` branch. The path returns to
+P1 and requires either a non-Chinese-native third judge family or an internal
+human spot check. P2.5 and P3 remain closed until that evidence exists.
 
 Narrowing the degradation is listed first because it alone unlocks three
 readings: specificity becomes interpretable, `defect_localisation` escapes being
@@ -400,7 +413,153 @@ job, upgrade safely, and reproduce the release evidence.
 
 ---
 
-## Deliberately downgraded
+# Beyond the first stable release
+
+P10 is the first shippable product. Everything below is post-1.0, and the
+confidence behind it decays fast with distance.
+
+**Read these as a register of designed-but-unscheduled work, not as a schedule.**
+Their purpose is to stop capability that is already specified from falling off
+the map. Two things had already fallen off before this section existed:
+
+- `STORY_MULTI_AGENT_DESIGN.md` §12–13 fully specifies the nanocodex skill
+  derivation loop — human revision corpus, candidate `SKILL.md`, promotion gate,
+  signed registry. It appeared nowhere in P0–P10. The registry is empty and all
+  three draft templates carry `skills: []`, so today a template binds constraints
+  and retrieval and nothing else.
+- `STORY_EVAL_DESIGN.md` §11 requires expanding to 120 cases **before** enabling
+  automatic skill promotion. The set is 30, and no phase owned the expansion.
+
+The project is currently at P1. Nothing below should be treated as a commitment.
+
+---
+
+## P11 · Evaluation at scale
+
+Prerequisite for P12: the parent contract forbids automatic skill promotion on a
+30-case set.
+
+- expand the case set from 30 to the 120-case target distribution;
+- add a **non-Chinese-native judge family**, so `inter_model_agreement` stops
+  measuring shared priors between two Chinese-native models;
+- MinHash / embedding premise-family checking, deferred at 30 cases where
+  reading them sufficed;
+- similarity search of every premise against existing screen works;
+- re-freeze the manifest and rubric at the larger scale.
+
+**Exit:** 120 cases frozen, premise-family separation machine-checked, and
+cross-family judge agreement measurable rather than merely reported.
+
+---
+
+## P12 · Skill derivation and promotion
+
+Implement the loop `STORY_MULTI_AGENT_DESIGN.md` §12–13 already specifies:
+
+- human revision corpus with `before`/`after`, `problem_code` and span refs;
+- nanocodex analyzer producing candidate `SKILL.md` with evidence and rationale;
+- lint, size and security validation of candidates;
+- train → validation → hidden holdout promotion, human-gated;
+- signed registry `skills-registry/<name>/<semver>/`, rollback by pointer;
+- templates bind real signed skill versions instead of `skills: []`.
+
+Gated on **P7** for the revision corpus — the pairs come from professional edits,
+which do not exist until screenwriters are engaged — and on **P11** for scale.
+
+Skill evolution stays offline and never mutates production skills directly.
+
+**Exit:** one skill is promoted from a real revision corpus through the hidden
+gate, signed, loaded by a template, and rollback is exercised.
+
+---
+
+## P13 · Deliverable formats
+
+A `story-package/v1` is a JSON document. Nobody shoots from JSON.
+
+- export to a real screenplay format for the production side;
+- per-episode shooting-oriented breakdowns respecting the declared production
+  tier;
+- round-trip integrity: exported artifacts trace back to node ids and revisions.
+
+This is the gap between "the system produced a story" and "a crew can use it".
+It is listed after P12 only because skills change what gets produced, not
+because export is less important.
+
+**Exit:** an exported deliverable is accepted by someone who would actually
+shoot from it, and traces back to the package it came from.
+
+---
+
+## P14 · Second content form — knowledge/explainer
+
+The first real test of P2.5's claim. Adding a form must supply an artifact
+schema, a rubric and a case set, and touch no aggregation, gating or verdict
+code.
+
+- explainer artifact schema: no character arcs, no scene dialogue;
+- its own rubric — factual soundness, explanatory clarity, watch drive — with
+  its own critical dimensions;
+- its own case set and admission gates;
+- its own adversarial seeding recipes; the drama masking recipes do not carry
+  over.
+
+If this phase requires editing `story-eval`, P2.5 failed and the failure is
+worth recording plainly.
+
+**Exit:** an explainer job runs end to end and is scored, with zero changes to
+aggregation, gating or verdict logic.
+
+---
+
+## P15 · Third content form — real-creator
+
+Real-creator content is not scripted output at all: single presenter, location
+sound, non-fiction. The artifact is closer to a shooting plan than a script, and
+the rubric has no dialogue-subtext dimension to measure.
+
+Sequenced after P14 because P14 establishes whether adding a form is genuinely
+configuration-only. Doing both at once would confound that answer.
+
+**Exit:** three content forms coexist under one product with three rubrics and
+one aggregation implementation.
+
+---
+
+## P16 · Video scope decision
+
+**A decision gate, not a work phase.** P10 states that video download, material
+extraction and automatic publishing require a separate scope decision. That
+decision belongs here, made explicitly rather than by drift.
+
+What must be settled before any video work starts:
+
+- rights and licensing for downloaded material, which is the binding constraint,
+  not the engineering;
+- whether video output is evaluated at all, and if so against what — the entire
+  evaluation apparatus assumes text artifacts;
+- whether this remains one product or becomes a second one.
+
+Existing video research documents are marked deferred and are reference only.
+They are not a plan and must not be treated as one.
+
+**Exit:** a recorded decision with its rights analysis, or a recorded decision
+not to proceed.
+
+---
+
+## P17–P18 · Deliberately unwritten
+
+Two slots are left empty rather than filled.
+
+Everything from P11 onward already rests on a product that does not exist yet;
+by P17 the assumptions compound past the point where writing phases produces
+information. Placeholder phases invite false precision — they get counted,
+scheduled and reported against, and none of that is grounded.
+
+What would have to be true before P17 can be written honestly: P10 has shipped,
+real users have run real jobs, and the failure modes are observed rather than
+predicted. Until then the useful artifact is the backlog above, not more phases.
 
 Part of planning is refusing work that is not worth its cost now.
 
@@ -431,9 +590,21 @@ P0 seal
                                               start procurement at P3a)
 ```
 
+Post-1.0, the register continues:
+
+```text
+P10 stable ──► P11 eval at scale ──► P12 skill loop (also needs P7)
+           ──► P13 deliverable formats
+           ──► P14 explainer form ──► P15 real-creator form
+           ──► P16 video scope decision
+               P17-P18 deliberately unwritten
+```
+
 P1 is the only gate every path passes through. P3b is the first phase that
 produces a story the product could ship. P5 makes it usable without a developer
-console. P10 is the stable release.
+console. P10 is the stable release. P12 is the first phase where the system
+improves itself, and it cannot start until professionals have edited real
+output.
 
 **P7 is drawn as a parallel branch on purpose.** It is the only phase gated on
 recruiting people rather than writing code, and it is the only one that can

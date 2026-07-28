@@ -23,9 +23,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import http.client
 import json
 import os
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -35,6 +38,7 @@ import yaml
 
 from probe_metrics import (
     consistency_metrics,
+    krippendorff_alpha_interval,
     median_pair_scores,
     median_scores,
     self_consistency,
@@ -47,6 +51,7 @@ STAGE0 = ROOT / "eval" / "adversarial" / "stage0"
 PAIR_DIR = STAGE0 / "motive-explicit"  # default; override with --pair-dir
 JUDGES = ROOT / "eval" / "judges.json"
 RUBRIC = ROOT / "eval" / "rubrics" / "judge-v1.yaml"
+MANIFEST = ROOT / "eval" / "manifests" / "eval-v0.1.0.json"
 CASE_ID = "comedy_002"
 
 SYSTEM_HEADER = """你是短剧评测员。你不知道哪个产物是基线，也不知道是否有人植入缺陷。
@@ -81,6 +86,57 @@ def atomic_write(path: Path, value: dict[str, Any]) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(temporary, path)
+
+
+def input_fingerprint(pair_dir: Path) -> str:
+    digest = hashlib.sha256()
+    paths = [
+        pair_dir / "pair.json",
+        pair_dir / "baseline.story-package.json",
+        pair_dir / "negative.story-package.json",
+        RUBRIC,
+        JUDGES,
+        MANIFEST,
+    ]
+    for path in paths:
+        relative = path.relative_to(ROOT).as_posix().encode("utf-8")
+        content = path.read_bytes()
+        digest.update(len(relative).to_bytes(4, "big"))
+        digest.update(relative)
+        digest.update(len(content).to_bytes(8, "big"))
+        digest.update(content)
+    return f"sha256:{digest.hexdigest()}"
+
+
+def urlopen_with_retry(
+    request: urllib.request.Request,
+    timeout: int,
+    attempts: int = 4,
+):
+    """Retry transient transport and throttling failures on one fixed route."""
+    for attempt in range(1, attempts + 1):
+        try:
+            return urllib.request.urlopen(request, timeout=timeout)
+        except urllib.error.HTTPError as error:
+            retryable = error.code == 429 or 500 <= error.code < 600
+            if not retryable or attempt == attempts:
+                raise
+            retry_after = error.headers.get("Retry-After")
+            delay = min(float(retry_after), 60.0) if retry_after else 2 ** attempt
+            error.read()
+            print(f"RETRY HTTP {error.code}: waiting {delay:g}s")
+            time.sleep(delay)
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            http.client.RemoteDisconnected,
+        ) as error:
+            if attempt == attempts:
+                raise
+            delay = 2 ** attempt
+            print(f"RETRY {type(error).__name__}: waiting {delay}s")
+            time.sleep(delay)
+    raise AssertionError("unreachable")
 
 
 def load_rubric() -> list[dict[str, Any]]:
@@ -198,7 +254,11 @@ def request(
         },
         method="POST",
     )
-    with urllib.request.urlopen(http, timeout=300) as response:
+    with urlopen_with_retry(
+        http,
+        timeout=int(route.get("request_timeout_seconds", 120)),
+        attempts=int(route.get("transport_attempts", 2)),
+    ) as response:
         raw = json.loads(response.read().decode("utf-8"))
     result = json.loads(raw["choices"][0]["message"]["content"])
     result["_provider_usage"] = raw.get("usage")
@@ -420,6 +480,7 @@ def select_judges(
         judges = [judge for judge in judges if judge["model"] == only_judge]
         if not judges:
             raise SystemExit(f"unknown judge model: {only_judge}")
+        judge_families = {judge["family"] for judge in judges}
     return judges, generator_family, judge_families
 
 
@@ -435,12 +496,14 @@ def saved_result_is_reusable(
     judge: dict[str, Any],
     route: dict[str, Any],
     samples_per_artifact: int,
+    expected_fingerprint: str,
 ) -> bool:
     summary = saved.get("summary", {})
     return (
         summary.get("judge_model") == judge["model"]
         and summary.get("route_provider") == route["provider"]
         and summary.get("samples_per_artifact") == samples_per_artifact
+        and summary.get("input_fingerprint") == expected_fingerprint
         and len(saved.get("forward", [])) == samples_per_artifact
         and len(saved.get("reverse", [])) == samples_per_artifact
     )
@@ -541,13 +604,17 @@ def run_judge(
     temperature: float,
     result_suffix: str,
     force: bool,
+    expected_fingerprint: str,
 ) -> dict[str, Any]:
     route = resolve_route(judge)
     suffix = f".{result_suffix}" if result_suffix else ""
     result_path = pair_dir / f"judge-{judge['model']}{suffix}.result.json"
+    partial_path = pair_dir / f"judge-{judge['model']}{suffix}.partial.json"
     if result_path.exists() and not force:
         saved = load(result_path)
-        if saved_result_is_reusable(saved, judge, route, samples_per_artifact):
+        if saved_result_is_reusable(
+            saved, judge, route, samples_per_artifact, expected_fingerprint
+        ):
             summary = refresh_saved_summary(saved, target, dimensions)
             saved["summary"] = summary
             atomic_write(result_path, saved)
@@ -558,20 +625,59 @@ def run_judge(
             return summary
     api_key = os.environ[route["api_key_env"]]
     dimension_ids = [dimension["id"] for dimension in dimensions]
-    forward = collect_samples(
-        route, judge, system, api_key, baseline, negative,
-        temperature, dimension_ids, samples_per_artifact,
+    partial = (
+        load(partial_path)
+        if partial_path.exists()
+        else {"input_fingerprint": expected_fingerprint, "forward": [], "reverse": []}
     )
-    reverse = collect_samples(
-        route, judge, system, api_key, negative, baseline,
-        temperature, dimension_ids, samples_per_artifact,
-    )
+    if partial.get("input_fingerprint") != expected_fingerprint:
+        partial = {
+            "input_fingerprint": expected_fingerprint,
+            "forward": [],
+            "reverse": [],
+        }
+    forward = partial["forward"][:samples_per_artifact]
+    reverse = partial["reverse"][:samples_per_artifact]
+    while len(forward) < samples_per_artifact:
+        forward.append(
+            request_validated(
+                route,
+                judge["model"],
+                system,
+                api_key,
+                baseline,
+                negative,
+                temperature,
+                dimension_ids,
+            )
+        )
+        partial["forward"] = forward
+        atomic_write(partial_path, partial)
+        print(f"CHECKPOINT {judge['model']}: forward {len(forward)}/{samples_per_artifact}")
+    while len(reverse) < samples_per_artifact:
+        reverse.append(
+            request_validated(
+                route,
+                judge["model"],
+                system,
+                api_key,
+                negative,
+                baseline,
+                temperature,
+                dimension_ids,
+            )
+        )
+        partial["reverse"] = reverse
+        atomic_write(partial_path, partial)
+        print(f"CHECKPOINT {judge['model']}: reverse {len(reverse)}/{samples_per_artifact}")
     summary = summarize_judge(
         judge, route, forward, reverse, dimensions, target, defect_spans, temperature
     )
+    summary["input_fingerprint"] = expected_fingerprint
     atomic_write(
         result_path, {"forward": forward, "reverse": reverse, "summary": summary}
     )
+    partial_path.unlink(missing_ok=True)
     return summary
 
 
@@ -580,8 +686,31 @@ def build_probe_summary(
     pair: dict[str, Any],
     judge_families: set[str],
     per_judge: list[dict[str, Any]],
+    thresholds: dict[str, float],
+    expected_fingerprint: str,
 ) -> dict[str, Any]:
     generator_family = config["generator"]["family"]
+    dimension_ids = sorted(per_judge[0]["baseline_scores"])
+    agreement_items = [
+        [
+            *[judge["baseline_scores"][dimension] for dimension in dimension_ids],
+            *[judge["negative_scores"][dimension] for dimension in dimension_ids],
+        ]
+        for judge in per_judge
+    ]
+    agreement = (
+        krippendorff_alpha_interval(agreement_items)
+        if len(agreement_items) >= 2
+        else None
+    )
+    status_passes = all(
+        judge["sensitivity"]
+        and judge["order_consistent"]
+        and judge["specificity_cross_pillar"]
+        >= thresholds["min_specificity_cross_pillar"]
+        and judge["self_consistency"] >= thresholds["min_self_consistency"]
+        for judge in per_judge
+    )
     return {
         "schema": "stage0-probe-result/v2",
         "pair_id": pair["pair_id"],
@@ -590,6 +719,14 @@ def build_probe_summary(
         "generator_judge_disjoint": generator_family not in judge_families,
         "judge_families": sorted(judge_families),
         "judges": per_judge,
+        "input_fingerprint": expected_fingerprint,
+        "status_thresholds": thresholds,
+        "inter_model_agreement": {
+            "method": "krippendorff_alpha_interval",
+            "value": agreement,
+            "items": len(dimension_ids) * 2,
+            "raters": len(per_judge),
+        },
         "independence_caveat": config["independence_caveat"],
         "all_judges_detected": all(judge["sensitivity"] for judge in per_judge),
         "min_specificity_all": min(
@@ -599,14 +736,7 @@ def build_probe_summary(
             judge["specificity_cross_pillar"] for judge in per_judge
         ),
         "min_specificity": min(judge["specificity_all"] for judge in per_judge),
-        "status": (
-            "measurable_gap"
-            if all(
-                judge["sensitivity"] and judge["order_consistent"]
-                for judge in per_judge
-            )
-            else "probe_failed"
-        ),
+        "status": "measurable_gap" if status_passes else "probe_failed",
     }
 
 
@@ -623,6 +753,15 @@ def main() -> int:
     baseline = load(pair_dir / "baseline.story-package.json")
     negative = load(pair_dir / "negative.story-package.json")
     pair = load(pair_dir / "pair.json")
+    manifest = load(MANIFEST)
+    metric_config = manifest["evaluator_metrics"]
+    thresholds = {
+        "min_specificity_cross_pillar": metric_config[
+            "perturbation_specificity"
+        ]["target"],
+        "min_self_consistency": metric_config["self_consistency"]["target"],
+    }
+    expected_fingerprint = input_fingerprint(pair_dir)
     defect = pair["seeded_defects"][0]
     per_judge = [
         run_judge(
@@ -630,10 +769,18 @@ def main() -> int:
             build_system(dimensions), defect["target_dimension"],
             set(defect["spans"]), samples_per_artifact, sampling["temperature"],
             args.result_suffix, args.force,
+            expected_fingerprint,
         )
         for judge in judges
     ]
-    summary = build_probe_summary(config, pair, judge_families, per_judge)
+    summary = build_probe_summary(
+        config,
+        pair,
+        judge_families,
+        per_judge,
+        thresholds,
+        expected_fingerprint,
+    )
     suffix = f".{args.result_suffix}" if args.result_suffix else ""
     atomic_write(pair_dir / f"probe-summary{suffix}.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))

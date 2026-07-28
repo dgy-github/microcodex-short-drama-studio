@@ -42,14 +42,12 @@ class ReportTests(unittest.TestCase):
     def test_stability_rerun_is_not_counted_as_a_third_judge(self) -> None:
         counted = self.report["judges_counted"]
         self.assertEqual(len(counted), len(set(counted)))
-        self.assertTrue(self.report["reruns_excluded_from_headline"])
+        self.assertEqual(self.report["reruns_excluded_from_headline"], [])
 
-    def test_localisation_is_flagged_as_constructively_guaranteed(self) -> None:
-        """Every dialogue node is seeded, so any citation is a hit. The 1.0
-        must not be read as localisation skill."""
+    def test_narrow_pair_makes_localisation_informative(self) -> None:
         block = self.report["defect_localisation"]
-        self.assertTrue(block["constructively_guaranteed"])
-        self.assertIsNotNone(block["caveat"])
+        self.assertFalse(block["constructively_guaranteed"])
+        self.assertIsNone(block["caveat"])
 
     def test_single_pair_resolution_is_disclosed(self) -> None:
         self.assertEqual(self.report["pairs_total"], 1)
@@ -57,8 +55,13 @@ class ReportTests(unittest.TestCase):
 
     def test_uncomputable_metrics_are_named_with_reasons(self) -> None:
         missing = self.report["not_computable_here"]
-        self.assertIn("inter_model_agreement", missing)
+        self.assertNotIn("inter_model_agreement", missing)
         self.assertIn("spot_check_agreement", missing)
+
+    def test_inter_model_agreement_is_reported(self) -> None:
+        agreement = self.report["inter_model_agreement"]
+        self.assertEqual(agreement["method"], "krippendorff_alpha_interval")
+        self.assertEqual(agreement["raters"], 2)
 
 
 if __name__ == "__main__":

@@ -130,3 +130,37 @@ def median_pair_scores(
         for dimension in dimension_ids
     }
     return baseline, negative
+
+
+def krippendorff_alpha_interval(raters: list[list[float]]) -> float:
+    """Krippendorff's alpha using squared interval distance.
+
+    Rows are raters and columns are shared items. Every item must have one
+    finite score from every rater; stage-0 validation guarantees no missing
+    dimension scores before this function is called.
+    """
+    if len(raters) < 2:
+        raise ValueError("inter-model agreement needs at least two raters")
+    item_count = len(raters[0])
+    if item_count == 0 or any(len(rater) != item_count for rater in raters):
+        raise ValueError("raters must score the same non-empty item set")
+    values = [score for rater in raters for score in rater]
+    if any(not isinstance(score, (int, float)) for score in values):
+        raise ValueError("agreement scores must be numeric")
+
+    observed_pairs = [
+        (raters[left][item] - raters[right][item]) ** 2
+        for item in range(item_count)
+        for left in range(len(raters))
+        for right in range(left + 1, len(raters))
+    ]
+    observed = statistics.mean(observed_pairs)
+    expected_pairs = [
+        (values[left] - values[right]) ** 2
+        for left in range(len(values))
+        for right in range(left + 1, len(values))
+    ]
+    expected = statistics.mean(expected_pairs)
+    if expected == 0:
+        return 1.0 if observed == 0 else float("nan")
+    return 1.0 - observed / expected

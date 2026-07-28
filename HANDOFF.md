@@ -15,16 +15,17 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ## 当前阶段
 
-P0 已封存。主依赖链进入 P1；P4 只提前实现不依赖真实 runtime 数据的基础边界。
-当前版本只写故事，不处理视频。
+P0 已封存。P1 工程清单完成，但稳定性退出条件失败；P2 选择“judge 不可靠”分支
+并返回 P1。P2.5/P3 暂不解锁。当前版本只写故事，不处理视频。
 
 ## 已完成
 
 - 30 个原创 case 已切分；10/10 dev 基线已生成归档。
 - P0 已完成：145 个文件封存于 `1cdc5c2`，提交前完成敏感信息和大文件审计。
-- Qwen 百炼与 GLM Ark 可用；stage-0 两轮探针已完成。
-- negative 已收紧为 2 条；双 specificity 指标已实现。
-- 窄 pair：Qwen all/cross `0.4444/0.5714`；GLM `0.6667/0.7143`。
+- Qwen 百炼与 GLM Ark 可用；窄 pair 已按同一输入指纹重跑完整12次调用。
+- P1 已完成指纹、status 门槛、双 specificity、重算 metrics 和 inter-model alpha。
+- 最新结果：Qwen cross/consistency `0.7143/0.925`，order flip；GLM
+  `0.1429/0.475`，order flip；alpha `0.3312`；严格 pair detection `0.0`。
 - 项目初始化、记忆、OpenAPI、CI 已落地。
 - 视频技术调研文档已标为 deferred，仅作未来参考，不构成当前开发任务。
 - P4 的**两项可预建项**已完成，其余 4 项**全部 gated，当前无一可推进**
@@ -37,6 +38,7 @@ P0 已封存。主依赖链进入 P1；P4 只提前实现不依赖真实 runtime
 - P7 从 P3a 起并行启动编剧采购；专业评审不等待桌面端和修订 UI。
 - 用户自带 provider key；凭据静态加密前移到 P5，P9 保留轮换和审计。
 - P8 包含 challenge 季度刷新和对抗集退役规则。详细理由见 `docs/ROADMAP.md`。
+- P11-P16 post-1.0 登记册已写入 ROADMAP；P17-P18 刻意留空，避免虚假精度。
 
 ## 最近验证
 
@@ -59,14 +61,15 @@ Stage 1 延期项不计。视频下载和素材提取不计入项目待办。
 | 范围 | 剩余 |
 |---|---:|
 | P0 封存当前状态 | 0 |
-| P1 校准仪器 | 6 |
+| P1 校准仪器 | 条件阻塞 |
 | P2.5 形态无关层 | 1 |
 | P3a 冻结评测集 | 4 |
 | P3b 首个端到端 runtime | 5 |
 | **首个端到端剧情产品前** | **16** |
 | P4 决策可观测与纠偏 | 4 |
 | P5-P10 | 30 |
-| **P0-P10 全部已知待办** | **50** |
+| **P0-P10 全部已知待办（首个可发布产品）** | **50** |
+| P11-P16 post-1.0 登记册 | 不计数 |
 
 ### P1-P3 的 16 项明细
 
@@ -79,8 +82,8 @@ Stage 1 延期项不计。视频下载和素材提取不计入项目待办。
 
 ## 下一步
 
-执行 P1-1：用窄 pair 重算 metrics（无需 API）。P4 的 D5 只建立 G0 和 provider
-能力清单，冻结评测集前不接入生产选择逻辑。
+为 P1 增加一个非中文原生第三 judge，或完成内部人工 blind spot check。现有
+`.env` 只有 Qwen/GLM 凭据；获得新证据前不得进入 P2.5/P3。
 
 ## Do-Not
 

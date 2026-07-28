@@ -8,6 +8,7 @@
 /.env.*
 !.env.example
 /eval/runs/
+*.partial.json
 /artifacts/
 /data/private/
 *.db

@@ -105,7 +105,11 @@
       },
       "compatibility": "legacy specificity and min_specificity fields alias the all view"
     },
-    "self_consistency": {"target": null, "blocking": false},
+    "self_consistency": {
+      "target": 0.8,
+      "blocking": false,
+      "definition": "mean share of dimensions with identical scores across samples, over both artifact orders and both pair members"
+    },
     "inter_model_agreement": {
       "target": null,
       "blocking": false,

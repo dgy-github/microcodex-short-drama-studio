@@ -1166,28 +1166,28 @@
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "load",
-    "line": 39
+    "line": 41
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "result_files",
-    "line": 43
+    "line": 45
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "observations",
-    "line": 51
+    "line": 53
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 85
+    "line": 87
   },
   {
     "language": "Python",
@@ -1401,6 +1401,13 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/probe_metrics.py",
+    "kind": "FunctionDef",
+    "name": "krippendorff_alpha_interval",
+    "line": 135
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "module",
     "name": "run_stage0_probe",
@@ -1411,147 +1418,161 @@
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "load",
-    "line": 65
+    "line": 70
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "atomic_write",
-    "line": 72
+    "line": 77
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
-    "name": "load_rubric",
-    "line": 86
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "build_system",
+    "name": "input_fingerprint",
     "line": 91
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
+    "name": "urlopen_with_retry",
+    "line": 111
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "load_rubric",
+    "line": 142
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "build_system",
+    "line": 147
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
     "name": "valid_line_spans",
-    "line": 103
+    "line": 159
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_route",
-    "line": 131
+    "line": 187
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request",
-    "line": 152
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "validate_judgment",
     "line": 208
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
+    "name": "validate_judgment",
+    "line": 268
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/run_stage0_probe.py",
+    "kind": "FunctionDef",
     "name": "normalize_owned_field_spans",
-    "line": 238
+    "line": 298
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request_validated",
-    "line": 281
+    "line": 341
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "check_connectivity",
-    "line": 329
+    "line": 389
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 388
+    "line": 448
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "select_judges",
-    "line": 404
+    "line": 464
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_pair_dir",
-    "line": 426
+    "line": 487
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "saved_result_is_reusable",
-    "line": 433
+    "line": 494
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "refresh_saved_summary",
-    "line": 449
+    "line": 512
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "collect_samples",
-    "line": 465
+    "line": 528
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "summarize_judge",
-    "line": 491
+    "line": 554
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "run_judge",
-    "line": 531
+    "line": 594
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_probe_summary",
-    "line": 578
+    "line": 684
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 613
+    "line": 743
   },
   {
     "language": "Python",
@@ -1739,7 +1760,7 @@
     "language": "Python",
     "path": "eval/tools/test_compute_evaluator_metrics.py",
     "kind": "FunctionDef",
-    "name": "test_localisation_is_flagged_as_constructively_guaranteed",
+    "name": "test_narrow_pair_makes_localisation_informative",
     "line": 47
   },
   {
@@ -1747,14 +1768,21 @@
     "path": "eval/tools/test_compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "test_single_pair_resolution_is_disclosed",
-    "line": 54
+    "line": 52
   },
   {
     "language": "Python",
     "path": "eval/tools/test_compute_evaluator_metrics.py",
     "kind": "FunctionDef",
     "name": "test_uncomputable_metrics_are_named_with_reasons",
-    "line": 58
+    "line": 56
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_compute_evaluator_metrics.py",
+    "kind": "FunctionDef",
+    "name": "test_inter_model_agreement_is_reported",
+    "line": 61
   },
   {
     "language": "Python",
@@ -1845,245 +1873,287 @@
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "sample",
-    "line": 23
+    "line": 32
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "RubricTests",
-    "line": 31
+    "line": 40
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "JudgeConfigTests",
-    "line": 42
+    "line": 51
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "ValidationTests",
-    "line": 76
+    "line": 85
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "AggregationTests",
-    "line": 135
+    "line": 144
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "PairSelfContainmentTests",
-    "line": 197
+    "line": 239
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "ClassDef",
     "name": "RouteTests",
-    "line": 228
+    "line": 294
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_rubric_has_ten_dimensions",
-    "line": 32
+    "line": 41
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_system_prompt_names_every_dimension",
-    "line": 35
+    "line": 44
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "setUp",
-    "line": 43
+    "line": 52
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_generator_family_is_disjoint_from_judges",
-    "line": 46
+    "line": 55
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_at_least_two_judge_families",
-    "line": 50
+    "line": 59
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_no_secret_material_in_tracked_config",
-    "line": 54
+    "line": 63
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_temperature_permits_variance",
-    "line": 69
+    "line": 78
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "setUp",
-    "line": 77
+    "line": 86
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_full_dimension_set_passes",
-    "line": 83
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_missing_dimension_is_rejected",
-    "line": 87
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_span_outside_the_artifact_is_rejected",
     "line": 92
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
-    "name": "test_real_beat_span_is_accepted",
-    "line": 97
+    "name": "test_missing_dimension_is_rejected",
+    "line": 96
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
-    "name": "test_owned_field_span_normalizes_to_its_node",
+    "name": "test_span_outside_the_artifact_is_rejected",
     "line": 101
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
+    "name": "test_real_beat_span_is_accepted",
+    "line": 106
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_owned_field_span_normalizes_to_its_node",
+    "line": 110
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
     "name": "test_production_fields_expand_to_real_source_nodes",
-    "line": 113
+    "line": 122
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_out_of_range_score_is_rejected",
-    "line": 127
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_median_ignores_a_single_outlier",
     "line": 136
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
-    "name": "test_self_consistency_detects_disagreement",
+    "name": "test_median_ignores_a_single_outlier",
     "line": 145
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
+    "name": "test_self_consistency_detects_disagreement",
+    "line": 154
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
     "name": "test_consistency_metrics_cover_both_orders_and_sides",
-    "line": 153
+    "line": 162
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_specificity_reports_all_and_cross_pillar_views",
-    "line": 164
+    "line": 173
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_specificity_rejects_target_without_a_pillar",
-    "line": 192
+    "line": 201
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_inter_model_agreement_is_one_for_identical_raters",
+    "line": 205
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_probe_status_requires_specificity_and_stability",
+    "line": 211
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_both_members_live_in_the_pair_directory",
-    "line": 198
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_probe_does_not_read_the_ignored_run_directory",
-    "line": 204
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_saved_primary_and_narrow_results_have_both_specificity_views",
-    "line": 210
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "setUp",
-    "line": 231
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_alternate_vendor_does_not_add_a_judge_family",
-    "line": 234
-  },
-  {
-    "language": "Python",
-    "path": "eval/tools/test_run_stage0_probe.py",
-    "kind": "FunctionDef",
-    "name": "test_every_judge_uses_the_routes_shape",
     "line": 240
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
+    "name": "test_probe_does_not_read_the_ignored_run_directory",
+    "line": 246
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_saved_primary_and_narrow_results_have_both_specificity_views",
+    "line": 252
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_pair_inputs_have_a_stable_fingerprint",
+    "line": 267
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_saved_result_without_fingerprint_is_not_reusable",
+    "line": 271
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 297
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_alternate_vendor_does_not_add_a_judge_family",
+    "line": 300
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_every_judge_uses_the_routes_shape",
+    "line": 306
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
     "name": "test_resolve_route_requires_endpoint_and_key",
-    "line": 247
+    "line": 313
   },
   {
     "language": "Python",
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_resolve_route_skips_a_blocked_route",
-    "line": 258
+    "line": 324
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_transient_429_is_retried",
+    "line": 346
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_run_stage0_probe.py",
+    "kind": "FunctionDef",
+    "name": "test_remote_disconnect_is_retried",
+    "line": 364
   },
   {
     "language": "Python",

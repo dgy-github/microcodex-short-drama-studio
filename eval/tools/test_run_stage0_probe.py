@@ -1,20 +1,29 @@
 import json
+import http.client
 import re
 import unittest
+import urllib.error
+from io import BytesIO
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from run_stage0_probe import (
     JUDGES,
     PAIR_DIR,
+    build_probe_summary,
     build_system,
     consistency_metrics,
+    input_fingerprint,
+    krippendorff_alpha_interval,
     load,
     load_rubric,
     median_scores,
     normalize_owned_field_spans,
     resolve_route,
+    saved_result_is_reusable,
     self_consistency,
     specificity_metrics,
+    urlopen_with_retry,
     valid_line_spans,
     validate_judgment,
 )
@@ -193,6 +202,39 @@ class AggregationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "target dimension has no pillar"):
             specificity_metrics({"a": 5.0}, {"a": 4.0}, "missing", [])
 
+    def test_inter_model_agreement_is_one_for_identical_raters(self) -> None:
+        self.assertEqual(
+            krippendorff_alpha_interval([[1, 2, 3], [1, 2, 3]]),
+            1.0,
+        )
+
+    def test_probe_status_requires_specificity_and_stability(self) -> None:
+        judge = {
+            "judge_model": "j",
+            "baseline_scores": {"a": 5.0},
+            "negative_scores": {"a": 4.0},
+            "sensitivity": True,
+            "order_consistent": True,
+            "specificity_all": 1.0,
+            "specificity_cross_pillar": 0.8,
+            "self_consistency": 0.7,
+        }
+        summary = build_probe_summary(
+            {
+                "generator": {"model": "g", "family": "generator"},
+                "independence_caveat": "c",
+            },
+            {"pair_id": "p"},
+            {"judge"},
+            [judge, {**judge, "judge_model": "j2"}],
+            {
+                "min_specificity_cross_pillar": 0.7,
+                "min_self_consistency": 0.8,
+            },
+            "sha256:x",
+        )
+        self.assertEqual(summary["status"], "probe_failed")
+
 
 class PairSelfContainmentTests(unittest.TestCase):
     def test_both_members_live_in_the_pair_directory(self) -> None:
@@ -221,6 +263,30 @@ class PairSelfContainmentTests(unittest.TestCase):
                 self.assertIn("specificity_all", judge)
                 self.assertIn("specificity_cross_pillar", judge)
                 self.assertEqual(judge["specificity"], judge["specificity_all"])
+
+    def test_pair_inputs_have_a_stable_fingerprint(self) -> None:
+        value = input_fingerprint(PAIR_DIR)
+        self.assertRegex(value, r"^sha256:[0-9a-f]{64}$")
+
+    def test_saved_result_without_fingerprint_is_not_reusable(self) -> None:
+        saved = {
+            "summary": {
+                "judge_model": "m",
+                "route_provider": "p",
+                "samples_per_artifact": 1,
+            },
+            "forward": [{}],
+            "reverse": [{}],
+        }
+        self.assertFalse(
+            saved_result_is_reusable(
+                saved,
+                {"model": "m"},
+                {"provider": "p"},
+                1,
+                "sha256:expected",
+            )
+        )
 
 
 
@@ -275,6 +341,40 @@ class RouteTests(unittest.TestCase):
         }
         self.assertEqual(resolve_route(judge)["provider"], "ready")
 
+    @patch("run_stage0_probe.time.sleep")
+    @patch("run_stage0_probe.urllib.request.urlopen")
+    def test_transient_429_is_retried(
+        self, urlopen: MagicMock, sleep: MagicMock
+    ) -> None:
+        throttled = urllib.error.HTTPError(
+            "https://example.test",
+            429,
+            "rate limited",
+            {"Retry-After": "1"},
+            BytesIO(b"{}"),
+        )
+        response = MagicMock()
+        urlopen.side_effect = [throttled, response]
+        request = urllib.request.Request("https://example.test")
+        self.assertIs(urlopen_with_retry(request, timeout=1), response)
+        sleep.assert_called_once_with(1.0)
+
+    @patch("run_stage0_probe.time.sleep")
+    @patch("run_stage0_probe.urllib.request.urlopen")
+    def test_remote_disconnect_is_retried(
+        self, urlopen: MagicMock, sleep: MagicMock
+    ) -> None:
+        response = MagicMock()
+        urlopen.side_effect = [
+            http.client.RemoteDisconnected("closed"),
+            response,
+        ]
+        request = urllib.request.Request("https://example.test")
+        self.assertIs(urlopen_with_retry(request, timeout=1), response)
+        sleep.assert_called_once_with(2)
+
 
 if __name__ == "__main__":
     unittest.main()
+    input_fingerprint,
+    krippendorff_alpha_interval,
