@@ -1,0 +1,105 @@
+feature: story-domain-breadth
+requirements:
+  - id: REQ-132
+    interfaces: [API-122, API-128]
+    implementation: [CFG-101, RT-114]
+    tests: [TEST-145, TEST-147]
+  - id: REQ-133
+    interfaces: [API-123]
+    implementation: [CFG-102]
+    tests: [TEST-145]
+  - id: REQ-134
+    interfaces: [API-124]
+    implementation: [CFG-103]
+    tests: [TEST-145]
+  - id: REQ-135
+    interfaces: [API-125]
+    implementation: [CFG-104]
+    tests: [TEST-145]
+  - id: REQ-136
+    interfaces: [API-126]
+    implementation: [CFG-105]
+    tests: [TEST-145]
+  - id: REQ-137
+    interfaces: [API-127]
+    implementation: [EVAL-113]
+    tests: [TEST-146]
+  - id: REQ-138
+    interfaces: [API-127]
+    implementation: [EVAL-113]
+    tests: [TEST-146]
+  - id: REQ-307
+    interfaces: [API-122, API-124, API-126]
+    implementation: [CFG-101, CFG-103, CFG-105]
+    tests: [TEST-309]
+  - id: REQ-308
+    interfaces: [API-128, API-148]
+    implementation: [BE-123, FE-110]
+    tests: [TEST-310, TEST-311]
+interfaces:
+  - id: API-122
+    location: schemas/genre-pack-registry-v1.json
+    status: CONTRACT_READY
+  - id: API-123
+    location: schemas/story-constraint-profile-v1.json
+    status: CONTRACT_READY
+  - id: API-124
+    location: schemas/story-agent-profile-v1.json
+    status: CONTRACT_READY
+  - id: API-125
+    location: schemas/retrieval-collection-v1.json
+    status: CONTRACT_READY
+  - id: API-126
+    location: schemas/genre-regression-manifest-v1.json
+    status: CONTRACT_READY
+  - id: API-127
+    location: schemas/adversarial-lifecycle-policy-v1.json
+    status: CONTRACT_READY
+  - id: API-128
+    location: crates/story-runtime/src/genre_packs.rs
+    status: IMPLEMENTED
+  - id: API-148
+    location: apps/desktop/src-tauri/src/commands.rs
+    status: CONTRACT_READY
+    purpose: project trusted genre pack options to the desktop
+implementation:
+  - id: CFG-101
+    location: config/genre-packs/registry-v1.json
+    owner: CAP-001
+  - id: CFG-102
+    location: config/constraint-profiles
+    owner: CAP-001
+  - id: CFG-103
+    location: config/agent-profiles
+    owner: CAP-004
+  - id: CFG-104
+    location: config/retrieval
+    owner: CAP-003
+  - id: CFG-105
+    location: config/regression
+    owner: CAP-005
+  - id: EVAL-113
+    location: eval/tools/maintain_challenge_set.py
+    owner: CAP-005
+  - id: RT-114
+    location: sidecar/campaign_adapter/workflow.py
+    owner: CAP-002
+  - id: BE-123
+    location: apps/desktop/src-tauri/src/commands.rs
+    owner: CAP-008
+  - id: FE-110
+    location: apps/desktop/src/lib/StoryJobForm.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-145
+    location: scripts/test_validate_genre_packs.py
+  - id: TEST-146
+    location: eval/tools/test_maintain_challenge_set.py
+  - id: TEST-147
+    location: sidecar/test_workflow.py
+  - id: TEST-309
+    location: scripts/test_validate_genre_packs.py
+  - id: TEST-310
+    location: crates/story-runtime/src/genre_packs.rs
+  - id: TEST-311
+    location: apps/desktop/src/lib/StoryJobForm.svelte

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/provider-health-v1.json",
+  "title": "Provider Health v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "provider", "status", "model"],
+  "properties": {
+    "schema": { "const": "provider-health/v1" },
+    "provider": { "enum": ["deepseek", "aliyun_bailian"] },
+    "status": { "const": "ready" },
+    "model": { "type": "string", "minLength": 1 }
+  }
+}

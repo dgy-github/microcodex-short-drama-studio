@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/windows-release-evidence-v1.json",
+  "title": "Windows Release Evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "signed": { "const": true } },
+        "required": ["signed"]
+      },
+      "then": {
+        "properties": {
+          "signing": { "type": "object" },
+          "distribution_license": {
+            "properties": { "cleared": { "const": true } },
+            "required": ["cleared"]
+          }
+        }
+      },
+      "else": { "properties": { "signing": { "type": "null" } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "distribution_license": {
+            "properties": { "cleared": { "const": true } },
+            "required": ["cleared"]
+          }
+        },
+        "required": ["distribution_license"]
+      },
+      "then": {
+        "properties": {
+          "distribution_license": {
+            "properties": { "review_required": { "maxItems": 0 } }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "distribution_license": {
+            "properties": { "review_required": { "minItems": 1 } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "installer_release_eligible": { "const": true } },
+        "required": ["installer_release_eligible"]
+      },
+      "then": {
+        "properties": {
+          "dirty": { "const": false },
+          "signed": { "const": true },
+          "distribution_license": {
+            "properties": { "cleared": { "const": true } },
+            "required": ["cleared"]
+          }
+        }
+      }
+    }
+  ],
+  "required": ["schema", "version", "installer_version", "commit", "dirty", "source_diff_sha256", "tools", "lockfiles", "signed", "signing", "distribution_license", "installer_release_eligible", "bundle_smoke", "artifacts"],
+  "properties": {
+    "schema": { "const": "windows-release-evidence/v1" },
+    "version": { "type": "string", "minLength": 1 },
+    "installer_version": { "const": "0.1.0-1" },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "dirty": { "type": "boolean" },
+    "source_diff_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rust", "node", "python"],
+      "properties": {
+        "rust": { "type": "string" },
+        "node": { "type": "string" },
+        "python": { "type": "string" }
+      }
+    },
+    "lockfiles": { "type": "array", "minItems": 3, "items": { "type": "string" } },
+    "signed": { "type": "boolean" },
+    "signing": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "certificate_thumbprint",
+            "timestamp_url",
+            "verified"
+          ],
+          "properties": {
+            "certificate_thumbprint": {
+              "type": "string",
+              "pattern": "^[A-F0-9]{40}$"
+            },
+            "timestamp_url": {
+              "const": "https://timestamp.digicert.com"
+            },
+            "verified": { "const": true }
+          }
+        }
+      ]
+    },
+    "distribution_license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cleared", "review_required", "policy", "policy_sha256"],
+      "properties": {
+        "cleared": { "type": "boolean" },
+        "review_required": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "policy": { "const": "config/distribution-license-policy-v1.json" },
+        "policy_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "installer_release_eligible": { "type": "boolean" },
+    "bundle_smoke": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "msi_path",
+        "msi_admin_extract",
+        "sidecar_protocol",
+        "webview2_loader_present",
+        "story_schema_present",
+        "desktop_launch",
+        "desktop_alive_seconds",
+        "sidecar_sha256",
+        "desktop_sha256",
+        "webview2_loader_sha256",
+        "story_schema_sha256"
+      ],
+      "properties": {
+        "msi_path": { "type": "string", "pattern": "\\.msi$" },
+        "msi_admin_extract": { "const": true },
+        "sidecar_protocol": { "const": true },
+        "webview2_loader_present": { "const": true },
+        "story_schema_present": { "const": true },
+        "desktop_launch": { "const": true },
+        "desktop_alive_seconds": { "type": "integer", "minimum": 1 },
+        "sidecar_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "desktop_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "webview2_loader_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "story_schema_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "bytes"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "bytes": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

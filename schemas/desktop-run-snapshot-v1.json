@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/desktop-run-snapshot-v1.json",
+  "title": "Desktop run snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "run_id", "job_id", "status", "last_event_id",
+    "tasks_total", "tasks_queued", "tasks_started", "tasks_completed",
+    "reviews_completed", "approvals_pending", "budget", "events"
+  ],
+  "properties": {
+    "schema": {"const": "desktop-run-snapshot/v1"},
+    "run_id": {"type": "string", "pattern": "^run_[a-f0-9]{32}$"},
+    "job_id": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": ["accepted", "running", "completed", "failed", "cancelled"]
+    },
+    "last_event_id": {"type": "integer", "minimum": 1},
+    "tasks_total": {"const": 17},
+    "tasks_queued": {"type": "integer", "minimum": 0, "maximum": 17},
+    "tasks_started": {"type": "integer", "minimum": 0, "maximum": 17},
+    "tasks_completed": {"type": "integer", "minimum": 0, "maximum": 17},
+    "reviews_completed": {"type": "integer", "minimum": 0, "maximum": 5},
+    "approvals_pending": {"type": "integer", "minimum": 0},
+    "error": {"type": ["string", "null"]},
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_tokens", "consumed_tokens", "max_cny_fen", "consumed_cny_fen"
+      ],
+      "properties": {
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "consumed_tokens": {"type": "integer", "minimum": 0},
+        "max_cny_fen": {"type": "integer", "minimum": 0},
+        "consumed_cny_fen": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {"$ref": "story-agent-event-v1.json"}
+    }
+  }
+}

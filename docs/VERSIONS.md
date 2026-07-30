@@ -24,6 +24,14 @@ governs. A document version answers one question: **are two scores comparable?**
 | `eval/cases/<split>/cases.jsonl` | frozen with the manifest | `schemas/eval-case-v1.json` |
 | `schemas/story-package-v1.json` | `story-package/v1` | `story-eval-offline/v1.0.0` §9 span addressing |
 | `policy/online-policy-v*.json` | `online-policy/v1` schema | `online-policy-design/v1.0.0` |
+| Desktop application | `0.1.0-alpha.1` | Tauri, npm and Rust manifests must match |
+| Windows installer | `0.1.0-1` | numeric prerelease required by MSI/WiX |
+| Durable product store | `story-store-version/v1` | forward-only idempotent migration |
+| Windows release evidence | `windows-release-evidence/v1` | installer hashes, optional signing provenance and toolchain identity |
+
+All production JSON contracts named `*/v1` are stable within the future `1.x`
+desktop line. Additive optional fields are backward compatible; changed required
+meaning requires a new contract major version and migrator.
 
 Document versions and data versions move independently. Editing a threshold
 bumps the manifest, not the design document. Changing how thresholds are

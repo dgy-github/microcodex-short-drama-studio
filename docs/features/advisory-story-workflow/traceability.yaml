@@ -1,0 +1,60 @@
+feature: advisory-story-workflow
+requirements:
+  - id: REQ-109
+    interfaces: [API-107, API-108, API-110]
+    implementation: [BE-107, BE-108]
+    tests: [TEST-128, TEST-129]
+  - id: REQ-110
+    interfaces: [API-109]
+    implementation: [BE-108]
+    tests: [TEST-129]
+  - id: REQ-111
+    interfaces: [API-108]
+    implementation: [BE-107, BE-108]
+    tests: [TEST-128, TEST-129]
+  - id: REQ-112
+    interfaces: [API-107, API-110]
+    implementation: [BE-107]
+    tests: [TEST-128]
+  - id: REQ-113
+    interfaces: [API-108, API-109]
+    implementation: [BE-108, BE-109]
+    tests: [TEST-129]
+  - id: REQ-114
+    interfaces: [API-107]
+    implementation: [BE-109]
+    tests: [TEST-129]
+interfaces:
+  - id: API-107
+    location: schemas/story-capability-request-v1.json
+    status: INTEGRATION_PASSED
+    purpose: allowlisted Python-to-Rust generation and validation capability
+  - id: API-108
+    location: schemas/story-workflow-result-v1.json
+    status: INTEGRATION_PASSED
+    purpose: retain one advisory fixed-workflow result
+  - id: API-109
+    location: schemas/story-review-record-v1.json
+    status: INTEGRATION_PASSED
+    purpose: retain structured review findings
+  - id: API-110
+    location: schemas/story-capability-response-v1.json
+    status: INTEGRATION_PASSED
+    purpose: return structured provider output or successful validation without credentials
+implementation:
+  - id: BE-107
+    location: crates/story-provider/src/capability_host.rs
+    owner: CAP-003
+  - id: BE-108
+    location: sidecar/campaign_adapter/workflow.py
+    owner: CAP-004
+  - id: BE-109
+    location: crates/story-runtime/examples/advisory_e2e.rs
+    owner: CAP-002
+tests:
+  - id: TEST-128
+    location: crates/story-provider/src/capability_host.rs
+    proves: capability authentication and allowlisting are fail-closed
+  - id: TEST-129
+    location: crates/story-runtime/examples/advisory_e2e.rs
+    proves: real 17-task run produces a schema-valid reviewed advisory package

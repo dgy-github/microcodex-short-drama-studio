@@ -1,0 +1,52 @@
+feature: sidecar-runtime-foundation
+requirements:
+  - id: REQ-107
+    interfaces:
+      - API-104
+    implementation:
+      - BE-104
+    tests:
+      - TEST-118
+      - TEST-119
+      - TEST-120
+      - TEST-121
+      - TEST-122
+      - TEST-123
+  - id: REQ-309
+    interfaces:
+      - API-104
+    implementation:
+      - BE-124
+    tests:
+      - TEST-123
+interfaces:
+  - id: API-104
+    location: crates/story-runtime/src/execution.rs
+    status: INTEGRATION_PASSED
+    purpose: own sidecar readiness transitions and the fixed story DAG
+implementation:
+  - id: BE-104
+    location: crates/story-runtime/src/execution.rs
+    owner: CAP-002
+  - id: BE-124
+    location: crates/story-runtime/src/sidecar.rs
+    owner: CAP-002
+tests:
+  - id: TEST-118
+    location: crates/story-runtime/src/execution.rs
+    proves: start-ready-stop-exit follows the only clean lifecycle
+  - id: TEST-119
+    location: crates/story-runtime/src/execution.rs
+    proves: commands are rejected before readiness and after stop begins
+  - id: TEST-120
+    location: crates/story-runtime/src/execution.rs
+    proves: unexpected process exit enters failed
+  - id: TEST-121
+    location: crates/story-runtime/src/execution.rs
+    proves: all 17 fixed tasks have unique IDs and earlier dependencies
+  - id: TEST-122
+    location: sidecar/test_server.py
+    proves: health and RPC reject missing credentials and accept the launch token
+  - id: TEST-123
+    location: crates/story-runtime/tests/sidecar_process_smoke.rs
+    proves: Rust starts, authenticates, health-checks, stops and reaps the real sidecar

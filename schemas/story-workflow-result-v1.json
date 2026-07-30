@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-workflow-result-v1.json",
+  "title": "Advisory story workflow result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "run_id", "job_id", "status", "promotion", "tasks", "reviews", "package", "provider_routes"],
+  "properties": {
+    "schema": {"const": "story-workflow-result/v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "job_id": {"type": "string", "minLength": 1},
+    "status": {"const": "advisory"},
+    "promotion": {"const": "non-promotable"},
+    "tasks": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_id", "agent_id", "artifact_schema", "content_sha256"],
+        "properties": {
+          "task_id": {"pattern": "^t(0[1-9]|1[0-7])$", "type": "string"},
+          "agent_id": {"type": "string", "minLength": 1},
+          "artifact_schema": {"type": "string", "minLength": 1},
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "story-review-record-v1.json"}
+    },
+    "package": {"$ref": "story-package-v1.json"},
+    "provider_routes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generation", "review"],
+      "properties": {
+        "generation": {"type": "string", "minLength": 1},
+        "review": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

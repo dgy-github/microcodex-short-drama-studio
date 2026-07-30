@@ -27,6 +27,8 @@ import hashlib
 import http.client
 import json
 import os
+import shutil
+import subprocess
 import tempfile
 import time
 import urllib.error
@@ -50,6 +52,7 @@ ROOT = Path(__file__).parents[2]
 STAGE0 = ROOT / "eval" / "adversarial" / "stage0"
 PAIR_DIR = STAGE0 / "motive-explicit"  # default; override with --pair-dir
 JUDGES = ROOT / "eval" / "judges.json"
+CODEX_JUDGES = ROOT / "eval" / "codex-judge.json"
 RUBRIC = ROOT / "eval" / "rubrics" / "judge-v1.yaml"
 MANIFEST = ROOT / "eval" / "manifests" / "eval-v0.1.0.json"
 CASE_ID = "comedy_002"
@@ -106,6 +109,22 @@ def input_fingerprint(pair_dir: Path) -> str:
         digest.update(len(content).to_bytes(8, "big"))
         digest.update(content)
     return f"sha256:{digest.hexdigest()}"
+
+
+def judge_config_fingerprint(judge: dict[str, Any]) -> str:
+    encoded = json.dumps(
+        judge, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return f"sha256:{hashlib.sha256(encoded).hexdigest()}"
+
+
+def load_probe_config() -> dict[str, Any]:
+    """Merge supplemental local judges without changing the remote input hash."""
+    config = load(JUDGES)
+    supplemental = load(CODEX_JUDGES)
+    config["judges"] = [*config["judges"], *supplemental["judges"]]
+    config["independence_caveat"] = supplemental["independence_caveat"]
+    return config
 
 
 def urlopen_with_retry(
@@ -194,28 +213,31 @@ def resolve_route(judge: dict[str, Any]) -> dict[str, Any]:
     """
     for route in judge["routes"]:
         if (
+            route.get("provider") == "local_codex_exec"
+            and not route.get("blocked_on")
+        ):
+            command_path = shutil.which(route.get("command", "codex"))
+            if command_path:
+                return {**route, "command_path": command_path}
+        if (
             route.get("endpoint")
             and os.environ.get(route["api_key_env"])
             and not route.get("blocked_on")
         ):
             return route
     raise SystemExit(
-        f"{judge['model']}: no unblocked route has both an endpoint and a key set; "
+        f"{judge['model']}: no usable local command or unblocked route has "
+        "both an endpoint and a key set; "
         "run --check-connectivity"
     )
 
 
-def request(
-    route: dict[str, Any],
-    model: str,
-    system: str,
-    api_key: str,
+def build_user_prompt(
     first: dict[str, Any],
     second: dict[str, Any],
-    temperature: float,
-    validation_error: str | None = None,
-) -> dict[str, Any]:
-    prompt = json.dumps(
+    validation_error: str | None,
+) -> str:
+    return json.dumps(
         {
             "case_id": CASE_ID,
             "artifact_A": first,
@@ -232,6 +254,138 @@ def request(
         ensure_ascii=False,
         separators=(",", ":"),
     )
+
+
+def write_compatible_model_catalog(workdir: Path) -> Path | None:
+    """Adapt a newer desktop cache for an older standalone CLI, without
+    modifying the operator's shared cache.
+
+    Codex CLI 0.120 requires `supports_reasoning_summaries`, while the current
+    desktop cache omits it. The judge does not request reasoning summaries, so
+    the conservative capability value is false.
+    """
+    source = Path.home() / ".codex" / "models_cache.json"
+    if not source.exists():
+        return None
+    catalog = load(source)
+    models = catalog.get("models")
+    if not isinstance(models, list):
+        return None
+    changed = False
+    for model in models:
+        if (
+            isinstance(model, dict)
+            and "supports_reasoning_summaries" not in model
+        ):
+            model["supports_reasoning_summaries"] = False
+            changed = True
+        if isinstance(model, dict) and isinstance(
+            model.get("supported_reasoning_levels"), list
+        ):
+            compatible_levels = [
+                level
+                for level in model["supported_reasoning_levels"]
+                if isinstance(level, dict)
+                and level.get("effort")
+                in {"none", "minimal", "low", "medium", "high", "xhigh"}
+            ]
+            if compatible_levels != model["supported_reasoning_levels"]:
+                model["supported_reasoning_levels"] = compatible_levels
+                changed = True
+    if not changed:
+        return None
+    destination = workdir / "models-catalog.compat.json"
+    destination.write_text(
+        json.dumps(catalog, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    return destination
+
+
+def request_codex(
+    route: dict[str, Any],
+    model: str,
+    system: str,
+    first: dict[str, Any],
+    second: dict[str, Any],
+    validation_error: str | None,
+) -> dict[str, Any]:
+    schema_path = ROOT / route["output_schema"]
+    prompt = f"{system}\n\n{build_user_prompt(first, second, validation_error)}"
+    with tempfile.TemporaryDirectory(prefix="story-judge-") as directory:
+        workdir = Path(directory)
+        output_path = workdir / "final.json"
+        model_catalog = write_compatible_model_catalog(workdir)
+        command = [
+            route["command_path"],
+            "exec",
+            "--skip-git-repo-check",
+            "--ephemeral",
+            "--sandbox",
+            "read-only",
+            "--model",
+            model,
+            "--output-schema",
+            str(schema_path),
+            "--output-last-message",
+            str(output_path),
+            "--json",
+            "--color",
+            "never",
+            "-",
+        ]
+        if model_catalog:
+            command[2:2] = [
+                "--config",
+                f"model_catalog_json={json.dumps(str(model_catalog))}",
+            ]
+        completed = subprocess.run(
+            command,
+            input=prompt,
+            cwd=workdir,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=int(route.get("request_timeout_seconds", 600)),
+            shell=False,
+            check=False,
+        )
+        if completed.returncode:
+            detail = (completed.stderr or completed.stdout)[-1200:]
+            raise RuntimeError(
+                f"codex exec exited {completed.returncode}: {detail.strip()}"
+            )
+        result = json.loads(output_path.read_text(encoding="utf-8"))
+        usage = None
+        for line in completed.stdout.splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("type") == "turn.completed":
+                usage = event.get("usage")
+        result["_provider_usage"] = usage
+        return result
+
+
+def request(
+    route: dict[str, Any],
+    model: str,
+    system: str,
+    api_key: str | None,
+    first: dict[str, Any],
+    second: dict[str, Any],
+    temperature: float,
+    validation_error: str | None = None,
+) -> dict[str, Any]:
+    if route["provider"] == "local_codex_exec":
+        return request_codex(
+            route, model, system, first, second, validation_error
+        )
+    if not api_key:
+        raise RuntimeError(f"{route['provider']}: missing API key")
+    prompt = build_user_prompt(first, second, validation_error)
     request_body = {
         "model": route.get("model", model),
         "messages": [
@@ -342,7 +496,7 @@ def request_validated(
     route: dict[str, Any],
     model: str,
     system: str,
-    api_key: str,
+    api_key: str | None,
     first: dict[str, Any],
     second: dict[str, Any],
     temperature: float,
@@ -397,6 +551,29 @@ def check_connectivity(judges: list[dict[str, Any]]) -> int:
     for judge in judges:
         for route in judge["routes"]:
             name = f"{judge['model']} via {route['provider']}"
+            if route.get("provider") == "local_codex_exec":
+                command_path = shutil.which(route.get("command", "codex"))
+                if not command_path:
+                    print(f"FAIL {name}: command not found")
+                    failures += 1
+                    continue
+                completed = subprocess.run(
+                    [command_path, "login", "status"],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=30,
+                    shell=False,
+                    check=False,
+                )
+                if completed.returncode:
+                    detail = (completed.stderr or completed.stdout).strip()[:400]
+                    print(f"FAIL {name}: {detail}")
+                    failures += 1
+                else:
+                    print(f"OK   {name}: command found and login is active")
+                continue
             if not route.get("endpoint"):
                 print(f"SKIP {name}: no endpoint recorded in eval/judges.json")
                 failures += 1
@@ -497,6 +674,7 @@ def saved_result_is_reusable(
     route: dict[str, Any],
     samples_per_artifact: int,
     expected_fingerprint: str,
+    expected_judge_config_fingerprint: str | None = None,
 ) -> bool:
     summary = saved.get("summary", {})
     return (
@@ -504,6 +682,11 @@ def saved_result_is_reusable(
         and summary.get("route_provider") == route["provider"]
         and summary.get("samples_per_artifact") == samples_per_artifact
         and summary.get("input_fingerprint") == expected_fingerprint
+        and (
+            expected_judge_config_fingerprint is None
+            or summary.get("judge_config_fingerprint")
+            == expected_judge_config_fingerprint
+        )
         and len(saved.get("forward", [])) == samples_per_artifact
         and len(saved.get("reverse", [])) == samples_per_artifact
     )
@@ -529,7 +712,7 @@ def collect_samples(
     route: dict[str, Any],
     judge: dict[str, Any],
     system: str,
-    api_key: str,
+    api_key: str | None,
     first: dict[str, Any],
     second: dict[str, Any],
     temperature: float,
@@ -570,9 +753,12 @@ def summarize_judge(
         "judge_model": judge["model"],
         "judge_family": judge["family"],
         "route_provider": route["provider"],
-        "route_endpoint": route["endpoint"],
+        "route_endpoint": route.get("endpoint"),
+        "route_command": route.get("command"),
         "samples_per_artifact": len(forward),
-        "temperature": temperature,
+        "temperature": (
+            None if route["provider"] == "local_codex_exec" else temperature
+        ),
         "baseline_scores": baseline_scores,
         "negative_scores": negative_scores,
         "target_dimension": target,
@@ -584,6 +770,8 @@ def summarize_judge(
             len(cited & defect_spans) / len(cited) if cited else 0.0
         ),
     }
+    if route["provider"] == "local_codex_exec":
+        result["sampling_control"] = "codex_cli_provider_default"
     result.update(consistency_metrics(forward, reverse, dimension_ids))
     result.update(
         specificity_metrics(baseline_scores, negative_scores, target, dimensions)
@@ -606,33 +794,73 @@ def run_judge(
     force: bool,
     expected_fingerprint: str,
 ) -> dict[str, Any]:
-    route = resolve_route(judge)
     suffix = f".{result_suffix}" if result_suffix else ""
     result_path = pair_dir / f"judge-{judge['model']}{suffix}.result.json"
     partial_path = pair_dir / f"judge-{judge['model']}{suffix}.partial.json"
     if result_path.exists() and not force:
         saved = load(result_path)
-        if saved_result_is_reusable(
-            saved, judge, route, samples_per_artifact, expected_fingerprint
+        saved_provider = saved.get("summary", {}).get("route_provider")
+        saved_route = next(
+            (
+                route
+                for route in judge["routes"]
+                if route["provider"] == saved_provider
+            ),
+            None,
+        )
+        saved_config_fingerprint = (
+            judge_config_fingerprint(judge)
+            if saved_provider == "local_codex_exec"
+            else None
+        )
+        if saved_route and saved_result_is_reusable(
+            saved,
+            judge,
+            saved_route,
+            samples_per_artifact,
+            expected_fingerprint,
+            saved_config_fingerprint,
         ):
             summary = refresh_saved_summary(saved, target, dimensions)
+            if saved_route["provider"] == "local_codex_exec":
+                summary["temperature"] = None
+                summary["sampling_control"] = "codex_cli_provider_default"
             saved["summary"] = summary
             atomic_write(result_path, saved)
             print(
-                f"RESUME {judge['model']} via {route['provider']}: "
+                f"RESUME {judge['model']} via {saved_route['provider']}: "
                 "reusing complete saved samples"
             )
             return summary
-    api_key = os.environ[route["api_key_env"]]
+    route = resolve_route(judge)
+    config_fingerprint = (
+        judge_config_fingerprint(judge)
+        if route["provider"] == "local_codex_exec"
+        else None
+    )
+    api_key = (
+        os.environ[route["api_key_env"]]
+        if route.get("api_key_env")
+        else None
+    )
     dimension_ids = [dimension["id"] for dimension in dimensions]
     partial = (
         load(partial_path)
         if partial_path.exists()
-        else {"input_fingerprint": expected_fingerprint, "forward": [], "reverse": []}
+        else {
+            "input_fingerprint": expected_fingerprint,
+            "judge_config_fingerprint": config_fingerprint,
+            "forward": [],
+            "reverse": [],
+        }
     )
-    if partial.get("input_fingerprint") != expected_fingerprint:
+    if (
+        partial.get("input_fingerprint") != expected_fingerprint
+        or partial.get("judge_config_fingerprint") != config_fingerprint
+    ):
         partial = {
             "input_fingerprint": expected_fingerprint,
+            "judge_config_fingerprint": config_fingerprint,
             "forward": [],
             "reverse": [],
         }
@@ -674,6 +902,8 @@ def run_judge(
         judge, route, forward, reverse, dimensions, target, defect_spans, temperature
     )
     summary["input_fingerprint"] = expected_fingerprint
+    if config_fingerprint:
+        summary["judge_config_fingerprint"] = config_fingerprint
     atomic_write(
         result_path, {"forward": forward, "reverse": reverse, "summary": summary}
     )
@@ -742,7 +972,7 @@ def build_probe_summary(
 
 def main() -> int:
     args = parse_args()
-    config = load(JUDGES)
+    config = load_probe_config()
     if args.check_connectivity:
         return 1 if check_connectivity(config["judges"]) else 0
     judges, _, judge_families = select_judges(config, args.only_judge)

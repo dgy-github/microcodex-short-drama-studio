@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/retrieval-collection-v1.json",
+  "title": "Licensed retrieval collection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "collection_id", "display_name", "sources"],
+  "properties": {
+    "schema": {"const": "retrieval-collection/v1"},
+    "collection_id": {"type": "string", "pattern": "^[a-z0-9-]+-v[0-9]+$"},
+    "display_name": {"type": "string", "minLength": 1},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id", "path", "content_sha256", "license_id",
+          "rights_holder", "rights_evidence", "allowed_uses"
+        ],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "pattern": "^[^\\\\:]+$"},
+          "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "license_id": {"type": "string", "minLength": 1},
+          "rights_holder": {"type": "string", "minLength": 1},
+          "rights_evidence": {"type": "string", "minLength": 1},
+          "allowed_uses": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"enum": ["retrieval", "evaluation"]}
+          }
+        }
+      }
+    }
+  }
+}

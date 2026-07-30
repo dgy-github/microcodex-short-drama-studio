@@ -1,0 +1,72 @@
+feature: desktop-evaluation-center
+requirements:
+  - id: REQ-151
+    interfaces: [API-139, API-143]
+    implementation: [BE-116, BE-117, FE-106]
+    tests: [TEST-162, TEST-166]
+  - id: REQ-152
+    interfaces: [API-140, API-142, API-143]
+    implementation: [BE-116, BE-117, FE-106]
+    tests: [TEST-163, TEST-165, TEST-166]
+  - id: REQ-153
+    interfaces: [API-141, API-142, API-143]
+    implementation: [BE-116, BE-117, FE-106]
+    tests: [TEST-164, TEST-165, TEST-166]
+  - id: REQ-154
+    interfaces: [API-140, API-141, API-143]
+    implementation: [BE-116, BE-117]
+    tests: [TEST-162, TEST-164, TEST-165]
+  - id: REQ-155
+    interfaces: [API-139]
+    implementation: [FE-106]
+    tests: [TEST-167]
+interfaces:
+  - id: API-139
+    location: schemas/desktop-evaluation-catalog-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: list offline and online datasets and selectable cases
+  - id: API-140
+    location: schemas/desktop-evaluation-batch-result-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: retain partial or batch automatic evaluation outcomes
+  - id: API-141
+    location: schemas/desktop-blind-assignment-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: expose sanitized human review material
+  - id: API-142
+    location: schemas/eval-score-record-v1.json
+    status: EXISTING
+    purpose: retain automatic and internal blind score records
+  - id: API-143
+    location: apps/desktop/src-tauri/src/commands.rs
+    status: FRONTEND_CONNECTED
+    purpose: expose catalog, automatic run, blind assignment and submission commands
+implementation:
+  - id: BE-116
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    owner: CAP-005
+  - id: BE-117
+    location: apps/desktop/src-tauri/src/commands.rs
+    owner: CAP-008
+  - id: FE-106
+    location: apps/desktop/src/lib/EvaluationCenter.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-162
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    proves: catalog exposes exactly offline and online datasets with bounded eligible cases
+  - id: TEST-163
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    proves: admission and judge outputs fail closed before aggregation
+  - id: TEST-164
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    proves: blind payload omits prohibited metadata and rejects duplicate submission
+  - id: TEST-165
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    proves: score records reuse manifest-owned story-eval floors and verdict
+  - id: TEST-166
+    location: apps/desktop/package.json
+    proves: evaluation selection and partial or batch actions type-check and build
+  - id: TEST-167
+    location: apps/desktop/src/lib/EvaluationCenter.svelte
+    proves: case rows expose readable summaries plus double-click and explicit detail actions

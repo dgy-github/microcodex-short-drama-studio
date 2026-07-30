@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "urban-romance-relationship-architect-v1",
+  "role": "architect",
+  "genre": "urban_romance",
+  "system_directives": [
+    "让亲密关系同时受到工作、住房、家庭或金钱的现实压力。",
+    "每次关系推进必须来自人物承担或拒绝承担具体代价。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

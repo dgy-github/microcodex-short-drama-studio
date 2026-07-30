@@ -3,11 +3,179 @@ info:
   title: MicrocodeX Short Drama Studio API
   version: 0.1.0-alpha.1
   description: >
-    Trusted Rust HTTP surface. Add operations here before implementing cross-layer
-    calls. SSE event payloads continue to use the tracked JSON schemas.
-paths: {}
+    Trusted localhost HTTP surfaces used by Rust. The desktop never calls the
+    Campaign sidecar directly. SSE event payloads continue to use tracked JSON
+    schemas.
+paths:
+  /health:
+    get:
+      operationId: getSidecarHealth
+      summary: Verify the authenticated Campaign sidecar is ready.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Sidecar is ready.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SidecarHealth"
+        "401":
+          description: Missing or invalid launch token.
+  /rpc:
+    post:
+      operationId: sendSidecarRpc
+      summary: Pass one authenticated JSON-RPC request to the Campaign handler.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: JSON-RPC response.
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid JSON request.
+        "401":
+          description: Missing or invalid launch token.
+  /v1/runs:
+    post:
+      operationId: startRun
+      summary: Accept a story run without waiting for completion.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/start-run-command-v1.json"
+      responses:
+        "202":
+          description: Original or replayed command acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/story-command-acceptance-v1.json"
+        "400":
+          description: Invalid command or idempotency key.
+        "401":
+          description: Missing or invalid launch token.
+        "409":
+          description: Idempotency key was already used for different input.
+  /v1/runs/{run_id}/events:
+    get:
+      operationId: streamRunEvents
+      summary: Replay and follow one run's durable events.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: Last-Event-ID
+          in: header
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: SSE stream of story-agent-event/v1 records.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        "400":
+          description: Invalid Last-Event-ID.
+        "401":
+          description: Missing or invalid launch token.
+        "404":
+          description: Run does not exist.
+  /v1/runs/{run_id}/result:
+    get:
+      operationId: getRunResult
+      summary: Fetch the completed advisory workflow result.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Completed fixed-workflow result.
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/story-workflow-result-v1.json"
+        "401":
+          description: Missing or invalid launch token.
+        "404":
+          description: Result is not complete or the run does not exist.
+  /v1/runs/{run_id}/cancel:
+    post:
+      operationId: cancelRun
+      summary: Cancel an accepted or running story run idempotently.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: Cancellation was durably recorded.
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/story-agent-event-v1.json"
+        "200":
+          description: The existing terminal event is returned.
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/story-agent-event-v1.json"
+        "401":
+          description: Missing or invalid launch token.
+        "404":
+          description: Run does not exist.
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
+    SidecarHealth:
+      type: object
+      additionalProperties: false
+      required: [protocol, status]
+      properties:
+        protocol:
+          const: story-sidecar-control/v1
+        status:
+          const: ready
     Error:
       type: object
       additionalProperties: false

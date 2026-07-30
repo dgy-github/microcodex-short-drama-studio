@@ -1,0 +1,23 @@
+{
+  "name": "microcodex-short-drama-desktop",
+  "private": true,
+  "version": "0.1.0-alpha.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.8.0",
+    "svelte": "^5"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5",
+    "@tauri-apps/cli": "2.8.0",
+    "svelte-check": "4.3.4",
+    "typescript": "^5",
+    "vite": "^6"
+  }
+}

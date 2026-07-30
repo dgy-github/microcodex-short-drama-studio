@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/content-form-registry-v1.json",
+  "title": "Content Form Registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "bindings"],
+  "properties": {
+    "schema": {"const": "content-form-registry/v1"},
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content_form", "artifact_schema", "rubric", "case_set"],
+        "properties": {
+          "content_form": {"enum": ["scripted_short_drama"]},
+          "artifact_schema": {"$ref": "#/$defs/assetRef"},
+          "rubric": {"$ref": "#/$defs/assetRef"},
+          "case_set": {"$ref": "#/$defs/assetRef"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "assetRef": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?/)(?!.*//)[^/]+(?:/[^/]+)*$"
+    }
+  }
+}

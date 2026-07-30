@@ -1,0 +1,10 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "suspense-closed-room-v1",
+  "genre": "suspense",
+  "case_refs": [
+    {"split": "train", "case_id": "suspense_001"},
+    {"split": "validation", "case_id": "suspense_002"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

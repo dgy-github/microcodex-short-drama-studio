@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/professional-release-evidence-v1.json",
+  "title": "Professional release evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "evaluation_id", "eval_version", "candidate_kind",
+    "candidate_id", "incumbent_id", "holdout_seal", "critical_dimensions",
+    "pair_reviews", "critical_dimension_deltas", "genre_slice_deltas",
+    "critical_failure_delta", "overlap_blocking_violations",
+    "mean_cost_within_budget", "p95_latency_within_budget",
+    "quality_gain_cost_approved", "stochastic_samples", "screenwriter_signoffs"
+  ],
+  "properties": {
+    "schema": {"const": "professional-release-evidence/v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "eval_version": {"type": "string", "minLength": 1},
+    "candidate_kind": {
+      "enum": ["model", "prompt", "graph", "retriever", "skill", "genre_pack"]
+    },
+    "candidate_id": {"type": "string", "minLength": 1},
+    "incumbent_id": {"type": "string", "minLength": 1},
+    "holdout_seal": {"$ref": "holdout-seal-v1.json"},
+    "critical_dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "pair_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pair_id", "case_id", "genre", "expected_preference",
+          "admission_passed", "policy_passed", "reviews", "adjudication"
+        ],
+        "properties": {
+          "pair_id": {"type": "string", "minLength": 1},
+          "case_id": {"type": "string", "minLength": 1},
+          "genre": {"type": "string", "minLength": 1},
+          "expected_preference": {"const": "candidate"},
+          "admission_passed": {"type": "boolean"},
+          "policy_passed": {"type": "boolean"},
+          "reviews": {
+            "type": "array",
+            "minItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rater_id", "credential", "blind", "preference", "dimensions"
+              ],
+              "properties": {
+                "rater_id": {"type": "string", "minLength": 1},
+                "credential": {
+                  "enum": ["working_screenwriter", "story_editor", "target_viewer"]
+                },
+                "blind": {"type": "boolean"},
+                "preference": {"enum": ["candidate", "incumbent", "tie"]},
+                "dimensions": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number", "minimum": 1, "maximum": 5
+                  }
+                }
+              }
+            }
+          },
+          "adjudication": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["adjudicator_id", "resolved"],
+                "properties": {
+                  "adjudicator_id": {"type": "string", "minLength": 1},
+                  "resolved": {"const": true}
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "critical_dimension_deltas": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    },
+    "genre_slice_deltas": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    },
+    "critical_failure_delta": {"type": "integer"},
+    "overlap_blocking_violations": {"type": "integer", "minimum": 0},
+    "mean_cost_within_budget": {"type": "boolean"},
+    "p95_latency_within_budget": {"type": "boolean"},
+    "quality_gain_cost_approved": {"type": "boolean"},
+    "stochastic_samples": {"type": "integer", "minimum": 0},
+    "screenwriter_signoffs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

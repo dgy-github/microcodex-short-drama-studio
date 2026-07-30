@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "workplace-credible-growth-v1",
+  "display_name": "职场成长",
+  "genre": "workplace",
+  "differentiation_axis": "真实组织约束下的能力、利益与联盟变化",
+  "market_note": "面向办公室和轻制作场景的职场短剧。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 10,
+    "max_speaking_cast": 14,
+    "production_level": "low_budget",
+    "audience": "20-40"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["一份文件解决全部冲突", "把专业能力写成口号"],
+  "required_conditions": ["晋升与失败必须对应可见行动", "组织关系必须影响人物选择"],
+  "agent_configuration": {
+    "architect_profile": "workplace-power-architect-v1",
+    "reviewer_profiles": ["workplace-credibility-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "workplace-credible-growth-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

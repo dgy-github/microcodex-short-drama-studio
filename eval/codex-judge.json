@@ -1,0 +1,23 @@
+{
+  "schema": "supplemental-judge-set/v1",
+  "note": "Local Codex is an offline evaluation route. It reuses the operator's existing Codex login and stores no credential in this repository.",
+  "judges": [
+    {
+      "model": "gpt-5.4",
+      "family": "openai",
+      "routes": [
+        {
+          "provider": "local_codex_exec",
+          "command": "codex",
+          "output_schema": "schemas/stage0-judge-output-v1.json",
+          "model_catalog_compatibility": "temporary_copy_adds_missing_supports_reasoning_summaries_and_filters_new_reasoning_efforts",
+          "request_timeout_seconds": 600,
+          "endpoint_verified": false,
+          "note": "Runs one ephemeral, read-only Codex session per sample from an isolated temporary working directory."
+        }
+      ],
+      "note": "Pinned to an OpenAI-family model present in the local model catalog and compatible with the installed standalone CLI. gpt-5.6-sol was rejected by the service because codex-cli 0.120.0 is too old. The generator family is DeepSeek, so the self-preference exclusion remains satisfied."
+    }
+  ],
+  "independence_caveat": "The OpenAI-family Codex judge reduces the shared Chinese-native-family blind spot, but all three judges remain LLMs and do not replace the required hidden human review."
+}

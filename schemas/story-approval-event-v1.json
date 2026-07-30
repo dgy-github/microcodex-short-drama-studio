@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-approval-event-v1.json",
+  "title": "Append-only story approval event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "approval_id", "revision_id", "decision", "actor",
+    "note", "occurred_at_unix_ms"
+  ],
+  "properties": {
+    "schema": {"const": "story-approval-event/v1"},
+    "approval_id": {"type": "string", "pattern": "^approval_[a-f0-9]{32}$"},
+    "revision_id": {"type": "string", "pattern": "^rev_[a-f0-9]{32}$"},
+    "decision": {"enum": ["approved", "rejected"]},
+    "actor": {"type": "string", "minLength": 1, "maxLength": 128},
+    "note": {"type": "string", "maxLength": 2000},
+    "occurred_at_unix_ms": {"type": "integer", "minimum": 1}
+  }
+}

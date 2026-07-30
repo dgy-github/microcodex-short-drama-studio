@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-agent-profile-v1.json",
+  "title": "Genre-specific story agent profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "profile_id", "role", "genre", "system_directives",
+    "output_schema", "allowed_capabilities"
+  ],
+  "properties": {
+    "schema": {"const": "story-agent-profile/v1"},
+    "profile_id": {"type": "string", "pattern": "^[a-z0-9-]+-v[0-9]+$"},
+    "role": {"enum": ["architect", "reviewer"]},
+    "genre": {
+      "enum": ["family", "urban_romance", "revenge", "suspense", "workplace", "rural", "comedy", "historical", "cross_genre"]
+    },
+    "system_directives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "output_schema": {"type": "string", "pattern": "^schemas/[^\\\\:]+\\.json$"},
+    "allowed_capabilities": {
+      "type": "array",
+      "items": {"enum": ["generate_structured_text", "validate_artifact"]}
+    }
+  }
+}

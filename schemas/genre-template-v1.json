@@ -12,9 +12,12 @@
     "genre",
     "differentiation_axis",
     "constraints",
+    "constraint_profiles",
     "forbidden_elements",
+    "agent_configuration",
     "skills",
     "retrieval_collections",
+    "regression_manifest",
     "rubric_overrides",
     "content_form"
   ],
@@ -115,6 +118,15 @@
       },
       "description": "Hard. The lazy resolutions this template refuses, checked deterministically at admission."
     },
+    "constraint_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+-v[0-9]+$"
+      },
+      "description": "Versioned format/production profiles. Long and short episode-count variants share story-job/v1 and story-package/v1."
+    },
     "required_conditions": {
       "type": "array",
       "items": {
@@ -130,11 +142,34 @@
       },
       "description": "References into skills-registry/<name>/<semver>/, which only serves signed versions. Empty is legal and currently accurate: the registry holds nothing, so today a template binds constraints and retrieval only."
     },
+    "agent_configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["architect_profile", "reviewer_profiles"],
+      "properties": {
+        "architect_profile": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+-v[0-9]+$"
+        },
+        "reviewer_profiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+-v[0-9]+$"
+          }
+        }
+      }
+    },
     "retrieval_collections": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "regression_manifest": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+-v[0-9]+$"
     },
     "rubric_overrides": {
       "const": null,

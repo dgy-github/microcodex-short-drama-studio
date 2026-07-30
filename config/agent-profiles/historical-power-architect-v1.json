@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "historical-power-architect-v1",
+  "role": "architect",
+  "genre": "historical",
+  "system_directives": [
+    "用身份、制度、礼法、资源与信息边界塑造人物选择。",
+    "任何权力逆转都必须有前置联盟、证据或牺牲。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

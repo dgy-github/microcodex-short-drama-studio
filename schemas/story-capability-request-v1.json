@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-capability-request-v1.json",
+  "title": "Story capability request v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "capability", "request_id", "route", "system", "prompt"],
+      "properties": {
+        "schema": {"const": "story-capability-request/v1"},
+        "capability": {"const": "generate_structured_text"},
+        "request_id": {"type": "string", "minLength": 1},
+        "route": {"enum": ["generation", "review"]},
+        "system": {"type": "string", "minLength": 1},
+        "prompt": {"type": "string", "minLength": 1}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "capability", "request_id", "artifact_schema", "artifact", "expected_episodes"],
+      "properties": {
+        "schema": {"const": "story-capability-request/v1"},
+        "capability": {"const": "validate_artifact"},
+        "request_id": {"type": "string", "minLength": 1},
+        "artifact_schema": {"const": "story-package/v1"},
+        "artifact": {"$ref": "story-package-v1.json"},
+        "expected_episodes": {"type": "integer", "minimum": 1}
+      }
+    }
+  ]
+}
+

@@ -4,13 +4,25 @@
   "title": "Story Job v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "job_id", "input", "genre_mode", "audience", "format", "budget"],
+  "required": ["schema", "job_id", "content_form", "input", "genre_mode", "audience", "format", "budget"],
   "properties": {
     "schema": {"const": "story-job/v1"},
     "job_id": {"type": "string", "minLength": 1},
+    "content_form": {
+      "enum": ["scripted_short_drama"],
+      "description": "Immutable for the life of the project. A different form starts a different project."
+    },
     "input": {"type": "string", "minLength": 1},
     "genre_mode": {"enum": ["auto", "fixed"]},
     "allowed_genres": {"type": "array", "items": {"type": "string"}},
+    "genre_pack_id": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9-]+-v[0-9]+$"
+    },
+    "constraint_profile_id": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9-]+-v[0-9]+$"
+    },
     "audience": {"type": "string", "minLength": 1},
     "format": {
       "type": "object",
@@ -34,4 +46,3 @@
     }
   }
 }
-

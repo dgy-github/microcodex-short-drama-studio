@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-command-acceptance-v1.json",
+  "title": "Story Command Acceptance v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "command", "request_id", "job_id", "run_id",
+    "event_stream_url", "accepted_event_seq", "status"
+  ],
+  "properties": {
+    "schema": {"const": "story-command-acceptance/v1"},
+    "command": {"const": "StartRun"},
+    "request_id": {"type": "string", "minLength": 1},
+    "job_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "pattern": "^run_[a-f0-9]{32}$"},
+    "event_stream_url": {
+      "type": "string",
+      "pattern": "^/v1/runs/run_[a-f0-9]{32}/events$"
+    },
+    "accepted_event_seq": {"type": "integer", "minimum": 1},
+    "status": {"const": "accepted"}
+  }
+}

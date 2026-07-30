@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "comedy-situational-v1",
+  "display_name": "生活喜剧",
+  "genre": "comedy",
+  "differentiation_axis": "人物欲望碰撞产生的情境笑料",
+  "market_note": "面向少场景、高节奏的生活喜剧短剧。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 10,
+    "max_speaking_cast": 14,
+    "production_level": "low_budget",
+    "audience": "16-45"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["只靠网络梗堆砌笑点", "用羞辱弱者制造笑料"],
+  "required_conditions": ["笑点必须改变局势", "包袱必须来自人物目标冲突"],
+  "agent_configuration": {
+    "architect_profile": "comedy-escalation-architect-v1",
+    "reviewer_profiles": ["comedy-payoff-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "comedy-situational-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

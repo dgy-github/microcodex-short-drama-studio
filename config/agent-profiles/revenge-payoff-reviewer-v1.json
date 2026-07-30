@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "revenge-payoff-reviewer-v1",
+  "role": "reviewer",
+  "genre": "revenge",
+  "system_directives": [
+    "检查爽点是否兑现前置压力和准备。",
+    "定位万能身份、反派降智、无损胜利和重复打脸。"
+  ],
+  "output_schema": "schemas/story-review-record-v1.json",
+  "allowed_capabilities": ["generate_structured_text"]
+}

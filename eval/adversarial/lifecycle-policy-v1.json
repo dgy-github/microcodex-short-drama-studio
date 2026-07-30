@@ -1,0 +1,20 @@
+{
+  "schema": "adversarial-lifecycle-policy/v1",
+  "policy_id": "adversarial-lifecycle-v1",
+  "refresh": {
+    "cadence_days": 92,
+    "source": "production_failures",
+    "minimum_new_cases": 4,
+    "rights_required": true
+  },
+  "retirement": {
+    "immediate_reasons": [
+      "rights_revoked",
+      "holdout_leakage",
+      "defect_not_upheld",
+      "duplicate_lineage"
+    ],
+    "saturation_windows": 3,
+    "replacement_required": true
+  }
+}

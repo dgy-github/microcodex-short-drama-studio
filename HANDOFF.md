@@ -1,99 +1,99 @@
 # HANDOFF
-
 status: active
-date: 2026-07-27
+date: 2026-07-30
 agent: Codex
 branch: main
-sealed_commit: 1cdc5c2
-p1_evidence_commit: 4cbd809
-working_tree: clean after this handoff update
 origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ## 接手必读
 
-依次读 `docs/ROADMAP.md`、本文档、`docs/STORY_EVAL_V1.md`。开发前运行
-`python scripts/init_project.py --check`。数值以 manifest、rubric 和 judges 配置为准。
+依次读 `docs/ROADMAP.md`、本文件、`docs/SECURITY_REVIEW.md` 和
+`docs/STORY_EVAL_V1.md`。
 
-## 当前阶段
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e sidecar
+python scripts/init_project.py --check
+```
 
-P0 已封存。P1 工程清单完成，但稳定性退出条件失败；P2 选择“judge 不可靠”分支
-并返回 P1。P2.5/P3 暂不解锁。当前版本只写故事，不处理视频。
+全量验证四条缺一不可；桌面端自带独立 workspace：
 
-## 已完成
+```powershell
+cargo test --workspace --all-features
+cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
+python -m unittest discover -s sidecar -p "test_*.py"
+python -m unittest discover -s eval/tools -p "test_*.py"
+```
 
-- 30 个原创 case 已切分；10/10 dev 基线已生成归档。
-- P0 已完成：145 个文件封存于 `1cdc5c2`，提交前完成敏感信息和大文件审计。
-- Qwen 百炼与 GLM Ark 可用；窄 pair 已按同一输入指纹重跑完整12次调用。
-- P1 已完成指纹、status 门槛、双 specificity、重算 metrics 和 inter-model alpha。
-- 最新结果：Qwen cross/consistency `0.7143/0.925`，order flip；GLM
-  `0.1429/0.475`，order flip；alpha `0.3312`；严格 pair detection `0.0`。
-- 项目初始化、记忆、OpenAPI、CI 已落地。
-- 视频技术调研文档已标为 deferred，仅作未来参考，不构成当前开发任务。
-- P4 的**两项可预建项**已完成，其余 4 项**全部 gated，当前无一可推进**
-  （非 33% 进度）：
-  - 已完成：`story-storage` 全候选决策留存接口及完整性校验（保留 t06 losers
-    和分数）；`story-core::ArtifactSpanRef` 与 `story-policy::Defect.span`。
-  - gated：`D5` 等 provider inventory + 冻结的 eval；`D6` 等 runtime failure
-    taxonomy；`proxy_fidelity` 阻塞于 P3b 的首批留存候选；编剧招募为 external。
-- P5-P10 已写入 `docs/ROADMAP.md`，全部限定为故事创作产品路线。
-- P7 从 P3a 起并行启动编剧采购；专业评审不等待桌面端和修订 UI。
-- 用户自带 provider key；凭据静态加密前移到 P5，P9 保留轮换和审计。
-- P8 包含 challenge 季度刷新和对抗集退役规则。详细理由见 `docs/ROADMAP.md`。
-- P11-P16 post-1.0 登记册已写入 ROADMAP；P17-P18 刻意留空，避免虚假精度。
+当前产品只写故事，不下载视频、不提取素材、不自动发布。
 
-## 最近验证
+## 当前结论
 
-2026-07-27 全量通过：
+- P5-P10 工程实现已完成；P10 clean-Windows Exit 尚未满足。
+- 当前版本是 `0.1.0-alpha.1`、advisory/non-promotable，不是稳定版。
+- 用户允许人工盲测后置；draft pack、模型、prompt、graph、policy 和 skill
+  均不得宣称 promoted。
+- 最新 NSIS 已覆盖安装；桌面端重复启动保护包含 UI、前端函数和 Rust 启动锁。
 
-- `cargo fmt --all -- --check`
-- `cargo clippy --workspace --all-targets --all-features -- -D warnings`
-- `cargo test --workspace --all-features`：33 项 Rust 测试
-- sidecar 2 项、eval 55 项 Python 测试
-- 项目记忆、registry、OpenAPI、traceability、ownership、init 检查
-- `git diff --check`
+## 最新付费证据
 
-## 主线剩余
+- 2026-07-30 完成真实付费 6 集固定流程：
+  `run_6e1b11e1eb2747f89b544fa4f571448c`。
+- 结果：17/17 tasks、5/5 reviews、`run.completed`。
+- Token：154,628 / 180,000，余量 25,372；预算上限 ¥12.00。
+- 产物：
+  `artifacts/advisory-runs/run_6e1b11e1eb2747f89b544fa4f571448c/workflow-result.json`
+  （69,724 字节）。
+- t10 六个分集子 Agent 并行完成；t15 精简上下文后使用 9,244 Token，
+  未再触发 `token_budget_exceeded`。
+- 该次运行证明真实 DeepSeek 生成、百炼审查、17-task DAG、Schema 校验和
+  成功落盘可协同完成。
 
-计数口径：ROADMAP 中一个可独立验收动作算一项；P2 决策门不计；
-Stage 1 延期项不计。视频下载和素材提取不计入项目待办。
+## 本轮已修
 
-> 计数只用于导航：P1 按条件退出，P5-P10 是 epic，不能换算成工期或完成率。
+- 接入项目原创 human-writing profile：t07 人物声音、t10 潜台词与动作、
+  t12 人味审查、t15 证据化修订、t16 终审。
+- sidecar 接受并严格校验 `human_writing` 五个任务指令。
+- t15 没有场景 finding 时不重复输入/输出六集正文，由运行时保留 t10 scenes。
+- 失败运行写 `run-failure.json`；首个失败原因不被连带错误覆盖。
+- 失败码区分 `final_review_rejected`、`artifact_validation_failed`、
+  `capability_timeout` 与 `provider_or_task_failure`。
+- 故事运行中按钮显示“任务运行中 · 已防重复”；`accepted/running` 均不可再次启动。
+- 作品库按真实完成时间排序；最新故事置顶并显示“最新生成”、梗概、时间和短 run ID。
+- 新任务完成后自动进入作品库并选中对应故事，解决创作 run 与故事卡片脱节。
+- 完整故事阅读器改为卡通漫画风：动态角色头像卡、分镜面板、镜头旁白框、
+  左右角色对话气泡和潜台词标注。
+- 修复新故事打包时 speaker 全部指向 `ch-1`；现在按 t10 角色姓名映射角色引用。
 
-| 范围 | 剩余 |
-|---|---:|
-| P0 封存当前状态 | 0 |
-| P1 校准仪器 | 条件阻塞 |
-| P2.5 形态无关层 | 1 |
-| P3a 冻结评测集 | 4 |
-| P3b 首个端到端 runtime | 5 |
-| **首个端到端剧情产品前** | **16** |
-| P4 决策可观测与纠偏 | 4 |
-| P5-P10 | 30 |
-| **P0-P10 全部已知待办（首个可发布产品）** | **50** |
-| P11-P16 post-1.0 登记册 | 不计数 |
+## 已完成能力
 
-### P1-P3 的 16 项明细
+- Tauri 2.8 + Svelte 5；Windows Credential Manager；DeepSeek/百炼配置和健康检查。
+- Start/Sync/幂等 Cancel、SSE `Last-Event-ID`、预算与事件投影。
+- artifact 浏览、完整故事阅读器、双击详情、修订/审批/比较/回滚/导出。
+- 离线/在线评测、人工盲测入口、Codex 第三 judge。
+- MSI/NSIS、PyInstaller onedir sidecar、许可证清单和本地 bundle smoke。
 
-- P1：重算窄 pair metrics；结果输入指纹；status 门槛；处理 Qwen 位置偏置；
-  `inter_model_agreement`；清理旧结果并重跑双 judge 12 次。
-- P2.5：不可变 `content_form` job 契约。通用 span 已完成；修订对应移入 P6。
-- P3a：剩余 9 个基线评分；维度相关矩阵；人工 spot check；冻结版本。
-- P3b：sidecar 生命周期；异步事件/SSE；固定执行序；注册 agent lanes；
-  授权检索后跑通并评分一个 story package。
+## 尚未完成
+
+- 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
+- clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。
+- 推送并取得 `windows-release-smoke` clean runner 绿灯。
+- 付费 soak、Qwen 批次、专业编剧双人 review/adjudication、人工盲测。
+- P1 judge 稳定性仍失败；`seeded_defect_detection = 0.0`，目标 0.75。
+- GLM 智谱/火山路由的外部账户状态仍未重新验证。
+- P11-P16 尚未实现；详见 `docs/ROADMAP.md`。
 
 ## 下一步
 
-为 P1 增加一个非中文原生第三 judge，或完成内部人工 blind spot check。现有
-`.env` 只有 Qwen/GLM 凭据；获得新证据前不得进入 P2.5/P3。
+用下一次新生成故事验证 speaker 映射和漫画气泡；当前已生成包中的旧 speaker 引用
+无法可靠反推，不应伪造修复。随后记录角色混声、工具化对白和缺乏潜台词的具体 span。
 
 ## Do-Not
 
-- API key 只放 `.env`；聊天中出现过的百炼 key 应轮换。
-- Ark 用 `glm-5-2-260617`，不用裸名 `glm-5.2`。
-- 不复用缺少输入指纹的旧 judge result。
-- 不把 `measurable_gap` 当准入通过，不比较低稳定 judge 的单点 specificity。
-- P2.5 完成前不新增其他 content form 的 rubric/case/template。
-- 不复制 nanocodex 的阻塞调用或独立 SQLite owner。
-- 不让 Svelte/Python 直接执行 FFmpeg、访问 provider key 或可信存储。
-- 不把 Douyin 抓取、cookies、反爬或未授权素材纳入视频素材 MVP。
-- 当前版本不创建媒体 schema、`story-media` crate、FFmpeg 依赖或素材 UI。
+- 不使用聊天中出现过的 API key；只使用 Credential Manager 中轮换后的凭据。
+- 不让 Svelte/Python 持有 provider key、可信存储或不受限 shell。
+- 不绕过 `Last-Event-ID`、幂等键、durable event、审批或 revision 历史。
+- 不把断线当任务失败；失败先读 `run-failure.json` 的精确错误码。
+- 不恢复 PyInstaller onefile；不创建视频 schema、FFmpeg 依赖或素材 UI。
+- 不把 unsigned、未 clean-VM 验收的包描述为公开稳定发行。

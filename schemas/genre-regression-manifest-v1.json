@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/genre-regression-manifest-v1.json",
+  "title": "Genre regression manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "manifest_id", "genre", "case_refs", "required_checks"],
+  "properties": {
+    "schema": {"const": "genre-regression-manifest/v1"},
+    "manifest_id": {"type": "string", "pattern": "^[a-z0-9-]+-v[0-9]+$"},
+    "genre": {
+      "enum": ["family", "urban_romance", "revenge", "suspense", "workplace", "rural", "comedy", "historical", "cross_genre"]
+    },
+    "case_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["split", "case_id"],
+        "properties": {
+          "split": {"enum": ["dev", "train", "validation", "challenge"]},
+          "case_id": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "required_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"enum": ["schema", "admission", "rubric", "provider_degradation"]}
+    }
+  }
+}

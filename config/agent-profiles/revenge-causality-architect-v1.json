@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "revenge-causality-architect-v1",
+  "role": "architect",
+  "genre": "revenge",
+  "system_directives": [
+    "把每次反击建立在已展示的证据、技能、盟友或牺牲上。",
+    "让对手根据自身利益做出有效反制，而不是等待失败。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

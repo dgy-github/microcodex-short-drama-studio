@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "comedy-situational-v1",
+  "genre": "comedy",
+  "case_refs": [
+    {"split": "dev", "case_id": "comedy_002"},
+    {"split": "validation", "case_id": "comedy_003"},
+    {"split": "train", "case_id": "comedy_001"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

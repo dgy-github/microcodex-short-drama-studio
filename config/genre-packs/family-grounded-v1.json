@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "family-grounded-v1",
+  "display_name": "现实家庭关系",
+  "genre": "family",
+  "differentiation_axis": "具体关系压力下的可信选择",
+  "market_note": "面向低成本、人物驱动的家庭短剧创作。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 12,
+    "max_speaking_cast": 16,
+    "production_level": "mid_budget",
+    "audience": "25-45"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["无代价和解", "用绝症替代人物选择"],
+  "required_conditions": ["冲突必须来自具体关系债务", "结局必须由人物选择挣得"],
+  "agent_configuration": {
+    "architect_profile": "family-causality-architect-v1",
+    "reviewer_profiles": ["family-credibility-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "family-grounded-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

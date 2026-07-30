@@ -1,0 +1,65 @@
+feature: directed-revision
+requirements:
+  - id: REQ-120
+    interfaces: [API-117]
+    implementation: [BE-114]
+    tests: [TEST-137]
+  - id: REQ-121
+    interfaces: [API-117, API-118]
+    implementation: [BE-114, BE-115, FE-105]
+    tests: [TEST-137, TEST-140]
+  - id: REQ-122
+    interfaces: [API-117]
+    implementation: [BE-114]
+    tests: [TEST-138, TEST-141]
+  - id: REQ-123
+    interfaces: [API-117]
+    implementation: [BE-114]
+    tests: [TEST-137]
+  - id: REQ-124
+    interfaces: [API-118]
+    implementation: [BE-114, BE-115, FE-105]
+    tests: [TEST-139, TEST-140]
+  - id: REQ-125
+    interfaces: [API-117, API-118]
+    implementation: [BE-114, BE-115, FE-105]
+    tests: [TEST-139, TEST-140]
+  - id: REQ-126
+    interfaces: [API-118]
+    implementation: [BE-114, BE-115, FE-105]
+    tests: [TEST-139, TEST-140]
+interfaces:
+  - id: API-117
+    location: schemas/story-revision-record-v1.json
+    status: INTEGRATION_PASSED
+    purpose: retain one immutable package revision and its correspondence
+  - id: API-118
+    location: schemas/story-approval-event-v1.json
+    status: INTEGRATION_PASSED
+    purpose: retain one explicit approval or rejection without mutating revision
+implementation:
+  - id: BE-114
+    location: crates/story-storage/src/revisions.rs
+    owner: CAP-006
+  - id: BE-115
+    location: apps/desktop/src-tauri/src/revisions.rs
+    owner: CAP-008
+  - id: FE-105
+    location: apps/desktop/src/lib/RevisionWorkspace.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-137
+    location: crates/story-storage/src/revisions.rs
+    proves: targeted replacement validates and populates correspondence
+  - id: TEST-138
+    location: crates/story-storage/src/revisions.rs
+    proves: a third targeted round is rejected with input-required
+  - id: TEST-139
+    location: crates/story-storage/src/revisions.rs
+    proves: approval, rollback-by-new-revision, and approved export preserve history
+  - id: TEST-140
+    location: apps/desktop/package.json
+    proves: revision workflow type-checks and builds through desktop commands
+  - id: TEST-141
+    location: crates/story-policy/src/lib.rs
+    proves: D3 ranks cited repairs and D4 fails closed at round and budget guards

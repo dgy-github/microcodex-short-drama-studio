@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "rural-community-architect-v1",
+  "role": "architect",
+  "genre": "rural",
+  "system_directives": [
+    "把土地、劳作、迁移、亲族与熟人社会写成具体行动压力。",
+    "让地方生活细节改变人物选择，而不是只作背景装饰。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "suspense-information-architect-v1",
+  "role": "architect",
+  "genre": "suspense",
+  "system_directives": [
+    "每个揭示必须回收已建立的证据。",
+    "反转必须改变人物选择与后续压力，不能只改变解释。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

@@ -1,0 +1,56 @@
+feature: run-command-replay
+requirements:
+  - id: REQ-108
+    interfaces:
+      - API-105
+      - API-106
+    implementation:
+      - BE-105
+      - BE-106
+    tests:
+      - TEST-124
+      - TEST-125
+      - TEST-126
+      - TEST-127
+  - id: REQ-310
+    interfaces:
+      - API-106
+    implementation:
+      - BE-125
+    tests:
+      - TEST-313
+interfaces:
+  - id: API-105
+    location: schemas/start-run-command-v1.json
+    status: INTEGRATION_PASSED
+    purpose: accept one immutable story job under an idempotency key
+  - id: API-106
+    location: schemas/story-command-acceptance-v1.json
+    status: INTEGRATION_PASSED
+    purpose: return the stable acceptance identity and event stream URL
+implementation:
+  - id: BE-105
+    location: sidecar/campaign_adapter/server.py
+    owner: CAP-004
+  - id: BE-106
+    location: crates/story-runtime/src/sidecar.rs
+    owner: CAP-002
+  - id: BE-125
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    owner: CAP-008
+tests:
+  - id: TEST-124
+    location: sidecar/test_server.py
+    proves: duplicate identical StartRun appends no duplicate work
+  - id: TEST-125
+    location: sidecar/test_server.py
+    proves: an idempotency key cannot be reused for different input
+  - id: TEST-126
+    location: sidecar/test_server.py
+    proves: Last-Event-ID replays only later matching-run events
+  - id: TEST-127
+    location: crates/story-runtime/tests/sidecar_process_smoke.rs
+    proves: real Rust and Python processes preserve idempotency and SSE replay
+  - id: TEST-313
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    proves: duplicate desktop Start returns the active run and terminal replay releases the next Start

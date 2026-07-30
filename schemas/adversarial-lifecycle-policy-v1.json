@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/adversarial-lifecycle-policy-v1.json",
+  "title": "Adversarial lifecycle policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policy_id", "refresh", "retirement"],
+  "properties": {
+    "schema": {"const": "adversarial-lifecycle-policy/v1"},
+    "policy_id": {"type": "string", "pattern": "^[a-z0-9-]+-v[0-9]+$"},
+    "refresh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cadence_days", "source", "minimum_new_cases", "rights_required"],
+      "properties": {
+        "cadence_days": {"type": "integer", "minimum": 1},
+        "source": {"const": "production_failures"},
+        "minimum_new_cases": {"type": "integer", "minimum": 1},
+        "rights_required": {"const": true}
+      }
+    },
+    "retirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["immediate_reasons", "saturation_windows", "replacement_required"],
+      "properties": {
+        "immediate_reasons": {
+          "type": "array",
+          "items": {"enum": ["rights_revoked", "holdout_leakage", "defect_not_upheld", "duplicate_lineage"]},
+          "minItems": 1
+        },
+        "saturation_windows": {"type": "integer", "minimum": 2},
+        "replacement_required": {"const": true}
+      }
+    }
+  }
+}

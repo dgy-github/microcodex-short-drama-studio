@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/desktop-evaluation-catalog-v1.json",
+  "title": "Desktop Evaluation Catalog v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "datasets"],
+  "properties": {
+    "schema": {"const": "desktop-evaluation-catalog/v1"},
+    "datasets": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dataset_id", "kind", "label", "case_count", "eligible_count", "cases"],
+        "properties": {
+          "dataset_id": {"enum": ["offline-v0.1.0", "online-local"]},
+          "kind": {"enum": ["offline", "online"]},
+          "label": {"type": "string", "minLength": 1},
+          "case_count": {"type": "integer", "minimum": 0},
+          "eligible_count": {"type": "integer", "minimum": 0},
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["case_id", "label", "genre", "difficulty", "split", "eligible"],
+              "properties": {
+                "case_id": {"type": "string"},
+                "label": {"type": "string", "minLength": 1},
+                "genre": {"type": "string"},
+                "difficulty": {"type": ["string", "null"]},
+                "split": {"type": ["string", "null"]},
+                "eligible": {"type": "boolean"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

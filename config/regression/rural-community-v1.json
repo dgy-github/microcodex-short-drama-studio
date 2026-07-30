@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "rural-community-v1",
+  "genre": "rural",
+  "case_refs": [
+    {"split": "dev", "case_id": "rural_003"},
+    {"split": "validation", "case_id": "rural_001"},
+    {"split": "train", "case_id": "rural_002"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

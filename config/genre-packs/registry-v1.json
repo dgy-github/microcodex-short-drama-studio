@@ -1,0 +1,49 @@
+{
+  "schema": "genre-pack-registry/v1",
+  "human_writing_profile": "human-writing/short-drama-human-writing-v1.json",
+  "packs": [
+    "genre-packs/family-grounded-v1.json",
+    "genre-packs/suspense-closed-room-v1.json",
+    "genre-packs/urban-romance-grounded-v1.json",
+    "genre-packs/revenge-earned-turnaround-v1.json",
+    "genre-packs/workplace-credible-growth-v1.json",
+    "genre-packs/rural-community-v1.json",
+    "genre-packs/comedy-situational-v1.json",
+    "genre-packs/historical-causal-v1.json"
+  ],
+  "constraint_profiles": [
+    "constraint-profiles/short-vertical-v1.json",
+    "constraint-profiles/long-serial-v1.json"
+  ],
+  "agent_profiles": [
+    "agent-profiles/family-causality-architect-v1.json",
+    "agent-profiles/family-credibility-reviewer-v1.json",
+    "agent-profiles/suspense-information-architect-v1.json",
+    "agent-profiles/suspense-causality-reviewer-v1.json",
+    "agent-profiles/urban-romance-relationship-architect-v1.json",
+    "agent-profiles/urban-romance-credibility-reviewer-v1.json",
+    "agent-profiles/revenge-causality-architect-v1.json",
+    "agent-profiles/revenge-payoff-reviewer-v1.json",
+    "agent-profiles/workplace-power-architect-v1.json",
+    "agent-profiles/workplace-credibility-reviewer-v1.json",
+    "agent-profiles/rural-community-architect-v1.json",
+    "agent-profiles/rural-authenticity-reviewer-v1.json",
+    "agent-profiles/comedy-escalation-architect-v1.json",
+    "agent-profiles/comedy-payoff-reviewer-v1.json",
+    "agent-profiles/historical-power-architect-v1.json",
+    "agent-profiles/historical-continuity-reviewer-v1.json"
+  ],
+  "retrieval_collections": [
+    "retrieval/internal-story-craft-v1.json"
+  ],
+  "regression_manifests": [
+    "regression/family-grounded-v1.json",
+    "regression/suspense-closed-room-v1.json",
+    "regression/urban-romance-grounded-v1.json",
+    "regression/revenge-earned-turnaround-v1.json",
+    "regression/workplace-credible-growth-v1.json",
+    "regression/rural-community-v1.json",
+    "regression/comedy-situational-v1.json",
+    "regression/historical-causal-v1.json"
+  ]
+}

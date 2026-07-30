@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/promotion-decision-v1.json",
+  "title": "Promotion decision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "evaluation_id", "candidate_kind", "candidate_id",
+    "incumbent_id", "decision", "human_gate_satisfied", "metrics",
+    "reasons", "evidence_fingerprint"
+  ],
+  "properties": {
+    "schema": {"const": "promotion-decision/v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "candidate_kind": {
+      "enum": ["model", "prompt", "graph", "retriever", "skill", "genre_pack"]
+    },
+    "candidate_id": {"type": "string", "minLength": 1},
+    "incumbent_id": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["promote", "reject", "non_promotable"]},
+    "human_gate_satisfied": {"type": "boolean"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair_accuracy", "pair_preference_lcb", "professional_agreement",
+        "adjudications_required", "adjudications_complete"
+      ],
+      "properties": {
+        "pair_accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "pair_preference_lcb": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "professional_agreement": {"type": ["number", "null"]},
+        "adjudications_required": {"type": "integer", "minimum": 0},
+        "adjudications_complete": {"type": "integer", "minimum": 0}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "evidence_fingerprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/desktop-run-summary-v1.json",
+  "title": "Desktop advisory run summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "job_id",
+    "status",
+    "promotion",
+    "generation_model",
+    "review_model",
+    "task_count",
+    "review_count",
+    "episode_count"
+  ],
+  "properties": {
+    "schema": {"const": "desktop-run-summary/v1"},
+    "run_id": {"type": "string", "pattern": "^run_[a-z0-9]{16,64}$"},
+    "job_id": {"type": "string", "minLength": 1},
+    "status": {"const": "advisory"},
+    "promotion": {"const": "non-promotable"},
+    "generation_model": {"type": "string", "minLength": 1},
+    "review_model": {"type": "string", "minLength": 1},
+    "task_count": {"type": "integer", "minimum": 0},
+    "review_count": {"type": "integer", "minimum": 0},
+    "episode_count": {"type": "integer", "minimum": 0}
+  }
+}
+

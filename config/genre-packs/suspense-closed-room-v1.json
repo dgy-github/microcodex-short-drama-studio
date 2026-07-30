@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "suspense-closed-room-v1",
+  "display_name": "低成本封闭空间悬疑",
+  "genre": "suspense",
+  "differentiation_axis": "有限场景中的因果压力与信息控制",
+  "market_note": "为低场景数的悬疑短剧提供可制作约束。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 8,
+    "max_speaking_cast": 10,
+    "production_level": "low_budget",
+    "audience": "18-40"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["无铺垫梦境反转", "超自然兜底", "侦探凭空得知真相"],
+  "required_conditions": ["关键揭示必须回收前置证据", "每次反转必须改变人物选择"],
+  "agent_configuration": {
+    "architect_profile": "suspense-information-architect-v1",
+    "reviewer_profiles": ["suspense-causality-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "suspense-closed-room-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

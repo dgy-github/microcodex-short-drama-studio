@@ -1,0 +1,43 @@
+feature: live-provider-soak
+requirements:
+  - id: REQ-159
+    interfaces: [API-146, API-147]
+    implementation: [BE-120, BE-121, FE-108]
+    tests: [TEST-171, TEST-173]
+  - id: REQ-160
+    interfaces: [API-146, API-147]
+    implementation: [BE-120, BE-121]
+    tests: [TEST-171, TEST-172]
+  - id: REQ-161
+    interfaces: [API-146]
+    implementation: [BE-120]
+    tests: [TEST-171, TEST-172]
+interfaces:
+  - id: API-146
+    location: schemas/provider-soak-result-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: retain one bounded, secret-free live-provider soak result
+  - id: API-147
+    location: apps/desktop/src-tauri/src/commands.rs
+    status: FRONTEND_CONNECTED
+    purpose: trigger the soak through typed Tauri IPC
+implementation:
+  - id: BE-120
+    location: apps/desktop/src-tauri/src/provider_soak.rs
+    owner: CAP-003
+  - id: BE-121
+    location: apps/desktop/src-tauri/src/commands.rs
+    owner: CAP-008
+  - id: FE-108
+    location: apps/desktop/src/lib/CredentialPanel.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-171
+    location: apps/desktop/src-tauri/src/provider_soak.rs
+    proves: bounded observations aggregate without secret or endpoint material
+  - id: TEST-172
+    location: apps/desktop/src-tauri/src/provider_soak.rs
+    proves: evidence is immutable, schema-valid, and partial-free
+  - id: TEST-173
+    location: apps/desktop/package.json
+    proves: the paid action, warning, busy state and result projection build

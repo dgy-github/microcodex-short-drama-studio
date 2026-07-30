@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-sidecar-ready-v1.json",
+  "title": "Story Sidecar Ready v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "status", "host", "port"],
+  "properties": {
+    "protocol": {"const": "story-sidecar-control/v1"},
+    "status": {"const": "ready"},
+    "host": {"const": "127.0.0.1"},
+    "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+  }
+}

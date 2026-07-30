@@ -1,0 +1,107 @@
+feature: desktop-story-console
+requirements:
+  - id: REQ-115
+    interfaces: [API-111]
+    implementation: [FE-101, BE-110]
+    tests: [TEST-130, TEST-133]
+  - id: REQ-116
+    interfaces: [API-112]
+    implementation: [FE-102, BE-111]
+    tests: [TEST-131, TEST-133]
+  - id: REQ-117
+    interfaces: [API-113, API-114]
+    implementation: [FE-103, BE-112]
+    tests: [TEST-132, TEST-133]
+  - id: REQ-118
+    interfaces: [API-115, API-116]
+    implementation: [FE-104, BE-113]
+    tests: [TEST-134, TEST-135, TEST-136, TEST-137]
+  - id: REQ-119
+    interfaces: [API-116]
+    implementation: [FE-104, BE-113]
+    tests: [TEST-134, TEST-135]
+  - id: REQ-311
+    interfaces: [API-111]
+    implementation: [FE-111]
+    tests: [TEST-314]
+interfaces:
+  - id: API-111
+    location: schemas/story-job-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: validate the immutable desktop story-project draft
+  - id: API-112
+    location: schemas/desktop-credential-status-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: expose credential presence without secret bytes
+  - id: API-113
+    location: schemas/desktop-run-summary-v1.json
+    status: INTEGRATION_PASSED
+    purpose: list completed advisory runs
+  - id: API-114
+    location: schemas/story-workflow-result-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: inspect one immutable advisory workflow result
+  - id: API-115
+    location: schemas/desktop-run-snapshot-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: project incremental run, review, approval, error, and budget state
+  - id: API-116
+    location: contracts/openapi.yaml
+    status: INTEGRATION_PASSED
+    purpose: start, replay, fetch, and cancel one authenticated sidecar run
+implementation:
+  - id: FE-101
+    location: apps/desktop/src/lib/StoryJobForm.svelte
+    owner: CAP-008
+  - id: FE-102
+    location: apps/desktop/src/lib/CredentialPanel.svelte
+    owner: CAP-008
+  - id: FE-103
+    location: apps/desktop/src/lib/ArtifactBrowser.svelte
+    owner: CAP-008
+  - id: BE-110
+    location: apps/desktop/src-tauri/src/commands.rs
+    owner: CAP-008
+  - id: BE-111
+    location: apps/desktop/src-tauri/src/credentials.rs
+    owner: CAP-003
+  - id: BE-112
+    location: apps/desktop/src-tauri/src/artifacts.rs
+    owner: CAP-008
+  - id: FE-104
+    location: apps/desktop/src/lib/RunConsole.svelte
+    owner: CAP-008
+  - id: FE-111
+    location: apps/desktop/src/lib/StoryJobForm.svelte
+    owner: CAP-008
+  - id: BE-113
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    owner: CAP-002
+tests:
+  - id: TEST-130
+    location: apps/desktop/src-tauri/src/commands.rs
+    proves: desktop job validation reuses story-core
+  - id: TEST-131
+    location: apps/desktop/src-tauri/src/credentials.rs
+    proves: credential responses never include secret bytes
+  - id: TEST-132
+    location: apps/desktop/src-tauri/src/artifacts.rs
+    proves: artifact reads reject unsafe IDs and invalid results
+  - id: TEST-133
+    location: apps/desktop/package.json
+    proves: the Svelte production bundle type-checks and builds
+  - id: TEST-134
+    location: sidecar/test_server.py
+    proves: cancellation is idempotent and appends one durable terminal event
+  - id: TEST-135
+    location: crates/story-runtime/tests/sidecar_process_smoke.rs
+    proves: Rust can invoke the authenticated cancellation operation
+  - id: TEST-136
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    proves: duplicate event sequences do not inflate desktop projections
+  - id: TEST-137
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    proves: real sidecar process completes the deterministic 17-task desktop path and persists its reviewed advisory artifact
+  - id: TEST-314
+    location: apps/desktop/package.json
+    proves: the token recommendation and default type-check and build in the production Svelte bundle

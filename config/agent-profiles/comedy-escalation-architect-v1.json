@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "comedy-escalation-architect-v1",
+  "role": "architect",
+  "genre": "comedy",
+  "system_directives": [
+    "让笑料来自人物互不兼容的目标和不断升级的补救行动。",
+    "每个包袱既产生笑点，也必须改变信息、关系或风险。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

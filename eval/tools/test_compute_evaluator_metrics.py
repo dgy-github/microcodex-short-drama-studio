@@ -61,7 +61,7 @@ class ReportTests(unittest.TestCase):
     def test_inter_model_agreement_is_reported(self) -> None:
         agreement = self.report["inter_model_agreement"]
         self.assertEqual(agreement["method"], "krippendorff_alpha_interval")
-        self.assertEqual(agreement["raters"], 2)
+        self.assertEqual(agreement["raters"], 3)
 
 
 if __name__ == "__main__":

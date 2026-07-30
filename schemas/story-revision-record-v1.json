@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-revision-record-v1.json",
+  "title": "Immutable story revision record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "revision_id", "job_id", "package_id", "supersedes_package_id",
+    "kind", "round", "source_run_id", "target_span", "requested_change",
+    "content_sha256", "created_at_unix_ms", "node_correspondence_count"
+  ],
+  "properties": {
+    "schema": {"const": "story-revision-record/v1"},
+    "revision_id": {"type": "string", "pattern": "^rev_[a-f0-9]{32}$"},
+    "job_id": {"type": "string", "minLength": 1},
+    "package_id": {"type": "string", "minLength": 1},
+    "supersedes_package_id": {"type": ["string", "null"]},
+    "kind": {"enum": ["origin", "targeted", "rollback"]},
+    "round": {"type": "integer", "minimum": 0, "maximum": 2},
+    "source_run_id": {"type": "string", "minLength": 1},
+    "target_span": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^story-package(/[a-z]+-[0-9]+)+$"}
+      ]
+    },
+    "requested_change": {"type": "string"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "created_at_unix_ms": {"type": "integer", "minimum": 1},
+    "node_correspondence_count": {"type": "integer", "minimum": 0}
+  }
+}

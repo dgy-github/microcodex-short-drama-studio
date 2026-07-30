@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "workplace-credible-growth-v1",
+  "genre": "workplace",
+  "case_refs": [
+    {"split": "dev", "case_id": "workplace_003"},
+    {"split": "validation", "case_id": "workplace_001"},
+    {"split": "train", "case_id": "workplace_002"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

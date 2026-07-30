@@ -42,8 +42,7 @@ state snapshots. A returned acceptance is not task completion.
 ## Pinned orchestration source
 
 - Repository: <https://github.com/dgy-github/campaign-muti-agent>
-- Reviewed commit: `6f7d0030b127c699ec5b6324b77795ed3a2452e0`
+- Reviewed commit: `1d935714449d18cad5bdc6711a498297ed73a5fb`
 - Python import package: `campaign`
 
 The dependency must remain pinned until a deliberate review updates the commit.
-

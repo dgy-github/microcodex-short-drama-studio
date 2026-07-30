@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "historical-causal-v1",
+  "display_name": "历史传奇",
+  "genre": "historical",
+  "differentiation_axis": "制度与身份限制下的因果选择",
+  "market_note": "为可控制作规模的架空或历史背景短剧提供约束。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 16,
+    "max_speaking_cast": 18,
+    "production_level": "high_budget",
+    "audience": "18-45"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["现代观念无阻力平移", "用身份揭晓替代人物成长"],
+  "required_conditions": ["关键选择必须受时代制度限制", "权力变化必须有前置因果"],
+  "agent_configuration": {
+    "architect_profile": "historical-power-architect-v1",
+    "reviewer_profiles": ["historical-continuity-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "historical-causal-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "revenge-earned-turnaround-v1",
+  "display_name": "复仇逆袭",
+  "genre": "revenge",
+  "differentiation_axis": "证据、能力与代价共同支撑的逆袭",
+  "market_note": "保留高密度爽点，同时避免无成本碾压。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 14,
+    "max_speaking_cast": 16,
+    "production_level": "mid_budget",
+    "audience": "18-45"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["突然获得万能权力", "反派只靠降智失败"],
+  "required_conditions": ["每次反击必须有前置准备", "胜利必须暴露主角代价"],
+  "agent_configuration": {
+    "architect_profile": "revenge-causality-architect-v1",
+    "reviewer_profiles": ["revenge-payoff-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "revenge-earned-turnaround-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

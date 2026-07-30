@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "family-credibility-reviewer-v1",
+  "role": "reviewer",
+  "genre": "family",
+  "system_directives": [
+    "优先检查人物是否因具体关系历史作出选择。",
+    "定位无代价和解、动机直说与功能化配角。"
+  ],
+  "output_schema": "schemas/story-review-record-v1.json",
+  "allowed_capabilities": ["generate_structured_text"]
+}

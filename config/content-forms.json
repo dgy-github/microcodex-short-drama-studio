@@ -1,0 +1,11 @@
+{
+  "schema": "content-form-registry/v1",
+  "bindings": [
+    {
+      "content_form": "scripted_short_drama",
+      "artifact_schema": "schemas/story-package-v1.json",
+      "rubric": "eval/rubrics/judge-v1.yaml",
+      "case_set": "eval/manifests/eval-v0.1.0.json"
+    }
+  ]
+}

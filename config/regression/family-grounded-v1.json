@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "family-grounded-v1",
+  "genre": "family",
+  "case_refs": [
+    {"split": "dev", "case_id": "family_001"},
+    {"split": "validation", "case_id": "family_002"},
+    {"split": "challenge", "case_id": "family_005"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

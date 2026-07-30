@@ -4,7 +4,7 @@
 
 The story-generation subsystem uses:
 
-- Campaign at pinned commit `6f7d0030b127c699ec5b6324b77795ed3a2452e0`
+- Campaign at pinned commit `1d935714449d18cad5bdc6711a498297ed73a5fb`
   for command, DAG execution, routing, governance, events, review, and recovery;
 - the Rust/Tauri application for trusted storage, provider calls, rights checks,
   accounting, and user interaction;
@@ -44,6 +44,7 @@ The customer-facing schema is product-owned and independent of Campaign:
 {
   "schema": "story-job/v1",
   "job_id": "job_...",
+  "content_form": "scripted_short_drama",
   "input": "一句或一段故事种子",
   "genre_mode": "auto",
   "allowed_genres": ["family", "suspense"],

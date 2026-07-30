@@ -1,0 +1,40 @@
+feature: human-writing-skill-pack
+requirements:
+  - id: REQ-312
+    interfaces: [API-149]
+    implementation: [BE-126]
+    tests: [TEST-315, TEST-317]
+  - id: REQ-313
+    interfaces: [API-149]
+    implementation: [BE-126, BE-127]
+    tests: [TEST-315, TEST-316, TEST-317]
+  - id: REQ-314
+    interfaces: [API-150]
+    implementation: [BE-127]
+    tests: [TEST-316]
+interfaces:
+  - id: API-149
+    location: schemas/human-writing-profile-v1.json
+    status: REVIEWED
+    purpose: define project-owned task-scoped human-writing directives
+  - id: API-150
+    location: schemas/story-review-record-v1.json
+    status: INTEGRATION_PASSED
+    purpose: retain cited human-taste and final-review findings
+implementation:
+  - id: BE-126
+    location: crates/story-runtime/src/genre_packs.rs
+    owner: CAP-002
+  - id: BE-127
+    location: sidecar/campaign_adapter/workflow.py
+    owner: CAP-004
+tests:
+  - id: TEST-315
+    location: crates/story-runtime/src/genre_packs.rs
+    proves: every resolved pack carries the validated project-owned profile
+  - id: TEST-316
+    location: sidecar/test_workflow.py
+    proves: the five intended tasks receive directives without adding tasks
+  - id: TEST-317
+    location: sidecar/test_server.py
+    proves: the sidecar boundary accepts a complete profile and rejects a missing required task directive

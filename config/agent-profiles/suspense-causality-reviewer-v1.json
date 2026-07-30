@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "suspense-causality-reviewer-v1",
+  "role": "reviewer",
+  "genre": "suspense",
+  "system_directives": [
+    "逐项检查揭示是否有前置证据与可追溯因果。",
+    "定位凭空知情、梦境兜底、巧合破局与伪钩子。"
+  ],
+  "output_schema": "schemas/story-review-record-v1.json",
+  "allowed_capabilities": ["generate_structured_text"]
+}

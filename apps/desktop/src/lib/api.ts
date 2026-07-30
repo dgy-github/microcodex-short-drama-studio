@@ -1,0 +1,159 @@
+import { invoke } from "@tauri-apps/api/core";
+import type {
+  CredentialStatus,
+  CredentialAuditEvent,
+  BlindAssignment,
+  EvaluationBatchResult,
+  EvaluationCatalog,
+  EvaluationScoreRecord,
+  HumanDimensionInput,
+  GenrePackOption,
+  ProviderHealth,
+  ProviderRouteSettings,
+  ProviderSoakResult,
+  ExportReceipt,
+  RevisionComparison,
+  RevisionSummary,
+  RevisionWorkspace,
+  RunSummary,
+  RunSnapshot,
+  StoryJob,
+  StoryJobPreview,
+  WorkflowResult,
+} from "./types";
+
+export const desktopApi = {
+  listGenrePacks: () => invoke<GenrePackOption[]>("list_genre_packs"),
+  validateStoryJob: (job: StoryJob) =>
+    invoke<StoryJobPreview>("validate_story_job", { job }),
+  credentialStatus: (provider: CredentialStatus["provider"]) =>
+    invoke<CredentialStatus>("credential_status", {
+      provider,
+      profile: "default",
+    }),
+  storeCredential: (
+    provider: CredentialStatus["provider"],
+    secret: string,
+  ) =>
+    invoke<CredentialStatus>("store_provider_credential", {
+      provider,
+      profile: "default",
+      secret,
+    }),
+  deleteCredential: (provider: CredentialStatus["provider"]) =>
+    invoke<CredentialStatus>("delete_provider_credential", {
+      provider,
+      profile: "default",
+    }),
+  credentialAudit: () => invoke<CredentialAuditEvent[]>("credential_audit"),
+  providerRoute: (provider: CredentialStatus["provider"]) =>
+    invoke<ProviderRouteSettings>("provider_route", { provider }),
+  saveProviderRoute: (
+    provider: CredentialStatus["provider"],
+    endpoint: string,
+    model: string,
+  ) =>
+    invoke<ProviderRouteSettings>("save_provider_route", {
+      provider,
+      endpoint,
+      model,
+    }),
+  checkProviderHealth: (provider: CredentialStatus["provider"]) =>
+    invoke<ProviderHealth>("check_provider_health", { provider }),
+  runProviderSoak: (iterations: number) =>
+    invoke<ProviderSoakResult>("run_provider_soak", { iterations }),
+  listRuns: () => invoke<RunSummary[]>("list_story_runs"),
+  readRun: (runId: string) =>
+    invoke<WorkflowResult>("read_story_run", { runId }),
+  startRun: (job: StoryJob) =>
+    invoke<RunSnapshot>("start_story_run", { job }),
+  syncRun: () => invoke<RunSnapshot>("sync_story_run"),
+  cancelRun: () => invoke<RunSnapshot>("cancel_story_run"),
+  openRevisionWorkspace: (runId: string) =>
+    invoke<RevisionWorkspace>("open_revision_workspace", { runId }),
+  readRevisionSpan: (revisionId: string, span: string) =>
+    invoke<unknown>("read_revision_span", { revisionId, span }),
+  createRevision: (
+    baseRevisionId: string,
+    span: string,
+    replacement: unknown,
+    requestedChange: string,
+  ) =>
+    invoke<RevisionSummary>("create_story_revision", {
+      baseRevisionId,
+      span,
+      replacement,
+      requestedChange,
+    }),
+  approveRevision: (
+    revisionId: string,
+    decision: "approved" | "rejected",
+    actor: string,
+    note: string,
+  ) =>
+    invoke<RevisionSummary>("approve_story_revision", {
+      revisionId,
+      decision,
+      actor,
+      note,
+    }),
+  compareRevisions: (fromRevisionId: string, toRevisionId: string) =>
+    invoke<RevisionComparison>("compare_story_revisions", {
+      fromRevisionId,
+      toRevisionId,
+    }),
+  rollbackRevision: (
+    currentRevisionId: string,
+    targetRevisionId: string,
+    requestedChange: string,
+  ) =>
+    invoke<RevisionSummary>("rollback_story_revision", {
+      currentRevisionId,
+      targetRevisionId,
+      requestedChange,
+    }),
+  exportRevision: (revisionId: string, targetPath: string) =>
+    invoke<ExportReceipt>("export_story_revision", {
+      revisionId,
+      targetPath,
+    }),
+  evaluationCatalog: () =>
+    invoke<EvaluationCatalog>("evaluation_catalog"),
+  runAutomaticEvaluation: (
+    datasetId: EvaluationCatalog["datasets"][number]["dataset_id"],
+    caseIds: string[],
+  ) =>
+    invoke<EvaluationBatchResult>("run_automatic_evaluation", {
+      datasetId,
+      caseIds,
+    }),
+  createBlindAssignments: (
+    datasetId: EvaluationCatalog["datasets"][number]["dataset_id"],
+    caseIds: string[],
+    raterId: string,
+  ) =>
+    invoke<BlindAssignment[]>("create_blind_assignments", {
+      datasetId,
+      caseIds,
+      raterId,
+    }),
+  submitBlindReview: (
+    assignmentId: string,
+    raterId: string,
+    dimensions: HumanDimensionInput[],
+  ) =>
+    invoke<EvaluationScoreRecord>("submit_blind_review", {
+      assignmentId,
+      raterId,
+      dimensions,
+    }),
+};
+
+export function errorMessage(error: unknown): string {
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const value = error as { message?: unknown };
+    if (typeof value.message === "string") return value.message;
+  }
+  return "操作失败，请检查本地配置后重试。";
+}

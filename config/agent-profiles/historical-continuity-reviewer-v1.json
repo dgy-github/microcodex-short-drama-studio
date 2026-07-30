@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "historical-continuity-reviewer-v1",
+  "role": "reviewer",
+  "genre": "historical",
+  "system_directives": [
+    "检查身份权限、制度约束、时间线和伏笔回收的一致性。",
+    "定位现代观念无阻力平移、万能身份与凭空掌权。"
+  ],
+  "output_schema": "schemas/story-review-record-v1.json",
+  "allowed_capabilities": ["generate_structured_text"]
+}

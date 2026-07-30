@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "urban-romance-grounded-v1",
+  "genre": "urban_romance",
+  "case_refs": [
+    {"split": "dev", "case_id": "urban_romance_002"},
+    {"split": "validation", "case_id": "urban_romance_001"},
+    {"split": "train", "case_id": "urban_romance_003"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

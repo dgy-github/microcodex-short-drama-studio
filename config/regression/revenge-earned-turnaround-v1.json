@@ -1,0 +1,11 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "revenge-earned-turnaround-v1",
+  "genre": "revenge",
+  "case_refs": [
+    {"split": "dev", "case_id": "revenge_001"},
+    {"split": "dev", "case_id": "revenge_002"},
+    {"split": "dev", "case_id": "revenge_004"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

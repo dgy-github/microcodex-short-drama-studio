@@ -1,0 +1,30 @@
+feature: provider-credential-storage
+requirements:
+  - id: REQ-105
+    interfaces:
+      - API-102
+    implementation:
+      - BE-102
+    tests:
+      - TEST-111
+      - TEST-112
+      - TEST-113
+interfaces:
+  - id: API-102
+    location: crates/story-provider/src/lib.rs
+    status: REVIEWED
+    purpose: keep provider secrets behind the Rust trusted boundary
+implementation:
+  - id: BE-102
+    location: crates/story-provider/src/lib.rs
+    owner: CAP-003
+tests:
+  - id: TEST-111
+    location: crates/story-provider/src/lib.rs
+    proves: credential identities reject empty and unsafe components
+  - id: TEST-112
+    location: crates/story-provider/src/lib.rs
+    proves: secret debug output is redacted and exposure is explicit
+  - id: TEST-113
+    location: crates/story-provider/tests/windows_keyring_smoke.rs
+    proves: real Windows Credential Manager write/read/replace/delete works

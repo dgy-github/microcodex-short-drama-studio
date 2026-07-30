@@ -88,13 +88,28 @@ impl<'de> Deserialize<'de> for ArtifactSpanRef {
     }
 }
 
+/// Structural family for one project.
+///
+/// A different content form starts a different project. The initial release
+/// deliberately exposes no mutation path and supports scripted drama only.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContentForm {
+    ScriptedShortDrama,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StoryJob {
     pub schema: String,
     pub job_id: String,
+    content_form: ContentForm,
     pub input: String,
     pub genre_mode: GenreMode,
     pub allowed_genres: Vec<String>,
+    #[serde(default)]
+    pub genre_pack_id: Option<String>,
+    #[serde(default)]
+    pub constraint_profile_id: Option<String>,
     pub audience: String,
     pub format: StoryFormat,
     pub content_limits: Vec<String>,
@@ -112,6 +127,10 @@ pub enum ValidationError {
 }
 
 impl StoryJob {
+    pub fn content_form(&self) -> ContentForm {
+        self.content_form
+    }
+
     pub fn validate(&self) -> Result<(), ValidationError> {
         if self.schema != "story-job/v1" {
             return Err(ValidationError::Schema);
@@ -134,9 +153,12 @@ mod tests {
         StoryJob {
             schema: "story-job/v1".into(),
             job_id: "job_1".into(),
+            content_form: ContentForm::ScriptedShortDrama,
             input: "两名维修工必须在商场开门前修好同一部故障电梯。".into(),
             genre_mode: GenreMode::Auto,
             allowed_genres: vec!["family".into()],
+            genre_pack_id: None,
+            constraint_profile_id: None,
             audience: "25-45".into(),
             format: StoryFormat {
                 episodes: 8,
@@ -161,6 +183,27 @@ mod tests {
         let mut value = job();
         value.input = " ".into();
         assert_eq!(value.validate(), Err(ValidationError::Blank));
+    }
+
+    #[test]
+    fn content_form_round_trips_and_is_read_only() {
+        let value = job();
+        let encoded = serde_json::to_value(&value).unwrap();
+        assert_eq!(encoded["content_form"], "scripted_short_drama");
+
+        let decoded: StoryJob = serde_json::from_value(encoded).unwrap();
+        assert_eq!(decoded.content_form(), ContentForm::ScriptedShortDrama);
+    }
+
+    #[test]
+    fn missing_or_unknown_content_form_is_rejected() {
+        let mut missing = serde_json::to_value(job()).unwrap();
+        missing.as_object_mut().unwrap().remove("content_form");
+        assert!(serde_json::from_value::<StoryJob>(missing).is_err());
+
+        let mut unknown = serde_json::to_value(job()).unwrap();
+        unknown["content_form"] = serde_json::json!("knowledge_explainer");
+        assert!(serde_json::from_value::<StoryJob>(unknown).is_err());
     }
 
     #[test]

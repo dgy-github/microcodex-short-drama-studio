@@ -1,0 +1,17 @@
+{
+  "schema": "distribution-license-policy/v1",
+  "dependencies": [
+    {
+      "ecosystem": "python",
+      "name": "campaign-muti-agent",
+      "source": "https://github.com/dgy-github/campaign-muti-agent.git",
+      "revision": "1d935714449d18cad5bdc6711a498297ed73a5fb",
+      "license": "MIT",
+      "evidence_path": "third_party/licenses/campaign-muti-agent/LICENSE",
+      "evidence_sha256": "900a2ab1ef244bad6a9e3ebc4d697a8a238d6cc7359e34097825dbfc5501544f",
+      "approved_for_distribution": true,
+      "reviewed_by": "Codex (owner-authorized MIT decision)",
+      "reviewed_at": "2026-07-29T03:51:50Z"
+    }
+  ]
+}

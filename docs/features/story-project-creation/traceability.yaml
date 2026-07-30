@@ -1,0 +1,26 @@
+feature: story-project-creation
+requirements:
+  - id: REQ-104
+    interfaces:
+      - API-101
+    implementation:
+      - BE-101
+    tests:
+      - TEST-109
+      - TEST-110
+interfaces:
+  - id: API-101
+    location: schemas/story-job-v1.json
+    status: REVIEWED
+    purpose: require the immutable content form on project-creation jobs
+implementation:
+  - id: BE-101
+    location: crates/story-core/src/lib.rs
+    owner: CAP-001
+tests:
+  - id: TEST-109
+    location: crates/story-core/src/lib.rs
+    proves: accepted content form round-trips and is exposed read-only
+  - id: TEST-110
+    location: crates/story-core/src/lib.rs
+    proves: missing and unknown content forms are rejected

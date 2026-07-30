@@ -1,0 +1,13 @@
+{
+  "schema": "story-constraint-profile/v1",
+  "profile_id": "short-vertical-v1",
+  "content_form": "scripted_short_drama",
+  "episode_count_variant": "short",
+  "episodes_range": [6, 12],
+  "minutes_per_episode_range": [1, 3],
+  "production": {
+    "max_locations": 6,
+    "max_speaking_cast": 8,
+    "level": "low_budget"
+  }
+}

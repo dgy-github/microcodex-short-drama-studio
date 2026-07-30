@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "rural-community-v1",
+  "display_name": "乡村现实",
+  "genre": "rural",
+  "differentiation_axis": "熟人社会、土地与代际关系中的具体压力",
+  "market_note": "以可核验的生活细节承载乡村人物故事。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 14,
+    "max_speaking_cast": 18,
+    "production_level": "mid_budget",
+    "audience": "25-55"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["把乡村人物写成猎奇符号", "用政策口号代替人物行动"],
+  "required_conditions": ["冲突必须落在具体资源与关系上", "生活细节必须服务人物选择"],
+  "agent_configuration": {
+    "architect_profile": "rural-community-architect-v1",
+    "reviewer_profiles": ["rural-authenticity-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "rural-community-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

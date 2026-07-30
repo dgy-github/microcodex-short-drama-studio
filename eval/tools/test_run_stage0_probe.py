@@ -1,6 +1,7 @@
 import json
 import http.client
 import re
+import subprocess
 import unittest
 import urllib.error
 from io import BytesIO
@@ -8,18 +9,22 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from run_stage0_probe import (
+    CODEX_JUDGES,
     JUDGES,
     PAIR_DIR,
     build_probe_summary,
     build_system,
     consistency_metrics,
     input_fingerprint,
+    judge_config_fingerprint,
     krippendorff_alpha_interval,
     load,
+    load_probe_config,
     load_rubric,
     median_scores,
     normalize_owned_field_spans,
     resolve_route,
+    request_codex,
     saved_result_is_reusable,
     self_consistency,
     specificity_metrics,
@@ -59,6 +64,12 @@ class JudgeConfigTests(unittest.TestCase):
     def test_at_least_two_judge_families(self) -> None:
         families = {j["family"] for j in self.config["judges"]}
         self.assertGreaterEqual(len(families), 2)
+
+    def test_supplemental_codex_is_a_third_disjoint_family(self) -> None:
+        config = load_probe_config()
+        families = {judge["family"] for judge in config["judges"]}
+        self.assertEqual(families, {"qwen", "zhipu", "openai"})
+        self.assertNotIn(config["generator"]["family"], families)
 
     def test_no_secret_material_in_tracked_config(self) -> None:
         """eval/judges.json is tracked; it must name env vars, never hold values."""
@@ -340,6 +351,84 @@ class RouteTests(unittest.TestCase):
             ],
         }
         self.assertEqual(resolve_route(judge)["provider"], "ready")
+
+    def test_local_codex_route_does_not_require_an_api_key(self) -> None:
+        judge = load(CODEX_JUDGES)["judges"][0]
+        route = resolve_route(judge)
+        self.assertEqual(route["provider"], "local_codex_exec")
+        self.assertNotIn("api_key_env", route)
+
+    @patch("run_stage0_probe.subprocess.run")
+    def test_codex_exec_is_isolated_read_only_and_structured(
+        self, run: MagicMock
+    ) -> None:
+        observed: dict = {}
+
+        def complete(command: list[str], **kwargs: object) -> subprocess.CompletedProcess:
+            observed["command"] = command
+            observed.update(kwargs)
+            output = Path(
+                command[command.index("--output-last-message") + 1]
+            )
+            output.write_text(
+                '{"A":{},"B":{},"preferred":"tie"}',
+                encoding="utf-8",
+            )
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout='{"type":"turn.completed","usage":{"input_tokens":1}}\n',
+                stderr="",
+            )
+
+        run.side_effect = complete
+        result = request_codex(
+            {
+                "provider": "local_codex_exec",
+                "command_path": "codex.exe",
+                "output_schema": "schemas/stage0-judge-output-v1.json",
+                "request_timeout_seconds": 30,
+            },
+            "gpt-test",
+            "system",
+            load(PAIR_DIR / "baseline.story-package.json"),
+            load(PAIR_DIR / "negative.story-package.json"),
+            None,
+        )
+        command = observed["command"]
+        self.assertIn("--ephemeral", command)
+        self.assertEqual(command[command.index("--sandbox") + 1], "read-only")
+        self.assertEqual(command[command.index("--model") + 1], "gpt-test")
+        self.assertIn("--output-schema", command)
+        self.assertFalse(observed["shell"])
+        self.assertFalse(Path(observed["cwd"]).is_relative_to(Path.cwd()))
+        self.assertEqual(result["_provider_usage"], {"input_tokens": 1})
+
+    def test_codex_saved_result_requires_exact_config_fingerprint(self) -> None:
+        judge = load(CODEX_JUDGES)["judges"][0]
+        fingerprint = judge_config_fingerprint(judge)
+        saved = {
+            "summary": {
+                "judge_model": judge["model"],
+                "route_provider": "local_codex_exec",
+                "samples_per_artifact": 1,
+                "input_fingerprint": "sha256:input",
+                "judge_config_fingerprint": fingerprint,
+            },
+            "forward": [{}],
+            "reverse": [{}],
+        }
+        route = {"provider": "local_codex_exec"}
+        self.assertTrue(
+            saved_result_is_reusable(
+                saved, judge, route, 1, "sha256:input", fingerprint
+            )
+        )
+        self.assertFalse(
+            saved_result_is_reusable(
+                saved, judge, route, 1, "sha256:input", "sha256:changed"
+            )
+        )
 
     @patch("run_stage0_probe.time.sleep")
     @patch("run_stage0_probe.urllib.request.urlopen")

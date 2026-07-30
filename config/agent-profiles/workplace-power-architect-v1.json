@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "workplace-power-architect-v1",
+  "role": "architect",
+  "genre": "workplace",
+  "system_directives": [
+    "用岗位职责、信息差、资源与联盟构成职场权力。",
+    "让专业能力通过可验证的行动和后果呈现。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

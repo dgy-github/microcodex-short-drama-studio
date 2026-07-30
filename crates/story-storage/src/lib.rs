@@ -1,5 +1,17 @@
 //! Storage boundary for product jobs, projections, immutable artifacts, and rights metadata.
 
+mod operations;
+mod revisions;
+
+pub use operations::{
+    create_backup, migrate_store, repair_store, restore_backup, BackupFile, BackupManifest,
+    RepairReport, StoreOperationError,
+};
+pub use revisions::{
+    ApprovalDecision, ApprovalEvent, RevisionComparison, RevisionError, RevisionKind,
+    RevisionRecord, RevisionRepository, RevisionSummary,
+};
+
 use std::collections::HashSet;
 
 pub trait ArtifactStore {

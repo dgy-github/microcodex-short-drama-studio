@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/start-run-command-v1.json",
+  "title": "Start Run Command v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "job"],
+  "properties": {
+    "schema": {"const": "start-run-command/v1"},
+    "job": {"$ref": "story-job-v1.json"}
+  }
+}

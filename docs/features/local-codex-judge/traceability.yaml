@@ -1,0 +1,21 @@
+feature: local-codex-judge
+requirements:
+  - id: REQ-103
+    implementation:
+      - eval/tools/run_stage0_probe.py
+      - eval/codex-judge.json
+      - schemas/stage0-judge-output-v1.json
+    tests:
+      - TEST-106
+      - TEST-107
+      - TEST-108
+tests:
+  - id: TEST-106
+    location: eval/tools/test_run_stage0_probe.py
+    proves: a local Codex route resolves without an API key
+  - id: TEST-107
+    location: eval/tools/test_run_stage0_probe.py
+    proves: Codex launches without a shell in an isolated read-only ephemeral session
+  - id: TEST-108
+    location: eval/tools/test_run_stage0_probe.py
+    proves: supplemental judge results require their exact configuration fingerprint

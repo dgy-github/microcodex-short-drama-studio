@@ -9,31 +9,31 @@ capabilities:
     reuse_rule: Extend story-core instead of defining parallel cross-process types.
   - id: CAP-002
     name: Runtime orchestration
-    summary: Owns asynchronous commands and append-only task events.
-    keywords: [state-machine, runtime, events]
+    summary: Owns content-form binding, genre and human-writing configuration, sidecar lifecycle, fixed story DAG, idempotent start/cancel commands, task events and advisory workflow evidence.
+    keywords: [state-machine, runtime, events, content-form, registry, human-writing, sidecar, execution-order, idempotency, replay, cancellation]
     owner: crates/story-runtime/src/lib.rs
-    interfaces: [IFACE-002]
+    interfaces: [IFACE-002, IFACE-008, IFACE-012, IFACE-017]
     reuse_rule: Extend the runtime task lifecycle; do not add a second orchestrator in UI or sidecar.
   - id: CAP-003
     name: Provider access
-    summary: Owns credentials and model-provider calls.
-    keywords: [authorization, configuration, retry, provider]
+    summary: Owns credentials, validated provider routes, bounded live-provider evidence, OpenAI-compatible model calls and the authenticated typed capability host.
+    keywords: [authorization, configuration, endpoint, model, retry, provider, soak]
     owner: crates/story-provider/src/lib.rs
-    interfaces: [IFACE-003]
+    interfaces: [IFACE-003, IFACE-011, IFACE-022, IFACE-023]
     reuse_rule: All production provider access goes through story-provider.
   - id: CAP-004
     name: Campaign sidecar protocol
-    summary: Defines typed requests and responses exposed to the Python sidecar.
-    keywords: [sidecar, protocol]
+    summary: Defines typed requests, authenticated localhost hosting, the fixed Campaign workflow, task-scoped human-writing directive consumption, bounded episode child lanes and responses exposed to Rust.
+    keywords: [sidecar, protocol, localhost, authentication, human-writing, episode-room, bounded-concurrency]
     owner: sidecar/campaign_adapter/protocol.py
-    interfaces: [IFACE-004]
+    interfaces: [IFACE-004, IFACE-009, IFACE-010]
     reuse_rule: Add typed capabilities here; never expose unrestricted shell access.
   - id: CAP-005
     name: Adversarial evaluator metrics
-    summary: Owns stage-0 sensitivity, dual specificity, consistency and localisation calculations.
-    keywords: [evaluation, specificity, metrics]
+    summary: Owns stage-0 metrics, rubric aggregation, offline and online sample evaluation, blind review records, holdout commitments and human-gated release decisions.
+    keywords: [evaluation, specificity, metrics, discrimination, blind-review, offline, online, holdout, professional-gate, promotion]
     owner: eval/tools/run_stage0_probe.py
-    interfaces: [IFACE-005]
+    interfaces: [IFACE-005, IFACE-016, IFACE-021]
     reuse_rule: Extend these metric helpers and manifest definitions instead of calculating competing probe metrics elsewhere.
   - id: CAP-006
     name: Candidate decision retention
@@ -49,6 +49,34 @@ capabilities:
     owner: crates/story-core/src/lib.rs
     interfaces: [IFACE-007]
     reuse_rule: Use ArtifactSpanRef for defects, revisions and citations instead of defining local path strings.
+  - id: CAP-008
+    name: Desktop story console
+    summary: Owns Tauri IPC, Svelte presentation state, registry-driven genre selection, live run projections, immutable artifact browsing, full-story reading, evaluation controls and provider-soak controls.
+    keywords: [desktop, tauri, svelte, ipc, genre-selector, artifact-browser, story-reader, run-controller, evaluation-center, provider-soak]
+    owner: apps/desktop/src-tauri/src/lib.rs
+    interfaces: [IFACE-013, IFACE-015, IFACE-021, IFACE-023]
+    reuse_rule: Extend the desktop IPC facade; never duplicate runtime, provider or domain rules in Svelte.
+  - id: CAP-009
+    name: Immutable revision history
+    summary: Owns schema-valid story revisions, node correspondence, append-only approvals, comparisons, rollback-by-new-revision and approved export.
+    keywords: [revision, approval, rollback, export, correspondence, immutable-history]
+    owner: crates/story-storage/src/revisions.rs
+    interfaces: [IFACE-014]
+    reuse_rule: Store every revision and approval through this owner; never overwrite an existing package or approval.
+  - id: CAP-010
+    name: Production data operations
+    summary: Owns store migration, interrupted-write repair, integrity backup/restore, dependency inventory and operational recovery evidence.
+    keywords: [migration, repair, backup, restore, integrity, reliability]
+    owner: crates/story-storage/src/operations.rs
+    interfaces: [IFACE-018]
+    reuse_rule: Use the versioned fail-closed operations API; never copy or overwrite durable product data ad hoc.
+  - id: CAP-011
+    name: Windows release engineering
+    summary: Owns distribution-license admission, exact pinned Python dependency verification, bundled sidecar runtime schemas, MSI/NSIS packaging and extracted-bundle smoke, ephemeral CI signing credential lifecycle, release evidence, compatibility and operator documentation.
+    keywords: [windows, packaging, signing, release, upgrade, rollback]
+    owner: scripts/build_windows_release.ps1
+    interfaces: [IFACE-019, IFACE-020]
+    reuse_rule: Extend the release evidence pipeline; unlicensed artifacts are not releasable, and unsigned artifacts remain personal-only unless a future public channel requires signing.
 interfaces:
   - id: IFACE-001
     name: story-core public types
@@ -63,20 +91,20 @@ interfaces:
     name: story-runtime public API
     kind: Rust crate API
     location: crates/story-runtime/src/lib.rs
-    purpose: Execute task lifecycle transitions and emit events.
-    inputs: [commands]
-    outputs: [events]
-    errors: [runtime errors]
-    side_effects: [task state changes]
+    purpose: Own sidecar readiness, expose the fixed story DAG, execute task lifecycle transitions and emit events.
+    inputs: [sidecar signals, commands]
+    outputs: [sidecar state, fixed execution order, events]
+    errors: [invalid sidecar transition, invalid execution order, runtime errors]
+    side_effects: [sidecar state changes, task state changes]
   - id: IFACE-003
     name: story-provider public API
     kind: Rust crate API
     location: crates/story-provider/src/lib.rs
-    purpose: Invoke configured model providers inside trusted boundaries.
-    inputs: [provider request]
-    outputs: [provider response]
-    errors: [provider errors]
-    side_effects: [network requests, budget consumption]
+    purpose: Store provider credentials and invoke configured model providers inside trusted boundaries.
+    inputs: [provider credential, provider request]
+    outputs: [redacted credential handle, provider response]
+    errors: [credential store errors, provider errors]
+    side_effects: [Windows Credential Manager access, network requests, budget consumption]
   - id: IFACE-004
     name: campaign sidecar protocol
     kind: Python protocol
@@ -113,3 +141,147 @@ interfaces:
     outputs: [validated ArtifactSpanRef]
     errors: [missing node, invalid kind, invalid index]
     side_effects: []
+  - id: IFACE-008
+    name: content-form asset registry
+    kind: Rust crate API and JSON configuration
+    location: crates/story-runtime/src/lib.rs
+    purpose: Resolve a story job to one trusted artifact-schema, rubric and case-set triple.
+    inputs: [content-form-registry/v1, StoryJob]
+    outputs: [validated content-form asset binding]
+    errors: [invalid registry, unsafe asset path, duplicate form, unregistered form]
+    side_effects: []
+  - id: IFACE-009
+    name: Campaign sidecar localhost host
+    kind: Authenticated HTTP and process protocol
+    location: sidecar/campaign_adapter/server.py
+    purpose: Host pinned Campaign handlers for the trusted Rust process owner.
+    inputs: [launch token, loopback bind, JSON-RPC request]
+    outputs: [readiness record, health response, JSON-RPC response]
+    errors: [unauthorized, invalid JSON, invalid bind, child process failure]
+    side_effects: [loopback socket bind, Python child process]
+  - id: IFACE-010
+    name: idempotent run control and SSE replay
+    kind: Authenticated HTTP and SSE protocol
+    location: sidecar/campaign_adapter/server.py
+    purpose: Accept StartRun once, cancel a run idempotently and replay matching durable events strictly after Last-Event-ID.
+    inputs: [start-run-command/v1, Idempotency-Key, Last-Event-ID, run ID]
+    outputs: [story-command-acceptance/v1, story-agent-event/v1 stream, terminal cancellation event]
+    errors: [invalid command, idempotency conflict, invalid cursor, unknown run]
+    side_effects: [Campaign EventLog append, workflow task cancellation, SSE stream]
+  - id: IFACE-011
+    name: Rust provider capability host
+    kind: Authenticated loopback HTTP capability
+    location: crates/story-provider/src/capability_host.rs
+    purpose: Keep provider credentials in Rust while serving allowlisted structured generation and artifact validation.
+    inputs: [story-capability-request/v1, launch token]
+    outputs: [structured provider artifact, validation result]
+    errors: [unauthorized capability, provider failure, invalid artifact]
+    side_effects: [provider network request, token usage]
+  - id: IFACE-012
+    name: Advisory fixed workflow result
+    kind: JSON artifact contract
+    location: schemas/story-workflow-result-v1.json
+    purpose: Retain all 17 task records, five reviews, provider routes and the final non-promotable package.
+    inputs: [fixed Campaign workflow events and artifacts]
+    outputs: [story-workflow-result/v1]
+    errors: [incomplete task evidence, invalid review, invalid package]
+    side_effects: [ignored local evidence write]
+  - id: IFACE-013
+    name: Desktop Tauri IPC
+    kind: Tauri command API
+    location: apps/desktop/src-tauri/src/lib.rs
+    purpose: Project registered genre packs, validate story drafts, configure provider credentials, control one live run and project immutable advisory artifacts to Svelte.
+    inputs: [genre pack query, story-job/v1, provider credential command, advisory run ID, Start, Sync, Cancel]
+    outputs: [genre pack options, validated job preview, credential presence, desktop-run-snapshot/v1, desktop-run-summary/v1, story-workflow-result/v1]
+    errors: [invalid input, credential store unavailable, runtime unavailable, unsafe run ID, missing or invalid artifact]
+    side_effects: [Windows Credential Manager writes, provider calls, sidecar process control, local artifact reads and writes]
+  - id: IFACE-014
+    name: immutable story revision repository
+    kind: Rust crate API and JSON artifact contracts
+    location: crates/story-storage/src/revisions.rs
+    purpose: Create and retain bounded targeted revisions, correspondence, approvals, comparisons, rollback revisions and approved exports.
+    inputs: [story-package/v1, ArtifactSpanRef, replacement node, approval decision, export path]
+    outputs: [story-revision-record/v1, story-approval-event/v1, validated exported story-package/v1]
+    errors: [invalid package, missing span, input required, final approval, unapproved export, storage failure]
+    side_effects: [immutable revision writes, append-only approval write, approved export write]
+  - id: IFACE-015
+    name: Desktop revision IPC
+    kind: Tauri command API
+    location: apps/desktop/src-tauri/src/revisions.rs
+    purpose: Project defect navigation, revision history, approval, comparison, rollback and export to Svelte.
+    inputs: [run ID, revision ID, ArtifactSpanRef, replacement node, approval, export path]
+    outputs: [desktop-revision-summary/v1, cited node, revision comparison, export receipt]
+    errors: [invalid revision, missing span, round limit, final approval, unapproved export]
+    side_effects: [revision repository operations]
+  - id: IFACE-016
+    name: professional release evidence gate
+    kind: Python tool and JSON artifact contracts
+    location: eval/tools/professional_gate.py
+    purpose: Seal hidden holdout evidence, measure professional pair review and forbid promotion without complete human evidence.
+    inputs: [professional-release-evidence/v1, private holdout, discrimination pair artifacts]
+    outputs: [holdout-seal/v1, promotion-decision/v1]
+    errors: [invalid panel, missing signoff, incomplete adjudication, failed release threshold]
+    side_effects: [public holdout commitment write, promotion decision write]
+  - id: IFACE-017
+    name: genre pack runtime context
+    kind: Rust API and typed StartRun extension
+    location: crates/story-runtime/src/genre_packs.rs
+    purpose: Resolve versioned genre configuration before provider access and forward only validated directives and retrieval provenance to the fixed workflow.
+    inputs: [story-job/v1, genre-pack-registry/v1, constraint, agent and retrieval documents]
+    outputs: [genre-context/v1]
+    errors: [invalid config, incomplete or unknown selection, constraint violation]
+    side_effects: [configuration reads]
+  - id: IFACE-018
+    name: durable store operations
+    kind: Rust crate API and JSON backup manifest
+    location: crates/story-storage/src/operations.rs
+    purpose: Migrate, repair, back up and restore story, revision and approval state with integrity validation.
+    inputs: [absolute store path, new backup or restore target]
+    outputs: [story-store-backup/v1, repair report, store version]
+    errors: [unsafe path, unsupported version, metadata error, hash mismatch, IO failure]
+    side_effects: [version marker write, partial-file removal, backup or restore directory creation]
+  - id: IFACE-019
+    name: Windows release evidence
+    kind: PowerShell build pipeline and JSON artifact
+    location: scripts/build_windows_release.ps1
+    purpose: Admit only license-cleared dependencies, verify exact installed git provenance, build MSI/NSIS installers, verify the extracted MSI sidecar and desktop, optionally import an ephemeral CI PFX and sign installers, and record license/signing provenance, smoke results, hashes and toolchain identity.
+    inputs: [lockfiles, dependency license inventory, bundled sidecar, optional local unlicensed verification override, optional certificate thumbprint, optional encrypted CI PFX and password]
+    outputs: [windows-release-evidence/v1, MSI and NSIS artifacts, verified pinned Python dependency, distribution-license decision, installer eligibility, extracted-bundle smoke evidence, signing provenance]
+    errors: [pinned dependency drift, unresolved distribution license, unsafe unlicensed override, build failure, extraction failure, sidecar protocol failure, desktop launch failure, invalid signing credential, missing signtool, signing failure, missing bundle]
+    side_effects: [dependency installation, release build, bounded MSI extraction, local process smoke, temporary CurrentUser certificate import, temporary PFX write, optional code signing, exact signing credential cleanup]
+  - id: IFACE-020
+    name: provider health diagnostic
+    kind: Tauri command API
+    location: apps/desktop/src-tauri/src/commands.rs
+    purpose: Run a minimal structured request against the configured DeepSeek or Bailian route during first-run setup.
+    inputs: [provider identity, credential handle]
+    outputs: [provider-health/v1]
+    errors: [missing credential, network, balance, model permission, invalid structured response]
+    side_effects: [minimal paid provider request]
+  - id: IFACE-021
+    name: desktop evaluation center IPC
+    kind: Tauri command API and JSON artifact contracts
+    location: apps/desktop/src-tauri/src/evaluations.rs
+    purpose: List offline and online evaluation samples, run bounded automatic advisory scoring, and create or submit blind human assignments.
+    inputs: [dataset ID, bounded case IDs, Bailian credential handle, blind rater ID, ten rubric dimension scores]
+    outputs: [desktop-evaluation-catalog/v1, desktop-evaluation-batch-result/v1, desktop-blind-assignment/v1, eval-score-record/v1]
+    errors: [invalid selection, missing artifact, admission failure, provider failure, invalid judge score, duplicate human submission]
+    side_effects: [minimal paid judge requests, atomic automatic batch writes, immutable blind assignment and score writes]
+  - id: IFACE-022
+    name: desktop provider route settings
+    kind: Tauri command API and JSON artifact contract
+    location: apps/desktop/src-tauri/src/provider_settings.rs
+    purpose: Persist and resolve the non-secret endpoint and model used by health, story runtime and evaluation calls.
+    inputs: [provider identity, HTTPS chat-completions endpoint, model ID]
+    outputs: [desktop-provider-route/v1]
+    errors: [invalid provider, invalid route, unavailable settings storage]
+    side_effects: [immutable provider route record write]
+  - id: IFACE-023
+    name: live provider soak
+    kind: Tauri command API and JSON artifact contract
+    location: apps/desktop/src-tauri/src/provider_soak.rs
+    purpose: Execute a bounded paid health soak over both configured routes and retain secret-free evidence.
+    inputs: [iteration count, provider route handles, credential handles]
+    outputs: [provider-soak-result/v1]
+    errors: [invalid iteration count, missing credential, concurrent soak, provider degradation, unavailable evidence storage]
+    side_effects: [bounded paid provider requests, immutable soak result write]

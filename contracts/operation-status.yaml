@@ -1,1 +1,19 @@
-operations: {}
+operations:
+  getSidecarHealth:
+    owner: CAP-004
+    status: INTEGRATION_PASSED
+  sendSidecarRpc:
+    owner: CAP-004
+    status: BACKEND_IMPLEMENTED
+  startRun:
+    owner: CAP-004
+    status: INTEGRATION_PASSED
+  streamRunEvents:
+    owner: CAP-004
+    status: INTEGRATION_PASSED
+  getRunResult:
+    owner: CAP-004
+    status: INTEGRATION_PASSED
+  cancelRun:
+    owner: CAP-004
+    status: INTEGRATION_PASSED

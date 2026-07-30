@@ -1,0 +1,48 @@
+feature: parallel-episode-story-reader
+requirements:
+  - id: REQ-303
+    interfaces: [API-107, API-108]
+    implementation: [BE-122]
+    tests: [TEST-306]
+  - id: REQ-304
+    interfaces: [API-107, API-108]
+    implementation: [BE-122]
+    tests: [TEST-306, TEST-307]
+  - id: REQ-305
+    interfaces: [API-113]
+    implementation: [FE-109]
+    tests: [TEST-308]
+  - id: REQ-306
+    interfaces: [API-113]
+    implementation: [FE-109]
+    tests: [TEST-308]
+interfaces:
+  - id: API-107
+    location: schemas/story-capability-request-v1.json
+    status: INTEGRATION_PASSED
+    purpose: existing typed Rust generation capability
+  - id: API-108
+    location: schemas/story-workflow-result-v1.json
+    status: INTEGRATION_PASSED
+    purpose: existing fixed 17-task result containing the complete package
+  - id: API-113
+    location: apps/desktop/src-tauri/src/artifacts.rs
+    status: FRONTEND_CONNECTED
+    purpose: existing immutable workflow-result read
+implementation:
+  - id: BE-122
+    location: sidecar/campaign_adapter/workflow.py
+    owner: CAP-004
+  - id: FE-109
+    location: apps/desktop/src/lib/ArtifactBrowser.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-306
+    location: sidecar/test_workflow.py
+    proves: one bounded child generation lane is run for every episode
+  - id: TEST-307
+    location: sidecar/test_workflow.py
+    proves: merged episode scenes survive canonical package construction
+  - id: TEST-308
+    location: apps/desktop/src/lib/ArtifactBrowser.svelte
+    proves: frontend type/build checks cover the full-story reader

@@ -1,0 +1,10 @@
+{
+  "schema": "genre-regression-manifest/v1",
+  "manifest_id": "historical-causal-v1",
+  "genre": "historical",
+  "case_refs": [
+    {"split": "train", "case_id": "historical_001"},
+    {"split": "challenge", "case_id": "historical_002"}
+  ],
+  "required_checks": ["schema", "admission", "rubric", "provider_degradation"]
+}

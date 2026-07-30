@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/provider-soak-result-v1.json",
+  "title": "Provider soak result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "soak_id",
+    "iterations_per_provider",
+    "status",
+    "started_at_unix_ms",
+    "finished_at_unix_ms",
+    "providers"
+  ],
+  "properties": {
+    "schema": {"const": "provider-soak-result/v1"},
+    "soak_id": {"type": "string", "pattern": "^soak_[a-f0-9]{32}$"},
+    "iterations_per_provider": {"type": "integer", "minimum": 3, "maximum": 20},
+    "status": {"enum": ["ready", "degraded"]},
+    "started_at_unix_ms": {"type": "integer", "minimum": 0},
+    "finished_at_unix_ms": {"type": "integer", "minimum": 0},
+    "providers": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "model",
+          "route_fingerprint",
+          "status",
+          "successful_requests",
+          "failed_requests",
+          "min_latency_ms",
+          "average_latency_ms",
+          "max_latency_ms"
+        ],
+        "properties": {
+          "provider": {"enum": ["deepseek", "aliyun_bailian"]},
+          "model": {"type": "string", "minLength": 1, "maxLength": 128},
+          "route_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "status": {"enum": ["ready", "degraded"]},
+          "successful_requests": {"type": "integer", "minimum": 0, "maximum": 20},
+          "failed_requests": {"type": "integer", "minimum": 0, "maximum": 20},
+          "min_latency_ms": {"type": "integer", "minimum": 0},
+          "average_latency_ms": {"type": "integer", "minimum": 0},
+          "max_latency_ms": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

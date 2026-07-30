@@ -1,0 +1,50 @@
+feature: desktop-provider-route-configuration
+requirements:
+  - id: REQ-155
+    interfaces: [API-144]
+    implementation: [BE-118, FE-107]
+    tests: [TEST-167, TEST-169]
+  - id: REQ-156
+    interfaces: [API-144]
+    implementation: [BE-118]
+    tests: [TEST-167, TEST-168]
+  - id: REQ-157
+    interfaces: [API-144, API-145]
+    implementation: [BE-118, BE-119]
+    tests: [TEST-168, TEST-170]
+  - id: REQ-158
+    interfaces: [API-144]
+    implementation: [BE-118]
+    tests: [TEST-167]
+interfaces:
+  - id: API-144
+    location: schemas/desktop-provider-route-v1.json
+    status: FRONTEND_CONNECTED
+    purpose: project one validated non-secret provider route
+  - id: API-145
+    location: apps/desktop/src-tauri/src/commands.rs
+    status: FRONTEND_CONNECTED
+    purpose: load and save provider routes through typed Tauri IPC
+implementation:
+  - id: BE-118
+    location: apps/desktop/src-tauri/src/provider_settings.rs
+    owner: CAP-003
+  - id: BE-119
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    owner: CAP-002
+  - id: FE-107
+    location: apps/desktop/src/lib/CredentialPanel.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-167
+    location: apps/desktop/src-tauri/src/provider_settings.rs
+    proves: defaults and unsafe route values are handled fail-closed
+  - id: TEST-168
+    location: apps/desktop/src-tauri/src/provider_settings.rs
+    proves: the latest immutable valid record wins and partial files are ignored
+  - id: TEST-169
+    location: apps/desktop/package.json
+    proves: editable route fields type-check and build
+  - id: TEST-170
+    location: apps/desktop/src-tauri/src/provider_settings.rs
+    proves: public route projections validate against their JSON Schema

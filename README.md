@@ -41,8 +41,9 @@ where the last session stopped is in [HANDOFF.md](HANDOFF.md).
 
 ## Current milestone
 
-M0 establishes schemas and executable protocol foundations. It does not claim
-to generate production stories yet.
+P5-P10 non-human implementation is present as an advisory desktop release
+candidate. It generates and reviews story packages, but does not claim stable
+release or model/prompt promotion while the blockers in `CHANGELOG.md` remain.
 
 ## Development
 

@@ -164,3 +164,31 @@ def krippendorff_alpha_interval(raters: list[list[float]]) -> float:
     if expected == 0:
         return 1.0 if observed == 0 else float("nan")
     return 1.0 - observed / expected
+
+
+def krippendorff_alpha_nominal(raters: list[list[str]]) -> float:
+    """Krippendorff's alpha with nominal disagreement for shared assignments."""
+    if len(raters) < 2:
+        raise ValueError("professional agreement needs at least two raters")
+    item_count = len(raters[0])
+    if item_count == 0 or any(len(rater) != item_count for rater in raters):
+        raise ValueError("raters must score the same non-empty item set")
+    values = [value for rater in raters for value in rater]
+    if any(not isinstance(value, str) or not value for value in values):
+        raise ValueError("nominal agreement values must be non-empty strings")
+    observed_pairs = [
+        raters[left][item] != raters[right][item]
+        for item in range(item_count)
+        for left in range(len(raters))
+        for right in range(left + 1, len(raters))
+    ]
+    observed = statistics.mean(observed_pairs)
+    expected_pairs = [
+        values[left] != values[right]
+        for left in range(len(values))
+        for right in range(left + 1, len(values))
+    ]
+    expected = statistics.mean(expected_pairs)
+    if expected == 0:
+        return 1.0 if observed == 0 else float("nan")
+    return 1.0 - observed / expected

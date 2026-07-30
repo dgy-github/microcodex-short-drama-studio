@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/adversarial-maintenance-state-v1.json",
+  "title": "Adversarial maintenance state v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "last_refresh", "pairs", "production_failure_candidates"],
+  "properties": {
+    "schema": {"const": "adversarial-maintenance-state/v1"},
+    "last_refresh": {"type": "string", "format": "date"},
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pair_id", "status", "flags", "measurement_windows", "replacement_pair_id"],
+        "properties": {
+          "pair_id": {"type": "string"},
+          "status": {"enum": ["candidate", "accepted_hard", "ordinary_negative", "defect_not_upheld", "construction_failed", "retired"]},
+          "flags": {
+            "type": "array",
+            "items": {"enum": ["rights_revoked", "holdout_leakage", "defect_not_upheld", "duplicate_lineage"]}
+          },
+          "measurement_windows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["detection_rate", "localisation_rate"],
+              "properties": {
+                "detection_rate": {"type": "number", "minimum": 0, "maximum": 1},
+                "localisation_rate": {"type": "number", "minimum": 0, "maximum": 1}
+              }
+            }
+          },
+          "replacement_pair_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "production_failure_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "rights_verified"],
+        "properties": {
+          "case_id": {"type": "string"},
+          "rights_verified": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

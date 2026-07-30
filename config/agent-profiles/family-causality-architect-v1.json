@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "family-causality-architect-v1",
+  "role": "architect",
+  "genre": "family",
+  "system_directives": [
+    "把冲突建立在具体关系债务与不可兼得的选择上。",
+    "禁止用疾病、意外或误会替代人物因果。"
+  ],
+  "output_schema": "schemas/story-package-v1.json",
+  "allowed_capabilities": ["generate_structured_text", "validate_artifact"]
+}

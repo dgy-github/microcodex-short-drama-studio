@@ -1,0 +1,89 @@
+feature: stable-story-studio-release
+requirements:
+  - id: REQ-145
+    interfaces: [API-134]
+    implementation: [REL-121, REL-126, REL-128]
+    tests: [TEST-154, TEST-158, TEST-159, TEST-174, TEST-175]
+  - id: REQ-146
+    interfaces: [API-135]
+    implementation: [REL-122, REL-127]
+    tests: [TEST-155, TEST-158, TEST-159, TEST-160]
+  - id: REQ-147
+    interfaces: [API-136]
+    implementation: [DESKTOP-123]
+    tests: [TEST-156]
+  - id: REQ-148
+    interfaces: [API-137]
+    implementation: [DOC-124]
+    tests: [TEST-157]
+  - id: REQ-149
+    interfaces: [API-138]
+    implementation: [DOC-125]
+    tests: [TEST-157]
+  - id: REQ-150
+    interfaces: [API-135]
+    implementation: [REL-122]
+    tests: [TEST-155, TEST-161]
+interfaces:
+  - id: API-134
+    location: crates/story-runtime/src/sidecar.rs
+    status: IMPLEMENTED
+  - id: API-135
+    location: schemas/windows-release-evidence-v1.json
+    status: IMPLEMENTED
+  - id: API-136
+    location: schemas/provider-health-v1.json
+    status: IMPLEMENTED
+  - id: API-137
+    location: docs/OPERATOR_GUIDE.md
+    status: DOCUMENTED
+  - id: API-138
+    location: docs/UPGRADE_ROLLBACK_POLICY.md
+    status: DOCUMENTED
+implementation:
+  - id: REL-121
+    location: scripts/build_windows_sidecar.ps1
+    owner: CAP-011
+  - id: REL-122
+    location: scripts/build_windows_release.ps1
+    owner: CAP-011
+  - id: REL-126
+    location: scripts/verify_windows_bundle.ps1
+    owner: CAP-011
+  - id: REL-127
+    location: scripts/build_signed_windows_release.ps1
+    owner: CAP-011
+  - id: REL-128
+    location: scripts/verify_pinned_python_dependency.py
+    owner: CAP-011
+  - id: DESKTOP-123
+    location: apps/desktop/src-tauri/src/commands.rs
+    owner: CAP-008
+  - id: DOC-124
+    location: docs/OPERATOR_GUIDE.md
+    owner: CAP-011
+  - id: DOC-125
+    location: docs/VERSIONS.md
+    owner: CAP-011
+tests:
+  - id: TEST-154
+    location: crates/story-runtime/src/sidecar.rs
+  - id: TEST-155
+    location: scripts/check_release_configuration.py
+  - id: TEST-156
+    location: apps/desktop/src-tauri/src/commands.rs
+  - id: TEST-157
+    location: scripts/check_release_configuration.py
+  - id: TEST-158
+    location: scripts/verify_windows_bundle.ps1
+  - id: TEST-159
+    location: .github/workflows/governance.yml
+  - id: TEST-160
+    location: scripts/test_check_release_configuration.py
+  - id: TEST-161
+    location: scripts/test_build_dependency_inventory.py
+  - id: TEST-174
+    location: scripts/test_verify_pinned_python_dependency.py
+  - id: TEST-175
+    location: sidecar/test_workflow.py
+    proves: frozen workflow resolves the packaged story schema from the PyInstaller runtime root

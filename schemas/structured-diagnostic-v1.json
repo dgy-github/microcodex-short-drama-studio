@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/structured-diagnostic-v1.json",
+  "title": "Structured Diagnostic v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "code", "component", "message", "context"],
+  "properties": {
+    "schema": { "const": "structured-diagnostic/v1" },
+    "code": { "type": "string", "pattern": "^[a-z0-9_]{1,64}$" },
+    "component": { "type": "string", "pattern": "^[a-z0-9_]{1,64}$" },
+    "message": { "type": "string" },
+    "context": {}
+  }
+}

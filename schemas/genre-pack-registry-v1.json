@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/genre-pack-registry-v1.json",
+  "title": "Genre pack registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "human_writing_profile", "packs", "constraint_profiles", "agent_profiles", "retrieval_collections", "regression_manifests"],
+  "properties": {
+    "schema": {"const": "genre-pack-registry/v1"},
+    "human_writing_profile": {
+      "type": "string",
+      "pattern": "^human-writing/[^\\\\:]+\\.json$"
+    },
+    "packs": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "constraint_profiles": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "agent_profiles": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "retrieval_collections": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "regression_manifests": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  }
+}

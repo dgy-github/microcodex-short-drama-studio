@@ -1,0 +1,16 @@
+{
+  "schema": "retrieval-collection/v1",
+  "collection_id": "internal-story-craft-v1",
+  "display_name": "MicrocodeX internal story craft guidance",
+  "sources": [
+    {
+      "source_id": "story-eval-v1-contract",
+      "path": "docs/STORY_EVAL_V1.md",
+      "content_sha256": "0fa6ca0afe2e0b33b5a83cc1da1e6a941b63781b89d81de04ce1bec428460d78",
+      "license_id": "MIT",
+      "rights_holder": "MicrocodeX Short Drama Studio contributors",
+      "rights_evidence": "LICENSE",
+      "allowed_uses": ["retrieval", "evaluation"]
+    }
+  ]
+}

@@ -52,16 +52,34 @@ negative. Once obtained, stop — do not keep optimising this pair.**
 
 ### Latest calibrated reading — 2026-07-27
 
-All saved results share one verified input fingerprint. Qwen reached
-cross-pillar specificity `0.7143` and self-consistency `0.925`, but flipped with
-artifact order. GLM reached specificity `0.1429`, self-consistency `0.475`, and
-also flipped with order. Krippendorff interval alpha across both judges is
-`0.3312`; strict seeded-pair detection is `0.0`.
+All saved results share one verified base-input fingerprint. The supplemental
+Codex result also carries its exact judge-configuration fingerprint. Qwen
+reached cross-pillar specificity `0.7143` and self-consistency `0.925`, but
+flipped with artifact order. GLM reached `0.1429/0.475` and also flipped.
+The local Codex `gpt-5.4` judge reached `0.4286/0.675`, detected the target
+degradation, and was order-consistent. Krippendorff interval alpha across all
+three judges rose from `0.3312` to `0.5175`; strict seeded-pair detection
+remains `0.0` because Qwen scored the degraded artifact lower in only half of
+its six observations.
 
 The engineering checklist is complete but the P1 exit condition is not. P2
-therefore selected the `judge stability still poor` branch. The path returns to
-P1 and requires either a non-Chinese-native third judge family or an internal
-human spot check. P2.5 and P3 remain closed until that evidence exists.
+therefore remains on the `judge stability still poor` branch. The requested
+non-Chinese-native third family has now been measured and did not clear the
+stability/specificity thresholds. The remaining high-value evidence is the
+internal blind human spot check.
+
+### Deferral decision — 2026-07-28
+
+P1 remains unresolved, but its human check is deferred until the first
+end-to-end story package exists. P2.5 and an advisory P3b prototype are
+unlocked under [`ADR-0002`](adr/ADR-0002-advisory-runtime-before-human-calibration.md).
+This is not a pass:
+
+- `eval-v0.1.0` and `judge-v1` cannot freeze;
+- no model, prompt, graph, retriever, policy or skill can be promoted;
+- prototype output is `advisory/non-promotable`;
+- the first end-to-end artifact feeds the blind human check;
+- the run must be repeated after P3a freezes the evaluation contract.
 
 Narrowing the degradation is listed first because it alone unlocks three
 readings: specificity becomes interpretable, `defect_localisation` escapes being
@@ -157,7 +175,7 @@ dialogue? who is in front of the camera?
 | --- | --- | --- |
 | 1 | Pillars and critical dimensions read from the manifest instead of being struct fields in `story-eval` | **done** |
 | 2 | Span addressing extracted from `story-package/v1` into a form-agnostic convention; revision correspondence remains in P6 | **done** |
-| 3 | `content_form` promoted to a first-class field on the job contract, selecting which (schema, rubric, case set) triple to load | open |
+| 3 | `content_form` promoted to a first-class field on the job contract, selecting which (schema, rubric, case set) triple to load | **done**; `content-form-registry/v1` binds the real scripted-drama assets in `story-runtime` |
 
 Item 1 was run first as a falsification test of this whole phase: if separating
 the layers had been painful, the form-agnostic layer would have been thinner
@@ -169,6 +187,12 @@ aggregates a hypothetical three-pillar explainer rubric with no code change.
 
 **Exit:** adding a content form requires an artifact schema, a rubric and a case
 set, and no edit to aggregation, gating or verdict logic.
+
+**Exit reached:** the registry is data-driven, the runtime rejects duplicate or
+unsafe bindings, and the checked-in scripted-drama entry resolves only existing
+assets. Adding a later form still requires extending the closed product
+`ContentForm` contract, but does not require changing aggregation, gating,
+verdict or runtime lookup logic.
 
 ### Explicitly not in scope
 
@@ -186,11 +210,13 @@ undiscovered until they force a rewrite.
 
 ---
 
-## P3 · Freeze the evaluation set, then build the runtime
+## P3 · Build an advisory runtime, then freeze and re-judge
 
-Sequenced, not parallel. Every runtime step needs the evaluation set to accept
-it; an unfrozen set is an absent acceptance standard, so runtime work done first
-would have to be re-judged afterwards.
+The original plan required P3a before P3b. ADR-0002 accepts a bounded reversal:
+build one advisory runtime path first to produce a real artifact, use that
+artifact in the deferred human check, freeze the evaluation contract, then
+repeat the runtime run. Prototype correctness can be tested before story
+quality is promotable; the two claims must not be conflated.
 
 ### P3a · Evaluation set to frozen
 
@@ -201,6 +227,8 @@ would have to be re-judged afterwards.
 - **Freeze `eval-v0.1.0` and `judge-v1`.**
 
 **Exit:** manifest and rubric frozen; a MAJOR bump is required to change them.
+This remains blocked on the deferred human check and blocks every promotion and
+release claim, but no longer blocks the advisory P3b prototype.
 
 ### P3b · Runtime, per `STORY_MULTI_AGENT_DESIGN.md` §15
 
@@ -211,10 +239,25 @@ would have to be re-judged afterwards.
 - Register the genre, three-architect, episode, scene and three reviewer lanes.
 - Licensed retrieval manifest and provenance checks.
 
-**Exit:** one job runs end to end and produces a `story-package/v1` through the
-DAG, scored by the frozen evaluation set — the multi-agent arm of the
-model-only-versus-multi-agent comparison the parent contract requires. The
-model-only arm already exists as the 10 archived baselines.
+**Advisory prototype status:** the Rust fail-closed lifecycle, fixed 17-task
+`ExecutionOrder`, real Python process supervision, authenticated localhost
+host, idempotent `StartRun`, EventLog replay, typed Rust provider capability,
+agent registration, structured reviews and artifact packaging are
+integration-tested. Run `run_0148aa190ce842c8b103d3885a68dfcb` completed
+17/17 tasks and produced a schema-valid six-episode `story-package/v1` with five
+review records. Generation used DeepSeek `deepseek-v4-pro` through the standard
+Chat Completions endpoint; review used Qwen `qwen3-vl-plus`. Provider-family
+separation is now exercised, while story quality remains unverified.
+Resume/Cancel and live SSE backpressure remain.
+
+**Prototype exit reached:** one job ran end to end and produced an
+`advisory/non-promotable` `story-package/v1` through the DAG. The artifact is
+now the input to the deferred blind human check.
+
+**Release-level exit:** after P3a freezes the evaluation set, repeat the job and
+score it with the frozen contract — the multi-agent arm of the
+model-only-versus-multi-agent comparison. The model-only arm already exists as
+the 10 archived baselines.
 
 ### Deferred within P3
 
@@ -253,15 +296,39 @@ deterministic fallbacks; online weights have measured proxy fidelity.
 Build the smallest desktop surface that can operate the P3/P4 runtime without a
 developer console:
 
-- create a story project with immutable `content_form=scripted_drama`;
-- capture premise, genre, episode/length constraints and budget;
+- create a story project with immutable `content_form=scripted_short_drama`
+  (**done in the Rust contract, Tauri command and desktop form**);
+- capture premise, genre, episode/length constraints and budget
+  (**done in `StoryJob` and the desktop binding**);
 - start/cancel a job and reconnect to its event stream;
 - show task progress, approvals, failures and budget state;
 - inspect versioned architecture, episode, scene and final story artifacts;
-- **encrypted storage for provider credentials, pulled forward from P9.**
+- **encrypted storage for provider credentials, pulled forward from P9
+  (done: Rust `story-provider` boundary + verified Windows Credential Manager
+  backend + desktop configuration UI).**
 
 The Svelte/Tauri shell calls Rust only. It neither holds provider credentials
 nor connects directly to the Campaign sidecar.
+
+**First desktop vertical slice reached:** the Tauri 2.8 + Svelte 5 shell now
+validates `story-job/v1`, configures DeepSeek/Qwen credentials through Windows
+Credential Manager, and browses completed advisory workflow artifacts through
+typed Rust IPC. The second slice adds Rust-owned DeepSeek/Qwen runtime launch,
+Start, idempotent Cancel, `Last-Event-ID` event recovery, task/review/approval/
+error/token-budget projection, and validated artifact persistence. Process-level
+Start/replay/Cancel integration passed. A deterministic desktop E2E now rejects
+a duplicate Start, runs the real Python sidecar through the authenticated
+capability boundary, completes 17 tasks and 5 reviews, performs both package
+validations, and persists the advisory artifact. The paid provider route remains
+ignored until rotated credentials are configured through Credential Manager.
+Provider endpoint and model settings are editable and retained by Rust. Health
+checks, the story runtime and automatic evaluation resolve the same validated
+route record, so an endpoint change cannot leave one path on a different
+hard-coded URL.
+The desktop also exposes a Rust-owned evaluation center: the 30-case offline
+catalog (10 archived packages currently eligible), locally retained online
+advisory samples, partial/all-eligible Qwen advisory scoring, and append-only
+ten-dimension human blind assignments. These results remain non-promotable.
 
 ### Why credential encryption moved here — settled 2026-07-27
 
@@ -313,6 +380,14 @@ Turn generated output into an editable writing workflow:
 **Exit:** a user can revise a cited story location, approve the result and export
 an auditable package without mutating history.
 
+**Implementation reached 2026-07-28:** `story-storage` now owns immutable
+origin/targeted/rollback revisions, complete node correspondence, create-once
+approval events, comparisons, and approved-only JSON export. `story-policy`
+implements deterministic D3 repair ordering and fail-closed D4 round/budget
+decisions. The desktop works from review findings through span navigation,
+replacement, history, approval, comparison, rollback, and export. Storage,
+desktop-service, Svelte check, and production-build evidence pass.
+
 ---
 
 ## P7 · Professional quality gate — **starts in parallel from P3a, not after P6**
@@ -343,6 +418,14 @@ after it must not be read as blocking it.
 
 **Exit:** one candidate-versus-incumbent release decision is made from hidden
 human review with complete provenance.
+
+**Non-human infrastructure reached 2026-07-28:** professional evidence and
+promotion-decision contracts, candidate discrimination-pair construction,
+sealed-holdout commitments, pair accuracy, stratified preference bounds,
+nominal professional agreement, adjudication detection, and all nine promotion
+rules are implemented and tested. Missing professional reviews or screenwriter
+signoff returns `non_promotable`. The exit remains intentionally unmet because
+the user excluded the human blind execution; no candidate is promoted.
 
 ---
 
@@ -381,6 +464,14 @@ the refresh on a cadence. It has no exit condition because it does not end.
 gate without core-code changes, and a defined retirement rule governs the
 adversarial set.
 
+**2026-07-28 implementation status:** the non-human scope is complete. Family
+and suspense draft packs, short/long constraints, agent profiles, licensed
+retrieval provenance, regression manifests, and quarterly retirement policy
+are schema-validated. Rust resolves the selected pack before provider access
+and the unchanged fixed workflow consumes its typed context. Both packs remain
+draft/non-promotable because hidden human promotion evidence is intentionally
+excluded from this development pass.
+
 ---
 
 ## P9 · Production reliability and governance
@@ -394,11 +485,25 @@ adversarial set.
 **Exit:** fault-injection, migration, backup/restore, security and sustained-run
 checks pass with no loss of durable story or approval state.
 
+**2026-07-28 implementation status:** migration, interrupted-write repair,
+hash-verified backup/restore, restart recovery, result-before-terminal
+durability, credential rotation audit, budget/timeout/provider/concurrency fault
+tests, redacted diagnostics, dependency inventory, security review, incident
+runbook, and a 250-run/750-event sustained check are implemented. The pinned
+Campaign revision now carries owner-selected MIT evidence; live-provider soak
+evidence still requires rotated credentials.
+
+A bounded desktop live-provider soak runner is now implemented for the missing
+evidence: it preflights both configured routes, performs 3–20 paid iterations
+per provider, and atomically retains only timing and success/failure summaries.
+No live result exists until rotated credentials are configured.
+
 ---
 
 ## P10 · Stable story-studio release
 
-- signed Windows packaging and reproducible build evidence;
+- Windows packaging and reproducible build evidence; Authenticode remains
+  optional for a future public distribution channel;
 - first-run provider configuration and health diagnostics;
 - accessibility, localization and operator documentation;
 - upgrade/rollback compatibility policy;
@@ -410,6 +515,30 @@ decision.
 
 **Exit:** a clean machine can install, configure, complete and export a story
 job, upgrade safely, and reproduce the release evidence.
+
+**2026-07-28 implementation status:** actual MSI and NSIS installers build with
+the bundled PyInstaller onedir sidecar under pinned Rust 1.88.0, Node 22.14.0
+and Python 3.12.10. The MSI administrative extraction succeeded, and its
+extracted sidecar passed the real duplicate-Start, `Last-Event-ID` replay and
+idempotent-Cancel process test with no process left behind. The extracted
+desktop executable also survived a five-second local launch smoke. These checks
+now run inside every release build; the schema requires all three successes and
+the extracted binary hashes. Deterministic lockfile build scripts, optional
+Authenticode sign/verification, release hashes/toolchain/source-state evidence
+(including untracked source), first-run credential routing, live provider
+health checks, accessibility/locale notes, operator guide, upgrade/rollback
+policy, stable contract declarations, and release notes are implemented. The
+secure CI PFX import/cleanup path, Windows SDK signtool discovery, HTTPS
+timestamping, and signed provenance contract are also implemented and fail
+closed without secrets. Distribution-license inventory is now a pre-package
+admission gate: unknown licenses stop normal/signed builds, while the explicit
+unsigned local override records the unresolved dependency and an ineligible
+installer. Owner-selected MIT evidence now clears the Campaign distribution
+review, and the sidecar build verifies the installed exact git revision before
+PyInstaller runs. The owner accepts unsigned installers for this personal
+project; absence of a signing identity is no longer a P10 blocker. Current local
+artifacts remain dirty and have not completed clean-VM
+install/upgrade/rollback evidence, so the exit is not yet claimed.
 
 ---
 
@@ -430,7 +559,9 @@ the map. Two things had already fallen off before this section existed:
 - `STORY_EVAL_DESIGN.md` §11 requires expanding to 120 cases **before** enabling
   automatic skill promotion. The set is 30, and no phase owned the expansion.
 
-The project is currently at P1. Nothing below should be treated as a commitment.
+The project is currently entering P2.5/P3b advisory prototype work while P1
+human calibration remains deferred. Nothing below should be treated as a
+commitment.
 
 ---
 
@@ -571,23 +702,53 @@ Part of planning is refusing work that is not worth its cost now.
 
 ---
 
+## Measured status of P10-P18 — verified 2026-07-29
+
+Moved here from `HANDOFF.md`. Phase status belongs to the roadmap; the
+handoff should carry only what the next session must act on. Every figure
+below was read off the repository, not inferred from plan documents.
+
+**P10：工程实现完成，Exit 条件未满足。** 打包链路是真的（MSI/NSIS 实际生成、
+sidecar 内嵌、first-run 配置页、许可证清单 fail-closed、evidence 绑定），但 Exit
+是「clean machine 安装→配置→完整故事→导出→升级→回滚」，该项未跑。
+
+**P11-P16：零实现，当前只是登记册。** 逐项实测：
+
+| 阶段 | 目标 | 实测 |
+|---|---|---|
+| P11 评测规模化 | 120 例 | **30 例**（dev 10 / train 9 / validation 7 / holdout 0 / challenge 4） |
+| P12 技能闭环 | 签名注册表 + 模板绑技能 | `skills-registry/` **不存在**；**8 个 genre pack 的 `skills` 全部为空数组** |
+| P13 交付格式 | 可拍的剧本格式 | 无 |
+| P14 科普形态 | 第二种 content form | `genre-template-v1.json` 的 `content_form` 枚举**只有 `scripted_short_drama` 一个值** |
+| P15 真人形态 | 第三种 | 同上 |
+| P16 视频范围决策 | 一份决策记录 | 无；`story-media` crate 不存在（**符合设计，不是缺口**） |
+
+P12 那行需要单独注意：**8 个 genre pack 全部 `skills: []`**，意味着 pack 目前只
+绑硬约束与检索集合，**技能层是空的**——而技能正是系统自我改进的载体。
+
+**P17-P18：不存在，刻意留空。** 理由见 `docs/ROADMAP.md`：P11 起已建立在尚不
+存在的产品上，占位阶段会被计数、排期、汇报，制造虚假精度。
+
+**P11-P16 当前全部动不了**：P12 卡在 P7（编剧）与 P11（120 例），P14 卡在 P2.5
+剩余两件，P16 是决策不是工程。真正挡路的仍是三件——P1 退出条件失败、DAG 从未
+跑过真实故事、零份人类证据。
+
+---
+
 ## Dependency summary
 
 ```text
 P0 seal
-  └─ P1 calibrate ──► P2 decide
-                        ├─ rubric holds ──────────┐
-                        ├─ rubric decorative ──► revise pillars (MAJOR) ──► P1
-                        └─ judges unreliable ──► add third family ──► P1
-                                                  │
-                        P2.5 sink the form layer ◄┘
-                          └─ P3a freeze ─┬─► P3b runtime ──► P4 decisions
-                                         │     └─► P5 desktop ──► P6 revision
-                                         │           └─► P8 breadth ──► P9 ──► P10
-                                         │
-                                         └─► P7 professional gate ─────────┘
-                                             (parallel; external lead time,
-                                              start procurement at P3a)
+  └─ P1 engineering complete; human calibration deferred
+       └─► P2.5 form registry
+             └─► P3b advisory runtime ──► first real artifact
+                    ├─► deferred human check ──► P3a freeze
+                    │       └─► repeat P3b against frozen eval
+                    └─► P5 desktop prototype
+                              └─► P4/P6/P8/P9/P10 only after their own gates
+
+P3a freeze ──► P7 professional gate
+               (parallel external lead time; required for promotion)
 ```
 
 Post-1.0, the register continues:
@@ -600,11 +761,12 @@ P10 stable ──► P11 eval at scale ──► P12 skill loop (also needs P7)
                P17-P18 deliberately unwritten
 ```
 
-P1 is the only gate every path passes through. P3b is the first phase that
-produces a story the product could ship. P5 makes it usable without a developer
-console. P10 is the stable release. P12 is the first phase where the system
-improves itself, and it cannot start until professionals have edited real
-output.
+P1 human calibration is now a delayed freeze/promotion gate rather than a
+prototype-start gate. P3b is the first phase that produces a real story
+artifact, but its first output is explicitly non-promotable. P5 makes the
+prototype usable without a developer console. P10 is the stable release. P12
+is the first phase where the system improves itself, and it cannot start until
+professionals have edited real output.
 
 **P7 is drawn as a parallel branch on purpose.** It is the only phase gated on
 recruiting people rather than writing code, and it is the only one that can

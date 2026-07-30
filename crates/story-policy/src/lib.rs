@@ -16,7 +16,7 @@ use story_core::ArtifactSpanRef;
 
 /// Shared vocabulary with offline evaluation. The vocabulary is shared; the
 /// scoring is not.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ProblemCode {
     HumanGeneric,
     MotiveExplicit,
@@ -39,7 +39,7 @@ impl ProblemCode {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Severity {
     Minor,
     Major,
@@ -200,6 +200,93 @@ pub enum Selection<'a> {
     AllRejected,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RevisionDecision {
+    Complete,
+    ReviseAgain,
+    InputRequired,
+}
+
+/// `D3`: rank cited defects for targeted repair.
+///
+/// Hard-rule and critical findings are never hidden by a numeric weight.
+/// Artifact-wide findings are excluded because they cannot drive a directed
+/// revision until a reviewer supplies a stable span.
+pub fn rank_repairs<'a>(
+    defects: &'a [Defect],
+    weights: &DefectWeights,
+    severity: &SeverityFactors,
+) -> Vec<&'a Defect> {
+    let mut ranked = defects
+        .iter()
+        .filter(|defect| defect.span.is_some())
+        .collect::<Vec<_>>();
+    ranked.sort_by(|left, right| {
+        repair_class(left)
+            .cmp(&repair_class(right))
+            .then_with(|| {
+                repair_score(right, weights, severity)
+                    .total_cmp(&repair_score(left, weights, severity))
+            })
+            .then_with(|| {
+                left.span
+                    .as_ref()
+                    .map(ArtifactSpanRef::as_str)
+                    .cmp(&right.span.as_ref().map(ArtifactSpanRef::as_str))
+            })
+            .then_with(|| left.code.cmp(&right.code))
+    });
+    ranked
+}
+
+/// `D4`: decide whether another bounded repair round may run.
+///
+/// Only unresolved critical or hard-rule defects force another round. Reaching
+/// the round or budget guard returns `InputRequired`; it never spends beyond
+/// policy implicitly.
+pub fn decide_revision(
+    rounds_used: u8,
+    max_rounds: u8,
+    unresolved: &[Defect],
+    remaining_budget_ratio: f32,
+    min_remaining_budget_ratio: f32,
+) -> RevisionDecision {
+    let blocking = unresolved
+        .iter()
+        .any(|defect| defect.severity == Severity::Critical || defect.code.is_hard_rule());
+    if !blocking {
+        return RevisionDecision::Complete;
+    }
+    if rounds_used >= max_rounds
+        || !(0.0..=1.0).contains(&remaining_budget_ratio)
+        || !(0.0..=1.0).contains(&min_remaining_budget_ratio)
+        || remaining_budget_ratio < min_remaining_budget_ratio
+    {
+        RevisionDecision::InputRequired
+    } else {
+        RevisionDecision::ReviseAgain
+    }
+}
+
+fn repair_class(defect: &Defect) -> u8 {
+    if defect.code.is_hard_rule() {
+        0
+    } else if defect.severity == Severity::Critical {
+        1
+    } else {
+        2
+    }
+}
+
+fn repair_score(defect: &Defect, weights: &DefectWeights, severity: &SeverityFactors) -> f32 {
+    let factor = match defect.severity {
+        Severity::Minor => severity.minor,
+        Severity::Major => severity.major,
+        Severity::Critical => f32::MAX,
+    };
+    weights.weight(defect.code).unwrap_or(f32::MAX) * factor
+}
+
 /// `D1`: pick one architecture candidate.
 ///
 /// Determinism is a hard requirement — identical inputs must yield an identical
@@ -336,6 +423,58 @@ mod tests {
         ];
         assert_eq!(chosen_id(&select(&pool, &policy)), "a");
         assert_eq!(chosen_id(&select(&pool, &policy)), "a");
+    }
+
+    #[test]
+    fn d3_prioritizes_hard_and_critical_cited_repairs() {
+        let cited = |code, severity, index| Defect {
+            code,
+            severity,
+            span: Some(ArtifactSpanRef::parse(format!("story-package/scene-{index}")).unwrap()),
+        };
+        let defects = vec![
+            cited(ProblemCode::Exposition, Severity::Major, 3),
+            cited(ProblemCode::Continuity, Severity::Critical, 2),
+            cited(ProblemCode::Policy, Severity::Minor, 1),
+            Defect {
+                code: ProblemCode::MotiveExplicit,
+                severity: Severity::Major,
+                span: None,
+            },
+        ];
+        let ranked = rank_repairs(
+            &defects,
+            &DefectWeights::default(),
+            &SeverityFactors::default(),
+        );
+        assert_eq!(ranked.len(), 3);
+        assert_eq!(ranked[0].code, ProblemCode::Policy);
+        assert_eq!(ranked[1].severity, Severity::Critical);
+    }
+
+    #[test]
+    fn d4_never_silently_exceeds_round_or_budget_guard() {
+        let blocking = vec![Defect {
+            code: ProblemCode::Continuity,
+            severity: Severity::Critical,
+            span: Some(ArtifactSpanRef::parse("story-package/scene-1").unwrap()),
+        }];
+        assert_eq!(
+            decide_revision(0, 2, &blocking, 0.8, 0.2),
+            RevisionDecision::ReviseAgain
+        );
+        assert_eq!(
+            decide_revision(2, 2, &blocking, 0.8, 0.2),
+            RevisionDecision::InputRequired
+        );
+        assert_eq!(
+            decide_revision(1, 2, &blocking, 0.1, 0.2),
+            RevisionDecision::InputRequired
+        );
+        assert_eq!(
+            decide_revision(0, 2, &[], 0.8, 0.2),
+            RevisionDecision::Complete
+        );
     }
 
     #[test]

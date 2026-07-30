@@ -42,19 +42,38 @@
             "type": "disabled"
           },
           "model_override_required": false,
-          "blocked_on": null,
-          "note": "Verified 2026-07-27 with a real Chat Completions request: the authenticated Ark route accepted model id glm-5-2-260617 and honoured JSON mode. Deep thinking is disabled for bounded stage-0 judge latency. The judge-level model remains glm-5.2 as the provider-neutral identity."
+          "blocked_on": "account_overdue",
+          "note": "Verified 2026-07-27 with a real Chat Completions request: the authenticated Ark route accepted model id glm-5-2-260617 and honoured JSON mode. Deep thinking is disabled for bounded stage-0 judge latency. The judge-level model remains glm-5.2 as the provider-neutral identity. Re-probed 2026-07-29: HTTP 403 AccountOverdueError. Both GLM routes are now blocked on billing, so the zhipu family cannot run at all until one is topped up."
         }
       ],
       "model_id_verified": true,
       "routes_note": "Routes are alternate vendors for ONE model, tried in order. They are deliberately not separate judges: the same model behind two vendors would satisfy min_judge_models on paper while being one opinion counted twice."
+    },
+    {
+      "model": "gpt-5.4",
+      "family": "openai",
+      "routes": [
+        {
+          "provider": "local_codex_exec",
+          "command": "codex",
+          "endpoint": null,
+          "api_key_env": null,
+          "output_schema": "schemas/stage0-judge-output-v1.json",
+          "endpoint_verified": true,
+          "blocked_on": null,
+          "note": "Runs through the local Codex CLI in --ephemeral --sandbox read-only mode, so no API key is held by this repository. Verified 2026-07-29: completed the full stage-0 narrow probe, order-consistent, and recorded its own judge_config_fingerprint."
+        }
+      ],
+      "sampling_control": "codex_cli_provider_default",
+      "note": "Promoted from supplemental to a formal judge on 2026-07-29. It is the only non-Chinese-native family in the set and the only judge that stayed order-consistent on the narrow pair, which is exactly why it counts."
     }
   ],
   "sampling": {
     "samples_per_artifact": 3,
     "aggregate": "median",
     "temperature": 0.7,
-    "temperature_note": "Deliberately not 0. The manifest aggregates three samples by median, which requires variance to exist. At temperature 0 self_consistency is trivially 1.0 and measures nothing."
+    "temperature_note": "Deliberately not 0. The manifest aggregates three samples by median, which requires variance to exist. At temperature 0 self_consistency is trivially 1.0 and measures nothing.",
+    "note_local_codex": "The local Codex route does not accept a temperature; it uses the CLI provider default and records sampling_control instead. Its self_consistency is therefore measured under different sampling than the HTTP judges and is not directly comparable to theirs."
   },
-  "independence_caveat": "Both judges are Chinese-native model families with likely overlapping Chinese training corpora and similar RLHF preferences for Chinese prose. Agreement between them is weaker evidence than the metric name suggests: it may reflect shared priors rather than independent confirmation. Genuine independence requires a non-Chinese-native family or a human."
+  "independence_caveat": "Two of the three judges (qwen, zhipu) are Chinese-native families with likely overlapping Chinese training corpora and similar RLHF preferences for Chinese prose; agreement between those two may reflect shared priors rather than independent confirmation. The openai family breaks that correlation and is the reason inter_model_agreement is now interpretable at all — but with one independent rater against two correlated ones, a high alpha still says less than the number suggests. A human rater remains the only fully independent check."
 }

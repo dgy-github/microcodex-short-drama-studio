@@ -1,0 +1,74 @@
+feature: production-reliability
+requirements:
+  - id: REQ-139
+    interfaces: [API-129]
+    implementation: [DESKTOP-115]
+    tests: [TEST-148]
+  - id: REQ-140
+    interfaces: [API-130]
+    implementation: [SIDECAR-116]
+    tests: [TEST-149]
+  - id: REQ-141
+    interfaces: [API-131]
+    implementation: [STORE-117]
+    tests: [TEST-150]
+  - id: REQ-142
+    interfaces: [API-130]
+    implementation: [SIDECAR-118]
+    tests: [TEST-151]
+  - id: REQ-143
+    interfaces: [API-132]
+    implementation: [RUNTIME-119]
+    tests: [TEST-152]
+  - id: REQ-144
+    interfaces: [API-133]
+    implementation: [OPS-120]
+    tests: [TEST-153]
+interfaces:
+  - id: API-129
+    location: schemas/credential-audit-event-v1.json
+    status: IMPLEMENTED
+  - id: API-130
+    location: sidecar/campaign_adapter/server.py
+    status: IMPLEMENTED
+  - id: API-131
+    location: schemas/story-store-backup-v1.json
+    status: IMPLEMENTED
+  - id: API-132
+    location: schemas/structured-diagnostic-v1.json
+    status: IMPLEMENTED
+  - id: API-133
+    location: docs/generated/dependency-inventory.json
+    status: GENERATED
+implementation:
+  - id: DESKTOP-115
+    location: apps/desktop/src-tauri/src/credentials.rs
+    owner: CAP-003
+  - id: SIDECAR-116
+    location: sidecar/campaign_adapter/server.py
+    owner: CAP-004
+  - id: STORE-117
+    location: crates/story-storage/src/operations.rs
+    owner: CAP-010
+  - id: SIDECAR-118
+    location: sidecar/campaign_adapter/workflow.py
+    owner: CAP-004
+  - id: RUNTIME-119
+    location: crates/story-runtime/src/diagnostics.rs
+    owner: CAP-002
+  - id: OPS-120
+    location: scripts/build_dependency_inventory.py
+    owner: CAP-010
+tests:
+  - id: TEST-148
+    location: apps/desktop/src-tauri/src/credentials.rs
+  - id: TEST-149
+    location: sidecar/test_server.py
+  - id: TEST-150
+    location: crates/story-storage/src/operations.rs
+  - id: TEST-151
+    location: sidecar/test_workflow.py
+  - id: TEST-152
+    location: crates/story-runtime/src/diagnostics.rs
+  - id: TEST-153
+    location: sidecar/test_reliability_sustained.py

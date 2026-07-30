@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-constraint-profile-v1.json",
+  "title": "Story constraint profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "profile_id", "content_form", "episode_count_variant",
+    "episodes_range", "minutes_per_episode_range", "production"
+  ],
+  "properties": {
+    "schema": {"const": "story-constraint-profile/v1"},
+    "profile_id": {"type": "string", "pattern": "^[a-z0-9-]+-v[0-9]+$"},
+    "content_form": {"const": "scripted_short_drama"},
+    "episode_count_variant": {"enum": ["short", "long"]},
+    "episodes_range": {
+      "type": "array", "prefixItems": [
+        {"type": "integer", "minimum": 1},
+        {"type": "integer", "minimum": 1}
+      ], "minItems": 2, "maxItems": 2
+    },
+    "minutes_per_episode_range": {
+      "type": "array", "prefixItems": [
+        {"type": "integer", "minimum": 1},
+        {"type": "integer", "minimum": 1}
+      ], "minItems": 2, "maxItems": 2
+    },
+    "production": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_locations", "max_speaking_cast", "level"],
+      "properties": {
+        "max_locations": {"type": "integer", "minimum": 1},
+        "max_speaking_cast": {"type": "integer", "minimum": 1},
+        "level": {"enum": ["low_budget", "mid_budget", "high_budget"]}
+      }
+    }
+  }
+}

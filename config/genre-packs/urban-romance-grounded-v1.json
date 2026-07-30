@@ -1,0 +1,31 @@
+{
+  "schema": "genre-template/v1",
+  "template_id": "urban-romance-grounded-v1",
+  "display_name": "都市情感关系",
+  "genre": "urban_romance",
+  "differentiation_axis": "现实利益与亲密关系之间的可信选择",
+  "market_note": "面向人物关系驱动、场景可控的都市情感短剧。",
+  "constraints": {
+    "episodes_range": [6, 80],
+    "minutes_per_episode": 2,
+    "max_locations": 14,
+    "max_speaking_cast": 14,
+    "production_level": "mid_budget",
+    "audience": "20-40"
+  },
+  "constraint_profiles": ["short-vertical-v1", "long-serial-v1"],
+  "forbidden_elements": ["用误会拖延全部剧情", "把控制欲包装成爱情"],
+  "required_conditions": ["关系变化必须由具体选择推动", "和解必须处理现实代价"],
+  "agent_configuration": {
+    "architect_profile": "urban-romance-relationship-architect-v1",
+    "reviewer_profiles": ["urban-romance-credibility-reviewer-v1"]
+  },
+  "skills": [],
+  "retrieval_collections": ["internal-story-craft-v1"],
+  "regression_manifest": "urban-romance-grounded-v1",
+  "rubric_overrides": null,
+  "promoted_by_eval_run": null,
+  "status": "draft",
+  "content_form": "scripted_short_drama",
+  "content_form_note": "长短集数变体共用 story-job/v1 与 story-package/v1。"
+}

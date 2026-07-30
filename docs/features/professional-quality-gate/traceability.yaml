@@ -1,0 +1,49 @@
+feature: professional-quality-gate
+requirements:
+  - id: REQ-127
+    interfaces: [API-119]
+    implementation: [EVAL-110]
+    tests: [TEST-142]
+  - id: REQ-128
+    interfaces: [API-120]
+    implementation: [EVAL-111]
+    tests: [TEST-143]
+  - id: REQ-129
+    interfaces: [API-121]
+    implementation: [EVAL-112]
+    tests: [TEST-144]
+  - id: REQ-130
+    interfaces: [API-120]
+    implementation: [EVAL-111]
+    tests: [TEST-143]
+  - id: REQ-131
+    interfaces: [API-120]
+    implementation: [EVAL-111]
+    tests: [TEST-143]
+interfaces:
+  - id: API-119
+    location: schemas/eval-adversarial-pair-v1.json
+    status: TESTED
+  - id: API-120
+    location: schemas/promotion-decision-v1.json
+    status: TESTED
+  - id: API-121
+    location: schemas/holdout-seal-v1.json
+    status: TESTED
+implementation:
+  - id: EVAL-110
+    location: eval/tools/build_discrimination_pair.py
+    owner: CAP-005
+  - id: EVAL-111
+    location: eval/tools/professional_gate.py
+    owner: CAP-005
+  - id: EVAL-112
+    location: eval/tools/seal_holdout.py
+    owner: CAP-005
+tests:
+  - id: TEST-142
+    location: eval/tools/test_build_discrimination_pair.py
+  - id: TEST-143
+    location: eval/tools/test_professional_gate.py
+  - id: TEST-144
+    location: eval/tools/test_seal_holdout.py

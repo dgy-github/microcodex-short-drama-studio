@@ -1,0 +1,13 @@
+{
+  "schema": "story-constraint-profile/v1",
+  "profile_id": "long-serial-v1",
+  "content_form": "scripted_short_drama",
+  "episode_count_variant": "long",
+  "episodes_range": [40, 80],
+  "minutes_per_episode_range": [2, 5],
+  "production": {
+    "max_locations": 12,
+    "max_speaking_cast": 16,
+    "level": "mid_budget"
+  }
+}

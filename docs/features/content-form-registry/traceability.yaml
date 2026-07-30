@@ -1,0 +1,34 @@
+feature: content-form-registry
+requirements:
+  - id: REQ-106
+    interfaces:
+      - API-103
+    implementation:
+      - BE-103
+    tests:
+      - TEST-114
+      - TEST-115
+      - TEST-116
+      - TEST-117
+interfaces:
+  - id: API-103
+    location: schemas/content-form-registry-v1.json
+    status: DONE
+    purpose: bind each content form to one artifact-schema, rubric and case-set triple
+implementation:
+  - id: BE-103
+    location: crates/story-runtime/src/lib.rs
+    owner: CAP-002
+tests:
+  - id: TEST-114
+    location: crates/story-runtime/src/lib.rs
+    proves: the real registry resolves a scripted-drama job to existing assets
+  - id: TEST-115
+    location: crates/story-runtime/src/lib.rs
+    proves: duplicate content-form entries are rejected
+  - id: TEST-116
+    location: crates/story-runtime/src/lib.rs
+    proves: absolute and traversal asset references are rejected
+  - id: TEST-117
+    location: crates/story-runtime/src/lib.rs
+    proves: a registry with no matching form fails closed

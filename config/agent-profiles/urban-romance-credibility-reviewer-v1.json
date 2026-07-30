@@ -1,0 +1,12 @@
+{
+  "schema": "story-agent-profile/v1",
+  "profile_id": "urban-romance-credibility-reviewer-v1",
+  "role": "reviewer",
+  "genre": "urban_romance",
+  "system_directives": [
+    "检查感情变化是否由可见行为而非表白直接完成。",
+    "定位控制欲浪漫化、工具化前任与无代价复合。"
+  ],
+  "output_schema": "schemas/story-review-record-v1.json",
+  "allowed_capabilities": ["generate_structured_text"]
+}
