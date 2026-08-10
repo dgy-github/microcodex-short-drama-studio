@@ -1,9 +1,46 @@
 # HANDOFF
 status: active
-date: 2026-07-30
-agent: Codex
+date: 2026-08-10
+agent: Claude Fable 5
 branch: main
 origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
+
+## 最新改进 (2026-08-10)
+
+由 Claude Fable 5 完成的代码质量提升工作：
+
+### 已完成
+- ✅ 删除孤儿 `templates/` 目录（已被 `config/genre-packs/` 取代）
+- ✅ 修复测试输出误导：重试日志改为 stderr
+- ✅ 创建 `IMPROVEMENT_PLAN.md` - 完整的项目完善计划
+- ✅ 创建 `TROUBLESHOOTING.md` - 常见问题和解决方案
+- ✅ 创建 `docs/CLEAN_VM_ACCEPTANCE_TEST.md` - P10 验收脚本
+- ✅ 创建 `scripts/setup_dev_environment.py` - 自动化环境设置
+- ✅ 创建 `docs/RELEASE_CHECKLIST.md` - 发布检查清单
+- ✅ 更新 `README.md` - 添加快速开始指南
+- ✅ 代码质量评估完成 - 总体评级 A-（单人开发背景下罕见的工程成熟度）
+
+### 质量评估结论
+**评级**: A-（优秀，有待改进）
+
+**优势**:
+- 架构设计优秀（A+）：边界清晰、fail-closed、形式无关抽象
+- 安全实践到位（A）：凭据加密、零泄露、诊断脱敏
+- 文档完整详尽（A）：包含设计文档、ADR、审计报告
+- 工程纪律严格：明确的 Exit 条件、版本化合约、诚实面对问题
+- 自我纪律异常严格（罕见于单人项目）
+
+**待改进**:
+- P1 退出条件失败：seeded_defect_detection = 0.0（目标 0.75）
+- P10 Clean VM 验收未执行
+- 可复现性问题（已通过新文档改善）
+- 测试覆盖不均（核心充分，桌面端较少）
+
+### 下一步优先级
+1. 🔴 **P10 验收** - 执行 `docs/CLEAN_VM_ACCEPTANCE_TEST.md`
+2. 🔴 **P1 人工盲测** - 解除 advisory/non-promotable 状态
+3. 🟡 **充值 GLM** - 恢复第三个 judge 族
+4. 🟢 **桌面端测试** - 补充集成测试（可选）
 
 ## 接手必读
 

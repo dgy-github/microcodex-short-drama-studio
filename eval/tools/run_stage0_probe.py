@@ -29,6 +29,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.error
@@ -143,7 +144,7 @@ def urlopen_with_retry(
             retry_after = error.headers.get("Retry-After")
             delay = min(float(retry_after), 60.0) if retry_after else 2 ** attempt
             error.read()
-            print(f"RETRY HTTP {error.code}: waiting {delay:g}s")
+            print(f"RETRY HTTP {error.code}: waiting {delay:g}s", file=sys.stderr)
             time.sleep(delay)
         except (
             urllib.error.URLError,
@@ -153,7 +154,7 @@ def urlopen_with_retry(
             if attempt == attempts:
                 raise
             delay = 2 ** attempt
-            print(f"RETRY {type(error).__name__}: waiting {delay}s")
+            print(f"RETRY {type(error).__name__}: waiting {delay}s", file=sys.stderr)
             time.sleep(delay)
     raise AssertionError("unreachable")
 
