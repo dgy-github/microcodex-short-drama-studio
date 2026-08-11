@@ -1,8 +1,12 @@
 //! Storage boundary for product jobs, projections, immutable artifacts, and rights metadata.
 
+mod export_formats;
 mod operations;
 mod revisions;
 
+pub use export_formats::{
+    package_to_html, package_to_markdown, package_to_plain_text, ExportFormat, ExportOptions,
+};
 pub use operations::{
     create_backup, migrate_store, repair_store, restore_backup, BackupFile, BackupManifest,
     RepairReport, StoreOperationError,

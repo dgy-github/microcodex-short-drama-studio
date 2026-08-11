@@ -17,6 +17,7 @@
   let actor = $state("operator");
   let approvalNote = $state("");
   let exportPath = $state("");
+  let exportFormat = $state("json");
   let comparison = $state<RevisionComparison | null>(null);
   let busy = $state(false);
   let error = $state("");
@@ -246,8 +247,20 @@
 
         <div class="export-panel">
           <label class="field">
-            <span>导出到尚不存在的绝对 .json 路径</span>
-            <input bind:value={exportPath} placeholder="D:\Stories\approved-story.json" />
+            <span>导出格式</span>
+            <select bind:value={exportFormat}>
+              <option value="json">JSON（原始数据）</option>
+              <option value="md">Markdown（可读格式）</option>
+              <option value="html">HTML（网页格式）</option>
+              <option value="txt">纯文本</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>导出到尚不存在的绝对路径</span>
+            <input
+              bind:value={exportPath}
+              placeholder={`D:\\Stories\\approved-story.${exportFormat}`}
+            />
           </label>
           <button class="primary" onclick={exportApproved} disabled={busy || active.approval?.decision !== "approved"}>
             导出已批准版本

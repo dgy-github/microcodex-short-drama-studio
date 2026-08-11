@@ -394,6 +394,74 @@ impl RevisionRepository {
         }
     }
 
+    /// Export approved revision with format support (JSON, Markdown, HTML, TXT)
+    pub fn export_approved_with_format(
+        &self,
+        revision_id: &str,
+        target: &Path,
+    ) -> Result<(), RevisionError> {
+        use crate::export_formats::{package_to_html, package_to_markdown, package_to_plain_text, ExportFormat, ExportOptions};
+
+        // Validate path
+        if !target.is_absolute() || target.exists() || !target.parent().is_some_and(Path::is_dir) {
+            return Err(RevisionError::InvalidExport);
+        }
+
+        // Determine format from extension
+        let format = target
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .and_then(ExportFormat::from_extension)
+            .ok_or(RevisionError::InvalidExport)?;
+
+        // Check approval status
+        let approval: ApprovalEvent =
+            read_json(&self.revision_dir(revision_id)?.join("approval.json"))
+                .map_err(|_| RevisionError::NotApproved)?;
+        if approval.decision != ApprovalDecision::Approved {
+            return Err(RevisionError::NotApproved);
+        }
+
+        // Read package
+        let package = self.read_package(revision_id)?;
+
+        // Convert to target format
+        let bytes = match format {
+            ExportFormat::Json => {
+                serde_json::to_vec_pretty(&package).map_err(|_| RevisionError::InvalidPackage)?
+            }
+            ExportFormat::Markdown => {
+                let options = ExportOptions::default();
+                let content = package_to_markdown(&package, &options)
+                    .map_err(|_| RevisionError::InvalidPackage)?;
+                content.into_bytes()
+            }
+            ExportFormat::Html => {
+                let options = ExportOptions::default();
+                let content = package_to_html(&package, &options)
+                    .map_err(|_| RevisionError::InvalidPackage)?;
+                content.into_bytes()
+            }
+            ExportFormat::PlainText => {
+                let options = ExportOptions::default();
+                let content = package_to_plain_text(&package, &options)
+                    .map_err(|_| RevisionError::InvalidPackage)?;
+                content.into_bytes()
+            }
+        };
+
+        // Write to temporary file and rename
+        let temporary = target.with_extension(format!("{}.partial", Uuid::new_v4().simple()));
+        write_new(&temporary, &bytes)?;
+        match std::fs::rename(&temporary, target) {
+            Ok(()) => Ok(()),
+            Err(_) => {
+                let _ = std::fs::remove_file(&temporary);
+                Err(RevisionError::InvalidExport)
+            }
+        }
+    }
+
     fn build_record(
         &self,
         package: &Value,

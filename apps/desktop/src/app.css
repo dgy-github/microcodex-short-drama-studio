@@ -422,3 +422,113 @@ button.danger { color: #e79990; }
   .score-grid { grid-template-columns: 1fr; }
   .story-character-grid { grid-template-columns: 1fr; }
 }
+/* Search and filter controls */
+.search-filters {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #151712;
+  border-bottom: 1px solid #2b2f27;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #353a30;
+  border-radius: 7px;
+  background: #10120e;
+  color: #eff0ea;
+  font-size: 0.875rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #8ba52f;
+  box-shadow: 0 0 0 3px #d7ff480c;
+}
+
+.search-input::placeholder {
+  color: #62685d;
+}
+
+.sort-select,
+.filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #353a30;
+  border-radius: 7px;
+  background: #10120e;
+  color: #eff0ea;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.sort-select:hover,
+.filter-select:hover {
+  border-color: #4c5540;
+}
+
+.sort-select:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #8ba52f;
+}
+
+.result-count {
+  font-size: 0.75rem;
+  color: #777d72;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Adjust artifact panel for search */
+.artifact-panel .panel-heading {
+  margin-bottom: 0;
+}
+/* Batch operation styles */
+.panel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.batch-toolbar {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #1a1d16;
+  border-bottom: 1px solid #2b2f27;
+  align-items: center;
+}
+
+.batch-count {
+  font-size: 0.875rem;
+  color: #b9d86c;
+  font-weight: 600;
+}
+
+.batch-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.batch-checkbox {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.run-list button.selected-batch {
+  background: #252b1d;
+  border-color: #8ba52f;
+}
+
+.run-list button.selected-batch::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #d7ff48;
+}

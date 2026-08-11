@@ -146,9 +146,19 @@ impl RevisionService {
         target_path: &str,
     ) -> Result<ExportReceipt, CommandError> {
         let target = PathBuf::from(target_path);
-        self.lock()?
-            .export_approved(revision_id, &target)
-            .map_err(map_revision_error)?;
+
+        // Use new format-aware export if extension is supported
+        let extension = target.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let result = if matches!(extension, "md" | "markdown" | "html" | "htm" | "txt") {
+            self.lock()?
+                .export_approved_with_format(revision_id, &target)
+        } else {
+            self.lock()?
+                .export_approved(revision_id, &target)
+        };
+
+        result.map_err(map_revision_error)?;
+
         Ok(ExportReceipt {
             revision_id: revision_id.to_owned(),
             target_path: target.to_string_lossy().into_owned(),

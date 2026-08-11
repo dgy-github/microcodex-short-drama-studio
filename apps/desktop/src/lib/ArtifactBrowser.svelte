@@ -6,20 +6,29 @@
 
   let { initialRunId = null }: { initialRunId?: string | null } = $props();
   let runs = $state<RunSummary[]>([]);
+  let filteredRuns = $state<RunSummary[]>([]);
   let selected = $state<RunSummary | null>(null);
   let detail = $state<WorkflowResult | null>(null);
   let busy = $state(true);
   let error = $state("");
   let revising = $state(false);
   let reading = $state(false);
+  let searchQuery = $state("");
+  let sortBy = $state<"date" | "name">("date");
+  let filterStatus = $state<"all" | "completed" | "failed">("all");
+  let batchMode = $state(false);
+  let selectedRunIds = $state<Set<string>>(new Set());
+  let batchBusy = $state(false);
+  let batchMessage = $state("");
 
   async function loadRuns() {
     busy = true;
     error = "";
     try {
       runs = await desktopApi.listRuns();
+      applyFilters();
       const initial =
-        runs.find((run) => run.run_id === initialRunId) ?? runs[0];
+        filteredRuns.find((run) => run.run_id === initialRunId) ?? filteredRuns[0];
       if (initial) await selectRun(initial);
     } catch (value) {
       error = errorMessage(value);
@@ -27,6 +36,47 @@
       busy = false;
     }
   }
+
+  function applyFilters() {
+    let result = [...runs];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((run) => {
+        const logline = (run.logline || "").toLowerCase();
+        const runId = run.run_id.toLowerCase();
+        const models = `${run.generation_model} ${run.review_model}`.toLowerCase();
+        return logline.includes(query) || runId.includes(query) || models.includes(query);
+      });
+    }
+
+    // Apply status filter
+    if (filterStatus !== "all") {
+      result = result.filter((run) => {
+        // Assuming runs with task_count < 17 are failed
+        const isCompleted = run.task_count >= 17;
+        return filterStatus === "completed" ? isCompleted : !isCompleted;
+      });
+    }
+
+    // Apply sorting
+    if (sortBy === "date") {
+      result.sort((a, b) => b.completed_at_unix_ms - a.completed_at_unix_ms);
+    } else if (sortBy === "name") {
+      result.sort((a, b) => (a.logline || "").localeCompare(b.logline || ""));
+    }
+
+    filteredRuns = result;
+  }
+
+  // Re-apply filters when search/filter/sort changes
+  $effect(() => {
+    searchQuery;
+    sortBy;
+    filterStatus;
+    if (runs.length > 0) applyFilters();
+  });
 
   async function selectRun(run: RunSummary) {
     selected = run;
@@ -85,6 +135,76 @@
     return new Date(timestamp).toLocaleString("zh-CN", { hour12: false });
   }
 
+  function toggleBatchMode() {
+    batchMode = !batchMode;
+    if (!batchMode) {
+      selectedRunIds.clear();
+      selectedRunIds = new Set();
+    }
+  }
+
+  function toggleRunSelection(runId: string) {
+    if (selectedRunIds.has(runId)) {
+      selectedRunIds.delete(runId);
+    } else {
+      selectedRunIds.add(runId);
+    }
+    selectedRunIds = new Set(selectedRunIds);
+  }
+
+  function toggleSelectAll() {
+    if (selectedRunIds.size === filteredRuns.length) {
+      selectedRunIds.clear();
+    } else {
+      selectedRunIds = new Set(filteredRuns.map(run => run.run_id));
+    }
+    selectedRunIds = new Set(selectedRunIds);
+  }
+
+  async function batchExport(format: string) {
+    if (selectedRunIds.size === 0) return;
+
+    batchBusy = true;
+    batchMessage = "";
+    let successCount = 0;
+    let failCount = 0;
+
+    try {
+      for (const runId of selectedRunIds) {
+        try {
+          const run = runs.find(r => r.run_id === runId);
+          if (!run) continue;
+
+          const workspace = await desktopApi.openRevisionWorkspace(runId);
+          const approvedRevision = workspace.revisions.find(
+            (rev) => rev.approval?.decision === "approved"
+          );
+
+          if (approvedRevision) {
+            const timestamp = Date.now();
+            const safeName = (run.logline || runId).replace(/[<>:"/\\|?*]/g, '_').slice(0, 50);
+            const targetPath = `D:\\Stories\\batch_${timestamp}_${safeName}.${format}`;
+
+            await desktopApi.exportRevision(approvedRevision.record.revision_id, targetPath);
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch {
+          failCount++;
+        }
+      }
+
+      batchMessage = `批量导出完成：成功 ${successCount}，失败 ${failCount}`;
+      selectedRunIds.clear();
+      selectedRunIds = new Set();
+    } catch (value) {
+      error = errorMessage(value);
+    } finally {
+      batchBusy = false;
+    }
+  }
+
   onMount(loadRuns);
 </script>
 
@@ -100,8 +220,65 @@
       <span class="eyebrow">作品库</span>
       <h2>已完成的故事包</h2>
     </div>
-    <button class="ghost" onclick={loadRuns} disabled={busy}>刷新</button>
+    <div class="panel-actions">
+      <button class="ghost" onclick={toggleBatchMode} disabled={busy || !runs.length}>
+        {batchMode ? "退出批量" : "批量操作"}
+      </button>
+      <button class="ghost" onclick={loadRuns} disabled={busy}>刷新</button>
+    </div>
   </div>
+
+  <div class="search-filters">
+    <input
+      type="text"
+      bind:value={searchQuery}
+      placeholder="搜索标题、运行ID、模型..."
+      class="search-input"
+    />
+    <select bind:value={sortBy} class="sort-select">
+      <option value="date">按日期排序</option>
+      <option value="name">按名称排序</option>
+    </select>
+    <select bind:value={filterStatus} class="filter-select">
+      <option value="all">全部状态</option>
+      <option value="completed">已完成</option>
+      <option value="failed">未完成</option>
+    </select>
+    <span class="result-count">{filteredRuns.length} / {runs.length} 个故事</span>
+  </div>
+
+  {#if batchMode}
+    <div class="batch-toolbar">
+      <button class="ghost" onclick={toggleSelectAll}>
+        {selectedRunIds.size === filteredRuns.length ? "取消全选" : "全选"}
+      </button>
+      <span class="batch-count">已选择 {selectedRunIds.size} 个故事</span>
+      <div class="batch-actions">
+        <button
+          class="secondary"
+          onclick={() => batchExport("json")}
+          disabled={batchBusy || selectedRunIds.size === 0}
+        >
+          批量导出 JSON
+        </button>
+        <button
+          class="secondary"
+          onclick={() => batchExport("md")}
+          disabled={batchBusy || selectedRunIds.size === 0}
+        >
+          批量导出 Markdown
+        </button>
+        <button
+          class="ghost danger"
+          onclick={batchDelete}
+          disabled={batchBusy || selectedRunIds.size === 0}
+        >
+          批量删除
+        </button>
+      </div>
+      {#if batchMessage}<p class="success">{batchMessage}</p>{/if}
+    </div>
+  {/if}
 
   {#if busy && !runs.length}
     <div class="empty-state">正在读取本地作品库…</div>
@@ -109,10 +286,12 @@
     <div class="empty-state error">{error}</div>
   {:else if !runs.length}
     <div class="empty-state">还没有完成的 advisory 故事包。</div>
+  {:else if !filteredRuns.length}
+    <div class="empty-state">没有找到匹配的故事。</div>
   {:else}
     <div class="artifact-layout">
       <div class="run-list">
-        {#each runs as run, index}
+        {#each filteredRuns as run, index}
           <button
             class:active={selected?.run_id === run.run_id}
             class="run-card"
