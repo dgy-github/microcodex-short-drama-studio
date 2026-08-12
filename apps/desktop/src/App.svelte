@@ -5,10 +5,12 @@
   import CredentialPanel from "./lib/CredentialPanel.svelte";
   import EvaluationCenter from "./lib/EvaluationCenter.svelte";
   import StoryJobForm from "./lib/StoryJobForm.svelte";
+  import { initTheme, toggleTheme, getTheme, type Theme } from "./lib/theme";
 
   let active = $state<"create" | "library" | "evaluation" | "settings">("create");
   let runCount = $state<number | null>(null);
   let latestCompletedRunId = $state<string | null>(null);
+  let currentTheme = $state<Theme>(getTheme());
 
   function openCompletedRun(runId: string) {
     latestCompletedRunId = runId;
@@ -19,7 +21,12 @@
     );
   }
 
+  function handleToggleTheme() {
+    currentTheme = toggleTheme();
+  }
+
   onMount(() => {
+    initTheme();
     Promise.all([
       desktopApi.credentialStatus("deepseek"),
       desktopApi.credentialStatus("aliyun_bailian"),
@@ -55,6 +62,10 @@
         <span>◉</span>模型配置
       </button>
     </nav>
+    <button class="theme-toggle" onclick={handleToggleTheme} title="切换主题">
+      <span class="theme-icon">{currentTheme === 'dark' ? '☀️' : '🌙'}</span>
+      <span class="theme-label">{currentTheme === 'dark' ? '亮色' : '暗色'}</span>
+    </button>
     <div class="sidebar-note">
       <span class="pulse"></span>
       <div><strong>P5 Desktop</strong><small>本地可信边界</small></div>

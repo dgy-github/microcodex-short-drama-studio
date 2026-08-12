@@ -131,7 +131,8 @@
     }
   }
 
-  function toggleBookmark(nodeId: string) {
+  function toggleBookmark(nodeId: string | undefined) {
+    if (!nodeId) return;
     if (bookmarks.has(nodeId)) {
       bookmarks.delete(nodeId);
     } else {
@@ -248,6 +249,14 @@
     } finally {
       batchBusy = false;
     }
+  }
+
+  async function batchDelete() {
+    if (selectedRunIds.size === 0) return;
+
+    // TODO: 实现批量删除功能
+    // 需要后端 API 支持删除运行记录
+    batchMessage = "批量删除功能待实现（需要后端支持）";
   }
 
   onMount(loadRuns);
