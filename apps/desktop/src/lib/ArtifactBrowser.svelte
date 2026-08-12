@@ -21,6 +21,12 @@
   let batchBusy = $state(false);
   let batchMessage = $state("");
 
+  // Reading mode enhancements
+  let fullscreenMode = $state(false);
+  let fontSize = $state(16); // Base font size in px
+  let currentEpisodeIndex = $state(0);
+  let bookmarks = $state<Set<string>>(new Set()); // Store episode node_ids
+
   async function loadRuns() {
     busy = true;
     error = "";
@@ -97,6 +103,45 @@
 
   function closeReader() {
     reading = false;
+    fullscreenMode = false;
+    currentEpisodeIndex = 0;
+  }
+
+  function toggleFullscreen() {
+    fullscreenMode = !fullscreenMode;
+  }
+
+  function increaseFontSize() {
+    if (fontSize < 24) fontSize += 2;
+  }
+
+  function decreaseFontSize() {
+    if (fontSize > 12) fontSize -= 2;
+  }
+
+  function resetFontSize() {
+    fontSize = 16;
+  }
+
+  function jumpToEpisode(index: number) {
+    currentEpisodeIndex = index;
+    const episodeElement = document.getElementById(`episode-${index}`);
+    if (episodeElement) {
+      episodeElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function toggleBookmark(nodeId: string) {
+    if (bookmarks.has(nodeId)) {
+      bookmarks.delete(nodeId);
+    } else {
+      bookmarks.add(nodeId);
+    }
+    bookmarks = new Set(bookmarks);
+  }
+
+  function isBookmarked(nodeId?: string) {
+    return nodeId ? bookmarks.has(nodeId) : false;
   }
 
   function scenesForEpisode(nodeId?: string) {
@@ -354,6 +399,7 @@
 {#if reading && detail && selected}
   <div
     class="story-reader-backdrop"
+    class:fullscreen={fullscreenMode}
     role="presentation"
     onclick={(event) => {
       if (event.target === event.currentTarget) closeReader();
@@ -361,6 +407,8 @@
   >
     <div
       class="story-reader"
+      class:fullscreen={fullscreenMode}
+      style="font-size: {fontSize}px;"
       role="dialog"
       aria-modal="true"
       aria-labelledby="story-reader-title"
@@ -371,9 +419,47 @@
           <h2 id="story-reader-title">完整故事</h2>
           <small>{detail.package.package_id} · {selected.episode_count} 集</small>
         </div>
-        <button class="ghost" type="button" onclick={closeReader} aria-label="关闭完整故事">
-          关闭
-        </button>
+        <div class="reader-controls">
+          <button
+            class="ghost control-btn"
+            type="button"
+            onclick={decreaseFontSize}
+            aria-label="减小字体"
+            title="减小字体"
+          >
+            A-
+          </button>
+          <button
+            class="ghost control-btn"
+            type="button"
+            onclick={resetFontSize}
+            aria-label="重置字体"
+            title="重置字体大小"
+          >
+            A
+          </button>
+          <button
+            class="ghost control-btn"
+            type="button"
+            onclick={increaseFontSize}
+            aria-label="增大字体"
+            title="增大字体"
+          >
+            A+
+          </button>
+          <button
+            class="ghost control-btn"
+            type="button"
+            onclick={toggleFullscreen}
+            aria-label={fullscreenMode ? "退出全屏" : "全屏模式"}
+            title={fullscreenMode ? "退出全屏" : "全屏模式"}
+          >
+            {fullscreenMode ? "⊟" : "⊡"}
+          </button>
+          <button class="ghost" type="button" onclick={closeReader} aria-label="关闭完整故事">
+            关闭
+          </button>
+        </div>
       </header>
 
       <section class="story-reader-summary">
@@ -413,13 +499,43 @@
 
       <section class="story-reader-section">
         <h3>分集正文</h3>
+
+        <!-- Quick Jump Navigation -->
+        <div class="episode-navigator">
+          <span class="nav-label">快速跳转：</span>
+          <div class="episode-jump-buttons">
+            {#each detail.package.episodes ?? [] as episode, index}
+              <button
+                class="episode-jump-btn"
+                class:active={currentEpisodeIndex === index}
+                class:bookmarked={isBookmarked(episode.node_id)}
+                onclick={() => jumpToEpisode(index)}
+                title={isBookmarked(episode.node_id) ? "已加书签" : ""}
+              >
+                {index + 1}
+                {#if isBookmarked(episode.node_id)}<span class="bookmark-indicator">★</span>{/if}
+              </button>
+            {/each}
+          </div>
+        </div>
+
         <div class="story-episode-list">
           {#each detail.package.episodes ?? [] as episode, index}
             {@const episodeScenes = scenesForEpisode(episode.node_id)}
-            <article class="story-episode">
+            <article class="story-episode" id="episode-{index}">
               <header>
-                <span>EPISODE {episode.index ?? index + 1}</span>
-                <h4>第 {episode.index ?? index + 1} 集</h4>
+                <div class="episode-header-left">
+                  <span>EPISODE {episode.index ?? index + 1}</span>
+                  <h4>第 {episode.index ?? index + 1} 集</h4>
+                </div>
+                <button
+                  class="ghost bookmark-btn"
+                  onclick={() => toggleBookmark(episode.node_id)}
+                  aria-label={isBookmarked(episode.node_id) ? "移除书签" : "添加书签"}
+                  title={isBookmarked(episode.node_id) ? "移除书签" : "添加书签"}
+                >
+                  {isBookmarked(episode.node_id) ? "★" : "☆"}
+                </button>
               </header>
               <div class="episode-outline">
                 <p><b>开场</b>{episode.opening_state ?? "—"}</p>

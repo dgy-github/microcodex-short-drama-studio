@@ -532,3 +532,184 @@ button.danger { color: #e79990; }
   width: 3px;
   background: #d7ff48;
 }
+
+/* Reading Mode Enhancements */
+
+/* Fullscreen mode */
+.story-reader-backdrop.fullscreen {
+  background: #0d0f0c;
+  z-index: 1000;
+}
+
+.story-reader.fullscreen {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* Reader controls */
+.reader-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.control-btn {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 2.5rem;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background: #2a2e25 !important;
+  color: #d7ff48;
+}
+
+/* Episode Navigator */
+.episode-navigator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: #1a1d16;
+  border: 1px solid #2b2f27;
+  border-radius: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  color: #8d9484;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.episode-jump-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.episode-jump-btn {
+  padding: 0.5rem 0.75rem;
+  background: #10120e;
+  border: 1px solid #353a30;
+  border-radius: 6px;
+  color: #eff0ea;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 2.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.episode-jump-btn:hover {
+  background: #20231c;
+  border-color: #8ba52f;
+  color: #d7ff48;
+}
+
+.episode-jump-btn.active {
+  background: #8ba52f;
+  border-color: #8ba52f;
+  color: #11130f;
+}
+
+.episode-jump-btn.bookmarked {
+  border-color: #d7ff48;
+  box-shadow: 0 0 8px rgba(215, 255, 72, 0.15);
+}
+
+.bookmark-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  color: #d7ff48;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* Episode header with bookmark */
+.story-episode header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.episode-header-left {
+  flex: 1;
+}
+
+.bookmark-btn {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #777d72;
+  transition: all 0.2s ease;
+  margin-left: 1rem;
+}
+
+.bookmark-btn:hover {
+  color: #d7ff48;
+  background: #20231c !important;
+}
+
+/* Smooth scroll behavior */
+.story-reader {
+  scroll-behavior: smooth;
+}
+
+/* Font size adjustments */
+.story-reader h3 {
+  font-size: 1.5em;
+}
+
+.story-reader h4 {
+  font-size: 1.25em;
+}
+
+.story-reader h5 {
+  font-size: 1.1em;
+}
+
+.story-reader p,
+.story-reader small,
+.story-reader span {
+  line-height: 1.6;
+}
+
+/* Fullscreen reading adjustments */
+.story-reader.fullscreen .story-reader-heading {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #12140f;
+  border-bottom: 1px solid #2b2f27;
+}
+
+.story-reader.fullscreen .episode-navigator {
+  top: 0;
+}
+
+/* Keyboard shortcuts hint */
+.reader-controls::before {
+  content: 'ESC 退出';
+  font-size: 0.75rem;
+  color: #62685d;
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #1a1d16;
+  border-radius: 4px;
+  font-weight: 500;
+}
