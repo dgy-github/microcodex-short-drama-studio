@@ -192,7 +192,10 @@ describe("StoryJobForm", () => {
       const mockSnapshot = {
         run_id: "run_test123",
         status: "running",
-        progress: { completed: 2, total: 17 },
+        tasks_completed: 2,
+        tasks_total: 17,
+        reviews_completed: 0,
+        approvals_pending: 0,
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
@@ -200,6 +203,9 @@ describe("StoryJobForm", () => {
           consumed_tokens: 5000,
           consumed_cny_fen: null,
         },
+        last_event_id: "evt_001",
+        events: [],
+        error: null,
       };
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
@@ -372,7 +378,10 @@ describe("StoryJobForm", () => {
       const mockSnapshot = {
         run_id: "run_test456",
         status: "running",
-        progress: { completed: 2, total: 17 },
+        tasks_completed: 2,
+        tasks_total: 17,
+        reviews_completed: 0,
+        approvals_pending: 0,
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
@@ -380,11 +389,17 @@ describe("StoryJobForm", () => {
           consumed_tokens: 5000,
           consumed_cny_fen: null,
         },
+        last_event_id: "evt_001",
+        events: [],
+        error: null,
       };
       const mockCompletedSnapshot = {
         run_id: "run_test456",
         status: "completed",
-        progress: { completed: 17, total: 17 },
+        tasks_completed: 17,
+        tasks_total: 17,
+        reviews_completed: 5,
+        approvals_pending: 0,
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
@@ -392,6 +407,9 @@ describe("StoryJobForm", () => {
           consumed_tokens: 150000,
           consumed_cny_fen: 1000,
         },
+        last_event_id: "evt_100",
+        events: [],
+        error: null,
       };
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
