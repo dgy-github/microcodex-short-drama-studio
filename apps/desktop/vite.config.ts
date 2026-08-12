@@ -8,10 +8,21 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
   },
+  resolve: {
+    conditions: ["browser"],
+  },
   test: {
     globals: true,
     environment: "jsdom",
     setupFiles: ["./src/test-setup.ts"],
+    alias: {
+      "svelte/internal/server": "svelte/internal/client",
+    },
+    server: {
+      deps: {
+        inline: [/svelte/],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json"],
