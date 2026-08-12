@@ -144,7 +144,7 @@ describe("CredentialPanel", () => {
 
   // TODO: 修复 Svelte 5 双向绑定在测试环境的问题
   describe("路由配置", () => {
-    it.skip("应该显示已保存的路由配置", async () => {
+    it("应该显示已保存的路由配置", async () => {
       render(CredentialPanel);
 
       await waitFor(() => {
