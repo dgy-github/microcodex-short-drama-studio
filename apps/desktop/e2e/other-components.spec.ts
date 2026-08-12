@@ -3,8 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe('ArtifactBrowser - 阅读器和修订工作区', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // 等待工件浏览器加载
-    await page.waitForSelector('text=工件浏览器', { timeout: 10000 });
+    // 等待应用加载
+    await page.waitForSelector('text=MicrocodeX', { timeout: 10000 });
+
+    // 点击"作品库"标签切换到 ArtifactBrowser
+    await page.click('button:has-text("作品库")');
+
+    // 等待作品库加载
+    await page.waitForSelector('h1:has-text("作品库")', { timeout: 10000 });
   });
 
   test('应该切换到阅读器视图', async ({ page }) => {
@@ -53,8 +59,11 @@ test.describe('ArtifactBrowser - 阅读器和修订工作区', () => {
 test.describe('StoryJobForm - 类型包切换', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // 等待故事任务表单加载
-    await page.waitForSelector('text=故事任务', { timeout: 10000 });
+    // 等待应用加载
+    await page.waitForSelector('text=MicrocodeX', { timeout: 10000 });
+
+    // 默认就在"创作台"，但确保已加载
+    await page.waitForSelector('h1:has-text("创作台")', { timeout: 10000 });
   });
 
   test('应该允许切换到类型包', async ({ page }) => {
@@ -91,7 +100,11 @@ test.describe('RevisionWorkspace - 完整测试', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // 等待应用加载
-    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('text=MicrocodeX', { timeout: 10000 });
+
+    // 点击"作品库"标签
+    await page.click('button:has-text("作品库")');
+    await page.waitForSelector('h1:has-text("作品库")', { timeout: 10000 });
   });
 
   test('应该加载修订工作区', async ({ page }) => {

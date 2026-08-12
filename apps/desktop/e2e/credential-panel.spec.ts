@@ -4,7 +4,13 @@ test.describe('CredentialPanel - 路由配置', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // 等待应用加载完成
-    await page.waitForSelector('text=本机凭据保险箱', { timeout: 10000 });
+    await page.waitForSelector('text=MicrocodeX', { timeout: 10000 });
+
+    // 点击"模型配置"标签切换到 CredentialPanel
+    await page.click('button:has-text("模型配置")');
+
+    // 等待 CredentialPanel 加载
+    await page.waitForSelector('text=DeepSeek', { timeout: 10000 });
   });
 
   test('应该显示已保存的路由配置', async ({ page }) => {
@@ -76,7 +82,11 @@ test.describe('CredentialPanel - 路由配置', () => {
 test.describe('CredentialPanel - 稳定性检查', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('text=本机凭据保险箱', { timeout: 10000 });
+    await page.waitForSelector('text=MicrocodeX', { timeout: 10000 });
+
+    // 点击"模型配置"标签
+    await page.click('button:has-text("模型配置")');
+    await page.waitForSelector('text=DeepSeek', { timeout: 10000 });
   });
 
   test('应该显示稳定性检查设置', async ({ page }) => {
