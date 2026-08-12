@@ -416,4 +416,192 @@ mod tests {
         assert_eq!(html_escape("<script>"), "&lt;script&gt;");
         assert_eq!(html_escape("A & B"), "A &amp; B");
     }
+
+    #[test]
+    fn test_markdown_export_with_characters() {
+        let package = json!({
+            "title": "角色测试",
+            "characters": [
+                {
+                    "name": "主角",
+                    "description": "勇敢的战士",
+                    "traits": ["勇敢", "善良", "坚强"]
+                }
+            ],
+            "episodes": []
+        });
+
+        let options = ExportOptions {
+            format: ExportFormat::Markdown,
+            include_metadata: true,
+            include_characters: true,
+        };
+
+        let result = package_to_markdown(&package, &options);
+        assert!(result.is_ok());
+        let markdown = result.unwrap();
+        assert!(markdown.contains("## 人物介绍"));
+        assert!(markdown.contains("### 主角"));
+        assert!(markdown.contains("勇敢的战士"));
+        assert!(markdown.contains("勇敢、善良、坚强"));
+    }
+
+    #[test]
+    fn test_markdown_export_without_metadata() {
+        let package = json!({
+            "title": "简单故事",
+            "premise": "这个不应该出现",
+            "episodes": []
+        });
+
+        let options = ExportOptions {
+            format: ExportFormat::Markdown,
+            include_metadata: false,
+            include_characters: true,
+        };
+
+        let result = package_to_markdown(&package, &options);
+        assert!(result.is_ok());
+        let markdown = result.unwrap();
+        assert!(markdown.contains("# 简单故事"));
+        assert!(!markdown.contains("故事信息"));
+        assert!(!markdown.contains("这个不应该出现"));
+    }
+
+    #[test]
+    fn test_html_export_basic_structure() {
+        let package = json!({
+            "title": "HTML测试",
+            "episodes": [
+                {"title": "第一集", "scenes": []}
+            ]
+        });
+
+        let options = ExportOptions::default();
+        let result = package_to_html(&package, &options);
+
+        assert!(result.is_ok());
+        let html = result.unwrap();
+        assert!(html.contains("<!DOCTYPE html>"));
+        assert!(html.contains("<title>HTML测试</title>"));
+        assert!(html.contains("<h1>HTML测试</h1>"));
+        assert!(html.contains("<h3>第 1 集</h3>"));
+    }
+
+    #[test]
+    fn test_html_export_xss_protection() {
+        let package = json!({
+            "title": "<script>alert('xss')</script>",
+            "episodes": []
+        });
+
+        let options = ExportOptions::default();
+        let result = package_to_html(&package, &options);
+
+        assert!(result.is_ok());
+        let html = result.unwrap();
+        assert!(html.contains("&lt;script&gt;"));
+        assert!(!html.contains("<script>alert"));
+    }
+
+    #[test]
+    fn test_plain_text_export() {
+        let package = json!({
+            "title": "纯文本测试",
+            "episodes": [
+                {
+                    "title": "开场",
+                    "scenes": [
+                        {
+                            "lines": [
+                                {"speaker": "A", "text": "你好"}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        let options = ExportOptions {
+            format: ExportFormat::PlainText,
+            include_metadata: false,
+            include_characters: false,
+        };
+
+        let result = package_to_plain_text(&package, &options);
+        assert!(result.is_ok());
+        let text = result.unwrap();
+        assert!(text.contains("纯文本测试"));
+        assert!(text.contains("第 1 集"));
+        assert!(text.contains("A: 你好"));
+        // 纯文本不应包含 Markdown 或 HTML 标记
+        assert!(!text.contains("##"));
+        assert!(!text.contains("<h"));
+    }
+
+    #[test]
+    fn test_export_format_extension_roundtrip() {
+        let formats = vec![
+            ExportFormat::Json,
+            ExportFormat::Markdown,
+            ExportFormat::Html,
+            ExportFormat::PlainText,
+        ];
+
+        for format in formats {
+            let ext = format.extension();
+            let parsed = ExportFormat::from_extension(ext);
+            assert_eq!(parsed, Some(format));
+        }
+    }
+
+    #[test]
+    fn test_empty_package_exports() {
+        let package = json!({});
+        let options = ExportOptions::default();
+
+        // 所有格式都应该能处理空包
+        let md = package_to_markdown(&package, &options);
+        assert!(md.is_ok());
+
+        let html = package_to_html(&package, &options);
+        assert!(html.is_ok());
+
+        let txt = package_to_plain_text(&package, &options);
+        assert!(txt.is_ok());
+    }
+
+    #[test]
+    fn test_markdown_episode_structure() {
+        let package = json!({
+            "title": "多集测试",
+            "episodes": [
+                {
+                    "title": "开始",
+                    "scenes": [
+                        {
+                            "description": "场景1",
+                            "lines": [
+                                {"speaker": "A", "text": "台词1"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "继续",
+                    "scenes": []
+                }
+            ]
+        });
+
+        let options = ExportOptions::default();
+        let result = package_to_markdown(&package, &options);
+
+        assert!(result.is_ok());
+        let markdown = result.unwrap();
+        assert!(markdown.contains("### 第 1 集：开始"));
+        assert!(markdown.contains("### 第 2 集：继续"));
+        assert!(markdown.contains("#### 场景 1"));
+        assert!(markdown.contains("**A**: 台词1"));
+    }
 }

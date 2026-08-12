@@ -32,3 +32,8 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .venv/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov

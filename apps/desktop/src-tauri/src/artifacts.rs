@@ -315,4 +315,122 @@ mod tests {
 
         let _ = std::fs::remove_dir_all(&dir);
     }
+
+    #[test]
+    fn run_id_validation_edge_cases() {
+        // 测试各种无效的 run_id 格式
+        assert!(!valid_run_id(""));
+        assert!(!valid_run_id("run_"));
+        assert!(!valid_run_id("run_abc"));
+        assert!(!valid_run_id("RUN_0148aa190ce842c8b103d3885a68dfcb")); // 大写前缀
+        assert!(!valid_run_id("run_0148aa190ce842c8b103d3885a68dfcb_extra")); // 额外后缀
+        assert!(!valid_run_id("run_0148aa190ce842c8b103d3885a68dfcb\n")); // 换行符
+        assert!(!valid_run_id("run_0148aa190ce842c8b103d3885a68dfcb ")); // 空格
+
+        // 测试有效格式
+        assert!(valid_run_id("run_0148aa190ce842c8b103d3885a68dfcb"));
+        assert!(valid_run_id("run_ffffffffffffffffffffffffffffffff"));
+        assert!(valid_run_id("run_00000000000000000000000000000000"));
+    }
+
+    #[test]
+    fn repository_list_returns_sorted_results() {
+        let dir = std::env::temp_dir().join(format!("mx-list-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let repository = ArtifactRepository::new(dir.clone());
+
+        // 创建多个成功运行
+        let run_ids = vec![
+            "run_0148aa190ce842c8b103d3885a68dfcb",
+            "run_28f176fffad642f7ab70fee5f7e74f84",
+            "run_abcdef1234567890abcdef1234567890",
+        ];
+
+        for run_id in &run_ids {
+            let record = serde_json::json!({
+                "schema": "story-workflow-result/v1",
+                "run_id": run_id,
+                "job_id": "job_1",
+                "status": "released",
+                "promotion": "promotable",
+                "tasks": [],
+                "reviews": [],
+                "package": {"episodes": [], "logline": {"text": "测试"}},
+                "provider_routes": {"generation": "openai", "review": "openai"},
+                "completed_at_unix_ms": 1234567890
+            });
+
+            let path = dir.join(run_id).join("workflow-result.json");
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(&path, serde_json::to_vec(&record).unwrap()).unwrap();
+        }
+
+        let list = repository.list().unwrap();
+        assert_eq!(list.len(), 3);
+
+        // 验证所有 run_id 都在列表中
+        let listed_ids: Vec<String> = list.iter().map(|s| s.run_id.clone()).collect();
+        for run_id in &run_ids {
+            assert!(listed_ids.contains(&run_id.to_string()));
+        }
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn repository_read_handles_missing_files() {
+        let dir = std::env::temp_dir().join(format!("mx-missing-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let repository = ArtifactRepository::new(dir.clone());
+
+        let run_id = "run_0148aa190ce842c8b103d3885a68dfcb";
+        let result = repository.read(run_id);
+
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("not found") || err.to_string().contains("No such file"));
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn repository_handles_corrupted_json() {
+        let dir = std::env::temp_dir().join(format!("mx-corrupt-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let repository = ArtifactRepository::new(dir.clone());
+
+        let run_id = "run_0148aa190ce842c8b103d3885a68dfcb";
+        let path = dir.join(run_id).join("workflow-result.json");
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(&path, b"not valid json {{{").unwrap();
+
+        let result = repository.read(run_id);
+        assert!(result.is_err());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn parse_projection_validates_required_fields() {
+        // 缺少 run_id
+        let missing_run_id = serde_json::json!({
+            "schema": "story-workflow-result/v1",
+            "job_id": "job_1",
+            "status": "released",
+            "promotion": "promotable",
+        });
+        assert!(parse_projection(&missing_run_id).is_err());
+
+        // 缺少 package
+        let missing_package = serde_json::json!({
+            "schema": "story-workflow-result/v1",
+            "run_id": "run_0148aa190ce842c8b103d3885a68dfcb",
+            "job_id": "job_1",
+            "status": "released",
+            "promotion": "promotable",
+        });
+        assert!(parse_projection(&missing_package).is_err());
+    }
 }
