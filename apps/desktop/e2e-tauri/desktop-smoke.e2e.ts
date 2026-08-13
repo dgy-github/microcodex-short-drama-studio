@@ -16,6 +16,9 @@ describe("真实 Tauri WebView 桌面验收", () => {
 
   it("启动真实桌面 WebView 并通过 IPC 初始化创作台", async () => {
     await expect(await $("nav[aria-label='主导航']")).toBeDisplayed();
+    // On a machine without configured provider credentials the app opens on
+    // 模型配置 by design, so the 创作台 view has to be requested explicitly.
+    await (await $("button=创作台")).click();
     await expect(await $("h1=创作台")).toBeDisplayed();
     await expect(await $("h2=把一句想法变成制作任务")).toBeDisplayed();
     await browser.waitUntil(

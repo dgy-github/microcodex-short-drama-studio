@@ -11,7 +11,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "npm run test:e2e:tauri",
-    "build:e2e:tauri": "npm run build && cargo build --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target-e2e",
+    "build:e2e:tauri": "npm run build && cargo build --features custom-protocol --manifest-path src-tauri/Cargo.toml --target-dir src-tauri/target-e2e",
     "test:e2e:tauri": "npm run build:e2e:tauri && wdio run wdio.conf.ts",
     "test:e2e:tauri:debug": "npm run build:e2e:tauri && wdio run wdio.conf.ts --logLevel debug",
     "tauri": "tauri",

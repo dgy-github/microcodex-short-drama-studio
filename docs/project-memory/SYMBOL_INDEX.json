@@ -2236,7 +2236,7 @@
     "path": "apps/desktop/src-tauri/src/artifacts.rs",
     "kind": "fn",
     "name": "repository_handles_corrupted_json",
-    "line": 401,
+    "line": 404,
     "public": false
   },
   {
@@ -2244,7 +2244,7 @@
     "path": "apps/desktop/src-tauri/src/artifacts.rs",
     "kind": "fn",
     "name": "parse_projection_validates_required_fields",
-    "line": 418,
+    "line": 421,
     "public": false
   },
   {
@@ -4324,7 +4324,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "stop",
-    "line": 508,
+    "line": 509,
     "public": false
   },
   {
@@ -4332,7 +4332,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "fake_capability",
-    "line": 516,
+    "line": 517,
     "public": false
   },
   {
@@ -4340,7 +4340,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "fake_artifact",
-    "line": 573,
+    "line": 574,
     "public": false
   },
   {
@@ -4348,7 +4348,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "const",
     "name": "KNOWN_TASKS",
-    "line": 646,
+    "line": 647,
     "public": false
   },
   {
@@ -4356,7 +4356,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "event",
-    "line": 664,
+    "line": 665,
     "public": false
   },
   {
@@ -4364,7 +4364,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "projection_deduplicates_sequences_and_usage",
-    "line": 688,
+    "line": 689,
     "public": false
   },
   {
@@ -4372,7 +4372,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "deterministic_desktop_runtime_completes_full_workflow_and_stores_artifact",
-    "line": 723,
+    "line": 724,
     "public": false
   },
   {
@@ -4380,7 +4380,7 @@
     "path": "apps/desktop/src-tauri/src/run_controller.rs",
     "kind": "fn",
     "name": "configured_desktop_runtime_completes_and_stores_a_story",
-    "line": 819,
+    "line": 820,
     "public": false
   },
   {
