@@ -150,23 +150,20 @@ def setup_python_venv(root: Path) -> bool:
 
     if venv_path.exists():
         print_warning(f"虚拟环境已存在: {venv_path}")
-        return True
+    else:
+        # 创建虚拟环境
+        print("  创建虚拟环境...")
+        success, output = run_command(['python', '-m', 'venv', '.venv'], cwd=root)
+        if not success:
+            print_error(f"创建虚拟环境失败: {output}")
+            return False
 
-    # 创建虚拟环境
-    print("  创建虚拟环境...")
-    success, output = run_command(['python', '-m', 'venv', '.venv'], cwd=root)
-    if not success:
-        print_error(f"创建虚拟环境失败: {output}")
-        return False
+        print_success("虚拟环境创建成功")
 
-    print_success("虚拟环境创建成功")
-
-    # 确定 pip 路径
+    # 确定虚拟环境 Python 路径
     if platform.system() == "Windows":
-        pip_path = venv_path / "Scripts" / "pip.exe"
         python_path = venv_path / "Scripts" / "python.exe"
     else:
-        pip_path = venv_path / "bin" / "pip"
         python_path = venv_path / "bin" / "python"
 
     # 升级 pip
@@ -181,12 +178,23 @@ def setup_python_venv(root: Path) -> bool:
     # 安装 sidecar
     print("  安装 sidecar 依赖...")
     success, output = run_command(
-        [str(pip_path), 'install', '-e', 'sidecar'],
+        [str(python_path), '-m', 'pip', 'install', '-e', 'sidecar'],
         cwd=root
     )
     if not success:
         print_error(f"安装 sidecar 失败: {output}")
         return False
+
+    # 安装 scripts 与 eval/tools 工具链依赖
+    print("  安装工具链依赖...")
+    for requirements in ("scripts/requirements.txt", "eval/tools/requirements.txt"):
+        success, output = run_command(
+            [str(python_path), '-m', 'pip', 'install', '-r', requirements],
+            cwd=root
+        )
+        if not success:
+            print_error(f"安装 {requirements} 失败: {output}")
+            return False
 
     print_success("Python 依赖安装成功")
 

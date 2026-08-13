@@ -21,16 +21,21 @@ from campaign_adapter.workflow import (
     character_reference,
     normalize_artifact,
     package_schema,
+    validate_task_graph,
 )
 
 
 class FakeCapability:
     def __init__(self) -> None:
-        package_path = next(
-            (Path(__file__).parents[1] / "eval" / "runs").glob(
-                "baseline-*/artifacts/*.story-package.json"
-            )
+        package_path = (
+            Path(__file__).parents[1]
+            / "eval"
+            / "baselines"
+            / "baseline-deepseek-v4-pro-20260727"
+            / "family_001.story-package.json"
         )
+        if not package_path.is_file():
+            raise FileNotFoundError(f"tracked workflow fixture missing: {package_path}")
         self.package = json.loads(package_path.read_text(encoding="utf-8"))
         self.validations = 0
         self.prompts: dict[str, str] = {}
@@ -132,12 +137,19 @@ class TrackingCapability(FakeCapability):
         super().__init__()
         self.active = 0
         self.max_active = 0
+        self._overlap_observed = asyncio.Event()
 
     async def generate(self, route: str, system: str, prompt: str):
+        task_name = prompt.splitlines()[0].split("=", 1)[1]
+        if not task_name.startswith("write_episode_"):
+            return await super().generate(route, system, prompt)
+
         self.active += 1
         self.max_active = max(self.max_active, self.active)
+        if self.active >= 2:
+            self._overlap_observed.set()
         try:
-            await asyncio.sleep(0.01)
+            await asyncio.wait_for(self._overlap_observed.wait(), timeout=1.0)
             return await super().generate(route, system, prompt)
         finally:
             self.active -= 1
@@ -163,6 +175,61 @@ def story_job(capability: FakeCapability, max_tokens: int = 100000) -> dict[str,
             "deadline_seconds": 60,
         },
     }
+
+
+class TaskGraphTests(unittest.TestCase):
+    """Python TASKS must stay in lock-step with the Rust fixed order.
+
+    `RUST_ORDER` below is a literal transcription of
+    `FIXED_STORY_EXECUTION_ORDER` in crates/story-runtime/src/execution.rs.
+    Changing either copy without the other fails `test_python_tasks_match_rust_fixed_order`.
+    """
+
+    RUST_ORDER = (
+        ("t01", ()),
+        ("t02", ("t01",)),
+        ("t03", ("t01", "t02")),
+        ("t04", ("t01", "t02")),
+        ("t05", ("t01", "t02")),
+        ("t06", ("t03", "t04", "t05")),
+        ("t07", ("t06",)),
+        ("t08", ("t07",)),
+        ("t09", ("t08",)),
+        ("t10", ("t09",)),
+        ("t11", ("t08", "t09", "t10")),
+        ("t12", ("t07", "t09", "t10")),
+        ("t13", ("t02", "t08", "t10")),
+        ("t14", ("t09", "t10")),
+        ("t15", ("t11", "t12", "t13", "t14")),
+        ("t16", ("t15",)),
+        ("t17", ("t16",)),
+    )
+
+    def test_python_tasks_match_rust_fixed_order(self) -> None:
+        self.assertEqual(
+            [(spec.task_id, spec.depends_on) for spec in TASKS],
+            list(self.RUST_ORDER),
+        )
+
+    def test_task_graph_is_complete_and_topological(self) -> None:
+        validate_task_graph()
+
+    def test_task_graph_rejects_duplicate_and_forward_dependency(self) -> None:
+        from campaign_adapter.workflow import TaskSpec
+
+        duplicate = (
+            TaskSpec("t01", "a", "a", "s", "schema", ()),
+            TaskSpec("t01", "b", "b", "s", "schema", ()),
+        )
+        with self.assertRaisesRegex(ValueError, "t01"):
+            validate_task_graph(duplicate)
+
+        forward = (
+            TaskSpec("t01", "a", "a", "s", "schema", ("t02",)),
+            TaskSpec("t02", "b", "b", "s", "schema", ()),
+        )
+        with self.assertRaisesRegex(ValueError, "t02"):
+            validate_task_graph(forward)
 
 
 class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):

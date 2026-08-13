@@ -1,9 +1,76 @@
 # HANDOFF
 status: active
-date: 2026-08-10
-agent: Claude Fable 5
+date: 2026-08-12
+agent: Claude Opus 5
 branch: main
 origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
+
+## 代码评审 (2026-08-12)
+
+由 Claude Opus 5 执行的全仓扫描。以下结论均经实际运行验证，非仅阅读文档。
+
+### 规模
+
+| 维度 | 数据 |
+| --- | --- |
+| 架构 | Rust workspace(6 crates) + Python sidecar + Tauri 2/Svelte 5 桌面端 |
+| 代码量 | Rust ~11k 行（含 src-tauri 4.3k）、Python ~2.7k、前端 ~5.2k、eval 4.8k |
+| 文档 | 113 个 md / 19.5k 行，文档与代码接近 1:1 |
+
+### 总评
+
+架构与安全设计 8/10，工程纪律 4/10。设计意识强（评估/策略分离、事件溯源、
+provider 契约校验），但交付纪律跟不上：测试写了不进 CI，CI 里挂掉的 job 无人处理，
+文档用"再写一份总结"代替"更新原来那份"。
+
+### 优势
+
+- 分层不是堆出来的。`crates/` 按 core/eval/policy/provider/runtime/storage 切分，
+  契约在 Rust、编排在 sidecar、UI 在 Tauri，边界清晰；README 的
+  "异步命令 → append-only 事件 → SSE → 可重放"在 `run_protocol.rs`、`sidecar.rs`
+  里确实落到了代码。
+- 安全细节有专业水准。`crates/story-provider/src/openai_compatible.rs` 的
+  `ProviderRoute::validate` 强制 https、拒绝 URL 内嵌凭据/query/fragment、校验路径
+  后缀与长度上限；`Debug` 手写为 secret 打 `[REDACTED]`；密钥走 Windows Credential
+  Manager。全仓扫描无硬编码密钥。
+- 评估体系是本项目最有价值的部分：离线评估（门禁）与在线策略（决策）分离、依赖
+  单向、版本号绑定文档。README 顶部老实标注 advisory，不吹稳定性。
+- `cargo test --workspace` 81 passed / 0 failed。
+
+### 已确认的问题
+
+1. **Python 测试在干净检出上必挂，CI 的 python job 应当一直是红的。**
+   `sidecar/test_workflow.py:29` 依赖 `eval/runs/baseline-*/artifacts/*.story-package.json`
+   作为夹具，但 `.gitignore` 忽略了 `/eval/runs/`，仓库内无此目录。实测 8 个用例报
+   `RuntimeError: coroutine raised StopIteration`（`next()` 在协程内耗尽）。
+   `governance.yml` 的 python job 无任何生成 baseline 的步骤。附带问题：夹具缺失时
+   应 fail 出可读信息，而非抛 `StopIteration` 被 asyncio 转成噪音。
+   本文件"全量验证四条缺一不可"中的 `unittest discover -s sidecar` 这条目前不成立。
+2. **vitest 把 Playwright 用例当单测收集。** `apps/desktop/vite.config.ts` 的 `test`
+   段缺 `include`/`exclude`，默认 glob 扫到 `e2e/*.spec.ts`。实测 111 passed /
+   28 skipped / **3 个文件收集失败**。一行
+   `exclude: ['e2e/**', ...configDefaults.exclude]` 即可修复。
+3. **CI 不跑前端测试。** `governance.yml` 的 desktop-windows job 只有
+   `npm run check` + `npm run build`，无 `npm test`、无 Playwright。最近 5 个 commit
+   全在做测试，却一条都没进门禁；28 个 skipped 单测同样无人拦截。
+4. **文档膨胀已影响可维护性。** 根目录 `ALPHA_RELEASE_COMPLETE`、`READY_TO_PUBLISH`、
+   `PROJECT_STATUS_REPORT`、`IMPROVEMENT_SUMMARY`、`HANDOFF`、`TODO_REMAINING` 是同
+   一件事的六个快照；`docs/` 下另有 `WORK_SUMMARY_2026_08_10` / `_FINAL_` /
+   `_FINAL_V2_` 三版。`TODO_REMAINING.md` 称"pytest 收集 0 个用例"，实测已收集 25 个
+   （未提交的 `pyproject.toml` 已修）——文档开始说假话。设计文档应留，过程报告应删
+   或归并。
+5. **仓库卫生。** `apps/desktop/microcodex-short-drama-studio/apps/desktop/VITEST_SKIP_FIX.md`
+   是嵌套重复目录残留（未跟踪，可删）；`apps/desktop/playwright-report/index.html` 与
+   `test-results/.last-run.json` 被 git 跟踪，应进 `.gitignore`；`sidecar/` 下遗留
+   `PROJECT_SCAN_REPORT.md`、`TEST_OPTIMIZATION_STATUS.md`。
+
+### 建议修复顺序（按性价比）
+
+1. 🔴 vitest 增加 `e2e/**` exclude（1 行）
+2. 🔴 Python 夹具改为仓库内固定 fixture，并把 `npm test` 加进 CI（约半小时，直接把
+   红灯变绿）
+3. 🟡 根目录 6 份状态文档合并为 1 份
+4. 🟢 清理残留目录与被跟踪的测试产物
 
 ## 最新改进 (2026-08-10)
 
@@ -49,9 +116,10 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e sidecar
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe -m pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 ```
 
 全量验证四条缺一不可；桌面端自带独立 workspace：
@@ -59,8 +127,8 @@ python scripts/init_project.py --check
 ```powershell
 cargo test --workspace --all-features
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
-python -m unittest discover -s sidecar -p "test_*.py"
-python -m unittest discover -s eval/tools -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
 ```
 
 当前产品只写故事，不下载视频、不提取素材、不自动发布。

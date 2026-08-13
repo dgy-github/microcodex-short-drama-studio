@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import EvaluationCenter from "./EvaluationCenter.svelte";
 import * as api from "./api";
+import type { BlindAssignment, EvaluationBatchResult, EvaluationCatalog } from "./types";
 
 // Mock the API module
 vi.mock("./api", () => ({
@@ -15,12 +16,13 @@ vi.mock("./api", () => ({
 }));
 
 describe("EvaluationCenter", () => {
-  const mockCatalog = {
+  const mockCatalog: EvaluationCatalog = {
+    schema: "desktop-evaluation-catalog/v1",
     datasets: [
       {
         dataset_id: "offline-v0.1.0",
+        kind: "offline",
         label: "离线测试集 v0.1.0",
-        description: "初始评估数据集",
         case_count: 3,
         eligible_count: 2,
         cases: [
@@ -31,8 +33,6 @@ describe("EvaluationCenter", () => {
             difficulty: "简单",
             split: "offline",
             eligible: true,
-            automatic_scores: null,
-            human_scores: [],
           },
           {
             case_id: "case_002",
@@ -41,8 +41,6 @@ describe("EvaluationCenter", () => {
             difficulty: "中等",
             split: "offline",
             eligible: true,
-            automatic_scores: null,
-            human_scores: [],
           },
           {
             case_id: "case_003",
@@ -51,71 +49,68 @@ describe("EvaluationCenter", () => {
             difficulty: null,
             split: "online",
             eligible: false,
-            automatic_scores: null,
-            human_scores: [],
           },
         ],
       },
       {
-        dataset_id: "online-v1.0.0",
+        dataset_id: "online-local",
+        kind: "online",
         label: "在线测试集 v1.0.0",
-        description: "生产环境数据集",
         case_count: 0,
         eligible_count: 0,
         cases: [],
       },
     ],
-    dimensions: [
-      {
-        dimension_id: "coherence",
-        display_name: "连贯性",
-        description: "情节逻辑是否连贯",
-        score_range: [1, 5],
-      },
-      {
-        dimension_id: "engagement",
-        display_name: "吸引力",
-        description: "故事是否引人入胜",
-        score_range: [1, 5],
-      },
-    ],
   };
 
-  const mockBatchResult = {
+  const mockBatchResult: EvaluationBatchResult = {
+    schema: "desktop-evaluation-batch-result/v1",
+    batch_id: "batch_001",
     dataset_id: "offline-v0.1.0",
-    case_ids: ["case_001", "case_002"],
-    evaluated_at_unix_ms: Date.now(),
-    scores: [
-      {
-        case_id: "case_001",
-        dimensions: [
-          { dimension_id: "coherence", score: 4.5, reason: "逻辑清晰" },
-          { dimension_id: "engagement", score: 4.0, reason: "情节吸引人" },
-        ],
+    mode: "automatic",
+    evidence_status: "partial_advisory",
+    selected_count: 2,
+    completed_count: 2,
+    failed_count: 0,
+    results: ["case_001", "case_002"].map((caseId, index) => ({
+      case_id: caseId,
+      status: "completed" as const,
+      failed_gates: [],
+      score_record: {
+        schema: "eval-score-record/v1" as const,
+        record_id: `score_${index + 1}`,
+        case_id: caseId,
+        rater: {
+          rater_id: "judge_01",
+          rater_type: "llm_judge" as const,
+          model_id: "qwen-test",
+        },
+        aggregate: {
+          pillars: { coherence: index === 0 ? 4.5 : 3.5, engagement: 4.0 },
+          geometric_mean: index === 0 ? 4.24 : 3.74,
+          legacy_weighted_sum: null,
+          floors_passed: true,
+          verdict: "pass" as const,
+        },
       },
-      {
-        case_id: "case_002",
-        dimensions: [
-          { dimension_id: "coherence", score: 3.5, reason: "部分跳跃" },
-          { dimension_id: "engagement", score: 4.2, reason: "引人入胜" },
-        ],
-      },
-    ],
+    })),
+    occurred_at_unix_ms: Date.now(),
   };
 
-  const mockAssignments = [
+  const mockAssignments: BlindAssignment[] = [
     {
+      schema: "desktop-blind-assignment/v1",
       assignment_id: "assign_001",
-      case_id: "case_001",
-      rater_id: "reviewer_01",
-      logline: "测试故事1",
-      content: "故事内容...",
+      alias: "测试故事1",
+      prompt: "请评估故事内容",
+      constraints: {},
+      artifact: { content: "故事内容..." },
       dimensions: [
         {
           dimension_id: "coherence",
-          display_name: "连贯性",
-          description: "情节逻辑是否连贯",
-          score_range: [1, 5],
+          name: "连贯性",
+          ask: "情节逻辑是否连贯",
+          anchors: { "1": "差", "3": "一般", "5": "优秀" },
         },
       ],
       allowed_spans: ["全文", "第一幕", "第二幕"],
@@ -242,7 +237,7 @@ describe("EvaluationCenter", () => {
     });
 
     // TODO: 修复复杂状态渲染问题
-    it.skip("应该显示评估结果", async () => {
+    it("应该显示评估结果", async () => {
       vi.mocked(api.desktopApi.runAutomaticEvaluation).mockResolvedValue(mockBatchResult);
 
       render(EvaluationCenter);
@@ -258,8 +253,8 @@ describe("EvaluationCenter", () => {
       await fireEvent.click(evaluateButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/coherence/)).toBeInTheDocument();
-        expect(screen.getByText(/4.5/)).toBeInTheDocument();
+        expect(screen.getAllByText("case_001")).toHaveLength(2);
+        expect(screen.getByText("4.24 · pass")).toBeInTheDocument();
       });
     });
 
@@ -275,7 +270,7 @@ describe("EvaluationCenter", () => {
 
   // TODO: 修复复杂交互和状态管理问题
   describe("人工评估", () => {
-    it.skip("应该切换到人工评估模式", async () => {
+    it("应该切换到人工评估模式", async () => {
       render(EvaluationCenter);
 
       await waitFor(() => {
@@ -290,7 +285,7 @@ describe("EvaluationCenter", () => {
       });
     });
 
-    it.skip("应该创建盲评任务", async () => {
+    it("应该创建盲评任务", async () => {
       vi.mocked(api.desktopApi.createBlindAssignments).mockResolvedValue(mockAssignments);
 
       render(EvaluationCenter);
@@ -322,7 +317,7 @@ describe("EvaluationCenter", () => {
       });
     });
 
-    it.skip("应该显示评分界面", async () => {
+    it("应该显示评分界面", async () => {
       vi.mocked(api.desktopApi.createBlindAssignments).mockResolvedValue(mockAssignments);
 
       render(EvaluationCenter);
@@ -342,7 +337,7 @@ describe("EvaluationCenter", () => {
       });
     });
 
-    it.skip("应该允许输入评分", async () => {
+    it("应该允许输入评分", async () => {
       vi.mocked(api.desktopApi.createBlindAssignments).mockResolvedValue(mockAssignments);
 
       render(EvaluationCenter);
@@ -370,48 +365,44 @@ describe("EvaluationCenter", () => {
 
   // TODO: 修复双击和详情渲染问题
   describe("案例详情", () => {
-    it.skip("应该打开案例详情", async () => {
+    it("应该打开案例详情", async () => {
       render(EvaluationCenter);
 
       await waitFor(() => {
         expect(screen.getByText("测试故事1")).toBeInTheDocument();
       });
 
-      const caseRow = screen.getByText("测试故事1").closest("tr");
+      const caseRow = screen.getByText("测试故事1").closest('[role="group"]');
       expect(caseRow).toBeInTheDocument();
 
       await fireEvent.dblClick(caseRow!);
 
-      await waitFor(() => {
-        expect(screen.getByText(/case_001/)).toBeInTheDocument();
-      });
+      expect(await screen.findByRole("dialog", { name: "case_001" })).toBeInTheDocument();
     });
 
-    it.skip("应该通过 Escape 键关闭详情", async () => {
+    it("应该通过 Escape 键关闭详情", async () => {
       render(EvaluationCenter);
 
       await waitFor(() => {
         expect(screen.getByText("测试故事1")).toBeInTheDocument();
       });
 
-      const caseRow = screen.getByText("测试故事1").closest("tr");
+      const caseRow = screen.getByText("测试故事1").closest('[role="group"]');
       await fireEvent.dblClick(caseRow!);
 
-      await waitFor(() => {
-        expect(screen.getByText(/case_001/)).toBeInTheDocument();
-      });
+      expect(await screen.findByRole("dialog", { name: "case_001" })).toBeInTheDocument();
 
       await fireEvent.keyDown(document, { key: "Escape" });
 
       await waitFor(() => {
-        expect(screen.queryByText(/case_001/)).not.toBeInTheDocument();
+        expect(screen.queryByRole("dialog", { name: "case_001" })).not.toBeInTheDocument();
       });
     });
   });
 
   describe("错误处理", () => {
     // TODO: 修复错误状态渲染问题
-    it.skip("应该处理目录加载失败", async () => {
+    it("应该处理目录加载失败", async () => {
       vi.mocked(api.desktopApi.evaluationCatalog).mockRejectedValue(
         new Error("网络错误")
       );

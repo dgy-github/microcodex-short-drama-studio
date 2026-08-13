@@ -25,6 +25,14 @@ MAX_REQUEST_BYTES = 1024 * 1024
 HEARTBEAT_SECONDS = 15
 POLL_SECONDS = 0.1
 
+# Wire-level command/job schemas. These must match the Rust side: the StartRun
+# command schema in story-runtime/src/run_protocol.rs, the job schema in
+# story-core/src/lib.rs, and the content-form enum (`ContentForm`), which
+# currently exposes only `scripted_short_drama`.
+START_RUN_SCHEMA = "start-run-command/v1"
+STORY_JOB_SCHEMA = "story-job/v1"
+SUPPORTED_CONTENT_FORMS = frozenset({"scripted_short_drama"})
+
 
 class RpcHandler(Protocol):
     async def handle_rpc(
@@ -339,13 +347,16 @@ def validate_start_command(command: dict[str, Any]) -> None:
     if (
         not {"schema", "job"} <= set(command)
         or not set(command) <= {"schema", "job", "genre_context"}
-        or command.get("schema") != "start-run-command/v1"
+        or command.get("schema") != START_RUN_SCHEMA
     ):
         raise ValueError("invalid StartRun command")
     job = command.get("job")
     if not isinstance(job, dict):
         raise ValueError("invalid StoryJob")
-    if job.get("schema") != "story-job/v1" or job.get("content_form") != "scripted_short_drama":
+    if (
+        job.get("schema") != STORY_JOB_SCHEMA
+        or job.get("content_form") not in SUPPORTED_CONTENT_FORMS
+    ):
         raise ValueError("invalid StoryJob")
     if not isinstance(job.get("job_id"), str) or not job["job_id"].strip():
         raise ValueError("invalid StoryJob")

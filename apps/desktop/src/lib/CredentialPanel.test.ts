@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import CredentialPanel from "./CredentialPanel.svelte";
 import * as api from "./api";
+import type {
+  CredentialAuditEvent,
+  CredentialStatus,
+  ProviderHealth,
+  ProviderRouteSettings,
+  ProviderSoakResult,
+} from "./types";
 
 // Mock the API module
 vi.mock("./api", () => ({
@@ -19,17 +26,21 @@ vi.mock("./api", () => ({
 }));
 
 describe("CredentialPanel", () => {
-  const mockDeepseekStatus = {
+  const mockDeepseekStatus: CredentialStatus = {
+    schema: "desktop-credential-status/v1",
     provider: "deepseek",
+    profile: "default",
     configured: true,
   };
 
-  const mockAliyunStatus = {
+  const mockAliyunStatus: CredentialStatus = {
+    schema: "desktop-credential-status/v1",
     provider: "aliyun_bailian",
+    profile: "default",
     configured: false,
   };
 
-  const mockDeepseekRoute = {
+  const mockDeepseekRoute: ProviderRouteSettings = {
     schema: "desktop-provider-route/v1",
     provider: "deepseek",
     profile: "default",
@@ -41,7 +52,7 @@ describe("CredentialPanel", () => {
     updated_at_unix_ms: Date.now(),
   };
 
-  const mockAliyunRoute = {
+  const mockAliyunRoute: ProviderRouteSettings = {
     schema: "desktop-provider-route/v1",
     provider: "aliyun_bailian",
     profile: "default",
@@ -53,12 +64,16 @@ describe("CredentialPanel", () => {
     updated_at_unix_ms: null,
   };
 
-  const mockAuditEvents = [
+  const mockAuditEvents: CredentialAuditEvent[] = [
     {
+      schema: "credential-audit-event/v1",
       sequence: 1,
+      occurred_at_unix_seconds: Math.floor(Date.now() / 1000),
       provider: "deepseek",
-      action: "stored",
-      timestamp_unix_ms: Date.now(),
+      profile: "default",
+      action: "configured",
+      previous_hash: "",
+      event_hash: "audit_hash_001",
     },
   ];
 
@@ -153,10 +168,11 @@ describe("CredentialPanel", () => {
       });
     });
 
-    it.skip("应该允许编辑 endpoint", async () => {
+    it("应该允许编辑 endpoint", async () => {
       render(CredentialPanel);
 
       await waitFor(() => {
+        expect(api.desktopApi.credentialAudit).toHaveBeenCalled();
         const endpointInputs = screen.getAllByPlaceholderText(/https/);
         expect(endpointInputs[1]).toBeInTheDocument();
       });
@@ -169,10 +185,11 @@ describe("CredentialPanel", () => {
       expect(endpointInput.value).toBe("https://custom.api.com/v1/chat");
     });
 
-    it.skip("应该允许编辑 model", async () => {
+    it("应该允许编辑 model", async () => {
       render(CredentialPanel);
 
       await waitFor(() => {
+        expect(api.desktopApi.credentialAudit).toHaveBeenCalled();
         const modelInputs = screen.getAllByPlaceholderText("模型 ID");
         expect(modelInputs.length).toBeGreaterThan(0);
       });
@@ -185,29 +202,33 @@ describe("CredentialPanel", () => {
       expect(modelInput.value).toBe("custom-model-v1");
     });
 
-    it.skip("应该保存路由配置", async () => {
-      const updatedRoute = { ...mockAliyunRoute, source: "user" };
+    it("应该保存路由配置", async () => {
+      const updatedRoute: ProviderRouteSettings = { ...mockAliyunRoute, source: "user" };
       vi.mocked(api.desktopApi.saveProviderRoute).mockResolvedValue(updatedRoute);
 
       render(CredentialPanel);
 
       await waitFor(() => {
+        expect(api.desktopApi.credentialAudit).toHaveBeenCalled();
         expect(screen.getAllByText("保存地址").length).toBeGreaterThan(0);
       });
 
       // 输入 endpoint 和 model
-      const endpointInputs = screen.getAllByPlaceholderText(/https/);
-      const modelInputs = screen.getAllByPlaceholderText("模型 ID");
-
-      await fireEvent.input(endpointInputs[1], {
+      await fireEvent.input(screen.getAllByPlaceholderText(/https/)[1], {
         target: { value: "https://test.api.com" },
       });
-      await fireEvent.input(modelInputs[1], {
-        target: { value: "test-model" },
+      await waitFor(() => {
+        expect(screen.getAllByPlaceholderText(/https/)[1]).toHaveValue("https://test.api.com");
       });
 
-      const saveButtons = screen.getAllByText("保存地址");
-      await fireEvent.click(saveButtons[1]);
+      await fireEvent.input(screen.getAllByPlaceholderText("模型 ID")[1], {
+        target: { value: "test-model" },
+      });
+      await waitFor(() => {
+        expect(screen.getAllByPlaceholderText("模型 ID")[1]).toHaveValue("test-model");
+      });
+
+      await fireEvent.click(screen.getAllByText("保存地址")[1]);
 
       await waitFor(() => {
         expect(api.desktopApi.saveProviderRoute).toHaveBeenCalledWith(
@@ -238,16 +259,22 @@ describe("CredentialPanel", () => {
 
     it("应该保存凭据", async () => {
       vi.mocked(api.desktopApi.storeCredential).mockResolvedValue({
+        schema: "desktop-credential-status/v1",
         provider: "deepseek",
+        profile: "default",
         configured: true,
       });
       vi.mocked(api.desktopApi.credentialAudit).mockResolvedValue([
         ...mockAuditEvents,
         {
+          schema: "credential-audit-event/v1",
           sequence: 2,
+          occurred_at_unix_seconds: Math.floor(Date.now() / 1000),
           provider: "deepseek",
-          action: "stored",
-          timestamp_unix_ms: Date.now(),
+          profile: "default",
+          action: "rotated",
+          previous_hash: "audit_hash_001",
+          event_hash: "audit_hash_002",
         },
       ]);
 
@@ -274,7 +301,9 @@ describe("CredentialPanel", () => {
 
     it("应该在保存后清空输入框", async () => {
       vi.mocked(api.desktopApi.storeCredential).mockResolvedValue({
+        schema: "desktop-credential-status/v1",
         provider: "deepseek",
+        profile: "default",
         configured: true,
       });
 
@@ -300,7 +329,9 @@ describe("CredentialPanel", () => {
 
     it("应该删除凭据", async () => {
       vi.mocked(api.desktopApi.deleteCredential).mockResolvedValue({
+        schema: "desktop-credential-status/v1",
         provider: "deepseek",
+        profile: "default",
         configured: false,
       });
 
@@ -321,11 +352,13 @@ describe("CredentialPanel", () => {
 
   describe("健康检查", () => {
     it("应该执行健康检查", async () => {
-      vi.mocked(api.desktopApi.checkProviderHealth).mockResolvedValue({
+      const health: ProviderHealth = {
+        schema: "provider-health/v1",
         provider: "deepseek",
         model: "deepseek-chat",
-        status: "healthy",
-      });
+        status: "ready",
+      };
+      vi.mocked(api.desktopApi.checkProviderHealth).mockResolvedValue(health);
 
       render(CredentialPanel);
 
@@ -355,7 +388,7 @@ describe("CredentialPanel", () => {
 
   // TODO: 修复 Svelte 5 状态更新和按钮禁用逻辑测试问题
   describe("稳定性检查", () => {
-    it.skip("应该显示稳定性检查设置", async () => {
+    it("应该显示稳定性检查设置", async () => {
       render(CredentialPanel);
 
       await waitFor(() => {
@@ -364,7 +397,7 @@ describe("CredentialPanel", () => {
       });
     });
 
-    it.skip("应该允许设置迭代次数", async () => {
+    it("应该允许设置迭代次数", async () => {
       render(CredentialPanel);
 
       await waitFor(() => {
@@ -378,14 +411,19 @@ describe("CredentialPanel", () => {
       expect(iterationInput.value).toBe("10");
     });
 
-    it.skip("应该运行稳定性检查", async () => {
-      const mockSoakResult = {
+    it("应该运行稳定性检查", async () => {
+      const mockSoakResult: ProviderSoakResult = {
+        schema: "provider-soak-result/v1",
+        soak_id: "soak_001",
         status: "ready",
         iterations_per_provider: 5,
+        started_at_unix_ms: 1,
+        finished_at_unix_ms: 2,
         providers: [
           {
             provider: "deepseek",
             model: "deepseek-chat",
+            route_fingerprint: "deepseek-route-001",
             status: "ready",
             successful_requests: 5,
             failed_requests: 0,
@@ -396,6 +434,7 @@ describe("CredentialPanel", () => {
           {
             provider: "aliyun_bailian",
             model: "qwen-max",
+            route_fingerprint: "aliyun-route-001",
             status: "ready",
             successful_requests: 5,
             failed_requests: 0,
@@ -409,10 +448,12 @@ describe("CredentialPanel", () => {
       vi.mocked(api.desktopApi.runProviderSoak).mockResolvedValue(mockSoakResult);
 
       // 需要两个提供商都配置
-      vi.mocked(api.desktopApi.credentialStatus).mockResolvedValue({
-        provider: "deepseek",
+      vi.mocked(api.desktopApi.credentialStatus).mockImplementation((provider) => Promise.resolve({
+        schema: "desktop-credential-status/v1",
+        provider,
+        profile: "default",
         configured: true,
-      });
+      }));
 
       render(CredentialPanel);
 
@@ -433,14 +474,19 @@ describe("CredentialPanel", () => {
       }, { timeout: 5000 });
     });
 
-    it.skip("应该显示稳定性检查结果", async () => {
-      const mockSoakResult = {
+    it("应该显示稳定性检查结果", async () => {
+      const mockSoakResult: ProviderSoakResult = {
+        schema: "provider-soak-result/v1",
+        soak_id: "soak_002",
         status: "ready",
         iterations_per_provider: 5,
+        started_at_unix_ms: 1,
+        finished_at_unix_ms: 2,
         providers: [
           {
             provider: "deepseek",
             model: "deepseek-chat",
+            route_fingerprint: "deepseek-route-001",
             status: "ready",
             successful_requests: 5,
             failed_requests: 0,
@@ -452,10 +498,12 @@ describe("CredentialPanel", () => {
       };
 
       vi.mocked(api.desktopApi.runProviderSoak).mockResolvedValue(mockSoakResult);
-      vi.mocked(api.desktopApi.credentialStatus).mockResolvedValue({
-        provider: "deepseek",
+      vi.mocked(api.desktopApi.credentialStatus).mockImplementation((provider) => Promise.resolve({
+        schema: "desktop-credential-status/v1",
+        provider,
+        profile: "default",
         configured: true,
-      });
+      }));
 
       render(CredentialPanel);
 
@@ -481,7 +529,7 @@ describe("CredentialPanel", () => {
       await waitFor(() => {
         expect(screen.getByText(/最近审计 #1/)).toBeInTheDocument();
         expect(screen.getByText(/deepseek/)).toBeInTheDocument();
-        expect(screen.getByText(/stored/)).toBeInTheDocument();
+        expect(screen.getByText(/configured/)).toBeInTheDocument();
       });
     });
   });

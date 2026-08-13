@@ -228,8 +228,8 @@ impl CommandError {
 pub fn run() {
     let repository_root = default_repository_root();
     let artifact_root = default_artifact_root();
-    let genre_packs =
-        GenrePackRegistry::load(&repository_root).expect("genre pack registry configuration failed");
+    let genre_packs = GenrePackRegistry::load(&repository_root)
+        .expect("genre pack registry configuration failed");
     let revisions =
         RevisionService::new(&repository_root).expect("revision repository configuration failed");
     let evaluations = EvaluationService::new(

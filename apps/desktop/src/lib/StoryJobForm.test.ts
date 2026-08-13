@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import StoryJobForm from "./StoryJobForm.svelte";
 import * as api from "./api";
+import type { RunSnapshot, StoryJobPreview } from "./types";
 
 // Mock the API module
 vi.mock("./api", () => ({
@@ -16,6 +17,36 @@ vi.mock("./api", () => ({
 }));
 
 describe("StoryJobForm", () => {
+  const createPreview = (): StoryJobPreview => ({
+    job_id: "job_test123",
+    content_form: "scripted_short_drama",
+    episodes: 6,
+    minutes_per_episode: 2,
+  });
+
+  const createSnapshot = (overrides: Partial<RunSnapshot> = {}): RunSnapshot => ({
+    schema: "desktop-run-snapshot/v1",
+    run_id: "run_test123",
+    job_id: "job_test123",
+    status: "running",
+    last_event_id: 1,
+    tasks_total: 17,
+    tasks_queued: 10,
+    tasks_started: 2,
+    tasks_completed: 2,
+    reviews_completed: 0,
+    approvals_pending: 0,
+    error: null,
+    budget: {
+      max_tokens: 180000,
+      consumed_tokens: 5000,
+      max_cny_fen: 1200,
+      consumed_cny_fen: null,
+    },
+    events: [],
+    ...overrides,
+  });
+
   const mockGenrePacks = [
     {
       pack_id: "family-grounded-v1",
@@ -68,7 +99,7 @@ describe("StoryJobForm", () => {
 
   describe("类型包切换", () => {
     // TODO: 修复 Svelte 5 onMount 异步渲染问题
-    it.skip("应该在切换类型包时更新题材和受众", async () => {
+    it("应该在切换类型包时更新题材和受众", async () => {
       // 确保 mock 在渲染前设置
       vi.mocked(api.desktopApi.listGenrePacks).mockResolvedValue(mockGenrePacks);
 
@@ -85,9 +116,9 @@ describe("StoryJobForm", () => {
       // 验证初始选中的类型包
       expect(genrePackSelect.value).toBe("family-grounded-v1");
 
-      // 等待其他字段出现
-      const genreInput = await screen.findByLabelText("题材标签", {}, { timeout: 10000 }) as HTMLInputElement;
-      const audienceInput = await screen.findByLabelText("核心受众", {}, { timeout: 10000 }) as HTMLInputElement;
+      // 这些标签使用可见文本包裹输入框，直接在对应 label 内定位。
+      const genreInput = screen.getByText("题材标签").closest("label")!.querySelector("input") as HTMLInputElement;
+      const audienceInput = screen.getByText("核心受众").closest("label")!.querySelector("input") as HTMLInputElement;
 
       // 验证初始值
       expect(genreInput.value).toBe("family, drama");
@@ -143,10 +174,7 @@ describe("StoryJobForm", () => {
 
   describe("任务校验", () => {
     it("应该成功校验有效的故事任务", async () => {
-      const mockPreview = {
-        episodes: 6,
-        minutes_per_episode: 2,
-      };
+      const mockPreview = createPreview();
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
 
@@ -188,25 +216,8 @@ describe("StoryJobForm", () => {
 
   describe("启动任务", () => {
     it("应该成功启动故事生成任务", async () => {
-      const mockPreview = { episodes: 6, minutes_per_episode: 2 };
-      const mockSnapshot = {
-        run_id: "run_test123",
-        status: "running",
-        tasks_completed: 2,
-        tasks_total: 17,
-        reviews_completed: 0,
-        approvals_pending: 0,
-        budget: {
-          max_tokens: 180000,
-          max_cny_fen: 1200,
-          deadline_seconds: 900,
-          consumed_tokens: 5000,
-          consumed_cny_fen: null,
-        },
-        last_event_id: "evt_001",
-        events: [],
-        error: null,
-      };
+      const mockPreview = createPreview();
+      const mockSnapshot = createSnapshot();
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
       vi.mocked(api.desktopApi.startRun).mockResolvedValue(mockSnapshot);
@@ -223,20 +234,9 @@ describe("StoryJobForm", () => {
     });
 
     // TODO: 修复 Svelte 5 状态更新时序问题
-    it.skip("应该在任务运行时禁用启动按钮", async () => {
-      const mockPreview = { episodes: 6, minutes_per_episode: 2 };
-      const mockSnapshot = {
-        run_id: "run_test123",
-        status: "running",
-        progress: { completed: 2, total: 17 },
-        budget: {
-          max_tokens: 180000,
-          max_cny_fen: 1200,
-          deadline_seconds: 900,
-          consumed_tokens: 5000,
-          consumed_cny_fen: null,
-        },
-      };
+    it("应该在任务运行时禁用启动按钮", async () => {
+      const mockPreview = createPreview();
+      const mockSnapshot = createSnapshot();
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
       vi.mocked(api.desktopApi.startRun).mockResolvedValue(mockSnapshot);
@@ -347,10 +347,7 @@ describe("StoryJobForm", () => {
 
     it("应该处理启动任务失败", async () => {
       vi.mocked(api.desktopApi.listGenrePacks).mockResolvedValue(mockGenrePacks);
-      vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue({
-        episodes: 6,
-        minutes_per_episode: 2,
-      });
+      vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(createPreview());
       vi.mocked(api.desktopApi.startRun).mockRejectedValue(
         new Error("Token 余额不足")
       );
@@ -374,43 +371,23 @@ describe("StoryJobForm", () => {
   describe("任务完成回调", () => {
     it("应该在任务完成时调用回调函数", async () => {
       const onCompleted = vi.fn();
-      const mockPreview = { episodes: 6, minutes_per_episode: 2 };
-      const mockSnapshot = {
-        run_id: "run_test456",
-        status: "running",
-        tasks_completed: 2,
-        tasks_total: 17,
-        reviews_completed: 0,
-        approvals_pending: 0,
-        budget: {
-          max_tokens: 180000,
-          max_cny_fen: 1200,
-          deadline_seconds: 900,
-          consumed_tokens: 5000,
-          consumed_cny_fen: null,
-        },
-        last_event_id: "evt_001",
-        events: [],
-        error: null,
-      };
-      const mockCompletedSnapshot = {
+      const mockPreview = createPreview();
+      const mockSnapshot = createSnapshot({ run_id: "run_test456" });
+      const mockCompletedSnapshot = createSnapshot({
         run_id: "run_test456",
         status: "completed",
+        last_event_id: 100,
+        tasks_queued: 17,
+        tasks_started: 17,
         tasks_completed: 17,
-        tasks_total: 17,
         reviews_completed: 5,
-        approvals_pending: 0,
         budget: {
           max_tokens: 180000,
-          max_cny_fen: 1200,
-          deadline_seconds: 900,
           consumed_tokens: 150000,
+          max_cny_fen: 1200,
           consumed_cny_fen: 1000,
         },
-        last_event_id: "evt_100",
-        events: [],
-        error: null,
-      };
+      });
 
       vi.mocked(api.desktopApi.validateStoryJob).mockResolvedValue(mockPreview);
       vi.mocked(api.desktopApi.startRun).mockResolvedValue(mockSnapshot);

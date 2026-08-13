@@ -14,17 +14,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "config/distribution-license-policy-v1.json"
 LICENSE_ROOT = ROOT / "third_party/licenses"
-POLICY_FIELDS = {
+COMMON_POLICY_FIELDS = {
     "ecosystem",
     "name",
-    "source",
-    "revision",
     "license",
     "evidence_path",
     "evidence_sha256",
     "approved_for_distribution",
     "reviewed_by",
     "reviewed_at",
+}
+PIN_FIELDS = {
+    "python": {"source", "revision"},
+    "npm": {"version", "integrity"},
 }
 
 
@@ -111,18 +113,41 @@ def python_packages() -> list[dict[str, str]]:
     return packages
 
 
-def pinned_git_dependencies() -> dict[tuple[str, str], tuple[str, str]]:
-    document = tomllib.loads(
+def pinned_dependencies() -> dict[tuple[str, str], list[dict[str, str]]]:
+    python_document = tomllib.loads(
         (ROOT / "sidecar/pyproject.toml").read_text(encoding="utf-8")
     )
-    pinned: dict[tuple[str, str], tuple[str, str]] = {}
-    for dependency in document["project"]["dependencies"]:
+    pinned: dict[tuple[str, str], list[dict[str, str]]] = {}
+    for dependency in python_document["project"]["dependencies"]:
         if " @ git+" not in dependency:
             continue
         name, git_reference = dependency.split(" @ git+", 1)
         source, revision = git_reference.rsplit("@", 1)
-        pinned[("python", name.strip())] = (source, revision)
+        pinned[("python", name.strip())] = [
+            {"source": source, "revision": revision}
+        ]
+
+    npm_document = json.loads(
+        (ROOT / "apps/desktop/package-lock.json").read_text(encoding="utf-8")
+    )
+    for location, package in npm_document["packages"].items():
+        if not location or "version" not in package or "integrity" not in package:
+            continue
+        name = location.rsplit("node_modules/", 1)[-1]
+        key = ("npm", name)
+        pin = {"version": package["version"], "integrity": package["integrity"]}
+        pins = pinned.setdefault(key, [])
+        if pin not in pins:
+            pins.append(pin)
     return pinned
+
+
+def pinned_git_dependencies() -> dict[tuple[str, str], list[dict[str, str]]]:
+    return {
+        key: pin
+        for key, pin in pinned_dependencies().items()
+        if key[0] == "python"
+    }
 
 
 def load_license_policy() -> tuple[dict, str]:
@@ -137,19 +162,22 @@ def load_license_policy() -> tuple[dict, str]:
 
 def validate_license_policy(
     policy: dict,
-    pinned: dict[tuple[str, str], tuple[str, str]],
+    pinned: dict[tuple[str, str], list[dict[str, str]]],
 ) -> dict[tuple[str, str], dict]:
     entries: dict[tuple[str, str], dict] = {}
     license_root = LICENSE_ROOT.resolve()
     for entry in policy["dependencies"]:
-        if set(entry) != POLICY_FIELDS:
+        ecosystem = entry.get("ecosystem")
+        pin_fields = PIN_FIELDS.get(ecosystem)
+        if pin_fields is None or set(entry) != COMMON_POLICY_FIELDS | pin_fields:
             raise ValueError("distribution license policy fields are invalid")
-        key = (entry["ecosystem"], entry["name"])
+        key = (ecosystem, entry["name"])
         if key in entries:
             raise ValueError(f"duplicate distribution license policy: {key}")
         if key not in pinned:
             raise ValueError(f"license policy does not match a pinned dependency: {key}")
-        if pinned[key] != (entry["source"], entry["revision"]):
+        policy_pin = {field: entry[field] for field in pin_fields}
+        if policy_pin not in pinned[key]:
             raise ValueError(f"license policy pin drift: {entry['name']}")
         approved = entry["approved_for_distribution"]
         if not isinstance(approved, bool):
@@ -200,7 +228,7 @@ def validate_license_policy(
 def build_inventory() -> dict:
     packages = cargo_packages() + npm_packages() + python_packages()
     policy, policy_hash = load_license_policy()
-    policy_entries = validate_license_policy(policy, pinned_git_dependencies())
+    policy_entries = validate_license_policy(policy, pinned_dependencies())
     for package in packages:
         package["license_source"] = (
             "package-metadata"

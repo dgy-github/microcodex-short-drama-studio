@@ -1,24 +1,41 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/svelte";
 import RunConsole from "./RunConsole.svelte";
-import type { RunSnapshot } from "./types";
+import type { RunSnapshot, StoryEvent } from "./types";
 
 describe("RunConsole", () => {
-  const createMockSnapshot = (overrides?: Partial<RunSnapshot>): RunSnapshot => ({
+  const createStoryEvent = (overrides: Partial<StoryEvent> = {}): StoryEvent => ({
+    protocol: "story-agent-event/v1",
+    event_id: "evt_1",
+    seq: 1,
+    occurred_at: "2026-08-12T00:00:00Z",
+    job_id: "job_test123",
     run_id: "run_test123456789",
+    task_id: null,
+    agent_id: null,
+    event_type: "run_started",
+    payload: {},
+    ...overrides,
+  });
+
+  const createMockSnapshot = (overrides?: Partial<RunSnapshot>): RunSnapshot => ({
+    schema: "desktop-run-snapshot/v1",
+    run_id: "run_test123456789",
+    job_id: "job_test123",
     status: "running",
-    tasks_completed: 5,
     tasks_total: 17,
+    tasks_queued: 10,
+    tasks_started: 7,
+    tasks_completed: 5,
     reviews_completed: 2,
     approvals_pending: 1,
     budget: {
       max_tokens: 180000,
       max_cny_fen: 1200,
-      deadline_seconds: 900,
       consumed_tokens: 50000,
       consumed_cny_fen: 400,
     },
-    last_event_id: "evt_001",
+    last_event_id: 1,
     events: [],
     error: null,
     ...overrides,
@@ -65,7 +82,6 @@ describe("RunConsole", () => {
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
-          deadline_seconds: 900,
           consumed_tokens: 75000,
           consumed_cny_fen: 600,
         },
@@ -83,7 +99,6 @@ describe("RunConsole", () => {
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
-          deadline_seconds: 900,
           consumed_tokens: 50000,
           consumed_cny_fen: null,
         },
@@ -99,7 +114,6 @@ describe("RunConsole", () => {
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
-          deadline_seconds: 900,
           consumed_tokens: 50000,
           consumed_cny_fen: 800,
         },
@@ -133,20 +147,20 @@ describe("RunConsole", () => {
     it("应该显示空事件列表提示", () => {
       const snapshot = createMockSnapshot({
         events: [],
-        last_event_id: "evt_123",
+        last_event_id: 123,
       });
       render(RunConsole, { props: { snapshot, cancelling: false, oncancel: vi.fn() } });
 
       expect(screen.getByText(/等待新的持久事件/)).toBeInTheDocument();
-      expect(screen.getByText(/evt_123/)).toBeInTheDocument();
+      expect(screen.getByText(/123/)).toBeInTheDocument();
     });
 
     it("应该显示事件列表（倒序）", () => {
       const snapshot = createMockSnapshot({
         events: [
-          { event_id: "evt_1", seq: 1, event_type: "task_started", task_id: "task_001" },
-          { event_id: "evt_2", seq: 2, event_type: "task_completed", task_id: "task_001" },
-          { event_id: "evt_3", seq: 3, event_type: "review_started", task_id: "review_001" },
+          createStoryEvent({ event_id: "evt_1", seq: 1, event_type: "task_started", task_id: "task_001" }),
+          createStoryEvent({ event_id: "evt_2", seq: 2, event_type: "task_completed", task_id: "task_001" }),
+          createStoryEvent({ event_id: "evt_3", seq: 3, event_type: "review_started", task_id: "review_001" }),
         ],
       });
       render(RunConsole, { props: { snapshot, cancelling: false, oncancel: vi.fn() } });
@@ -161,7 +175,7 @@ describe("RunConsole", () => {
     it("应该显示 run 级别的事件", () => {
       const snapshot = createMockSnapshot({
         events: [
-          { event_id: "evt_1", seq: 1, event_type: "run_started", task_id: null },
+          createStoryEvent({ event_id: "evt_1", seq: 1, event_type: "run_started", task_id: null }),
         ],
       });
       render(RunConsole, { props: { snapshot, cancelling: false, oncancel: vi.fn() } });
@@ -267,12 +281,12 @@ describe("RunConsole", () => {
       expect(progressBar.style.width).toBe("100%");
     });
 
-    it("应该计算 50% 进度", () => {
-      const snapshot = createMockSnapshot({ tasks_completed: 8, tasks_total: 16 });
+    it("应该计算 47% 进度", () => {
+      const snapshot = createMockSnapshot({ tasks_completed: 8, tasks_total: 17 });
       render(RunConsole, { props: { snapshot, cancelling: false, oncancel: vi.fn() } });
 
       const progressBar = document.querySelector(".progress-track span") as HTMLElement;
-      expect(progressBar.style.width).toBe("50%");
+      expect(progressBar.style.width).toBe("47%");
     });
   });
 
@@ -282,7 +296,6 @@ describe("RunConsole", () => {
         budget: {
           max_tokens: 180000,
           max_cny_fen: 1200,
-          deadline_seconds: 900,
           consumed_tokens: 0,
           consumed_cny_fen: 0,
         },
@@ -293,12 +306,14 @@ describe("RunConsole", () => {
     });
 
     it("应该处理大量事件", () => {
-      const events = Array.from({ length: 50 }, (_, i) => ({
-        event_id: `evt_${i}`,
-        seq: i + 1,
-        event_type: "task_event",
-        task_id: `task_${i}`,
-      }));
+      const events = Array.from({ length: 50 }, (_, i) =>
+        createStoryEvent({
+          event_id: `evt_${i}`,
+          seq: i + 1,
+          event_type: "task_event",
+          task_id: `task_${i}`,
+        })
+      );
 
       const snapshot = createMockSnapshot({ events });
       render(RunConsole, { props: { snapshot, cancelling: false, oncancel: vi.fn() } });

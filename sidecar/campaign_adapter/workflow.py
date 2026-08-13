@@ -45,6 +45,12 @@ class TaskSpec:
     depends_on: tuple[str, ...]
 
 
+# 17-task fixed story graph. This MUST stay in lock-step with the Rust copy in
+# `crates/story-runtime/src/execution.rs` (`FIXED_STORY_EXECUTION_ORDER`):
+# identical task ids, identical ordering, identical `depends_on`. Rust validates
+# the graph topologically at compile time; `validate_task_graph()` below guards
+# this Python copy, and `test_task_graph_matches_rust_order` in test_workflow.py
+# pins the ids/dependencies against the Rust-ordered expectation.
 TASKS = (
     TaskSpec("t01", "classify_genre", "genre-analyst", "genre-classification", "genre-analysis/v1", ()),
     TaskSpec("t02", "retrieve_evidence", "life-detail-retriever", "licensed-rag", "retrieval-manifest/v1", ("t01",)),
@@ -64,6 +70,35 @@ TASKS = (
     TaskSpec("t16", "final_review", "final-editor", "final-review", "story-review-record/v1", ("t15",)),
     TaskSpec("t17", "package_artifact", "artifact-packager", "package-artifact", "story-package/v1", ("t16",)),
 )
+
+
+def validate_task_graph(specs: tuple[TaskSpec, ...] = TASKS) -> None:
+    """Assert the fixed graph is complete and topologically ordered.
+
+    Mirrors `validate_fixed_story_execution_order` on the Rust side. Any
+    duplicate id or forward reference raises; callers rely on this to catch a
+    drift between the Python and Rust copies at test time.
+    """
+    expected = [f"t{index:02}" for index in range(1, len(specs) + 1)]
+    seen: set[str] = set()
+    for spec, expected_id in zip(specs, expected):
+        if spec.task_id != expected_id:
+            raise ValueError(
+                f"task graph must be t01..t{len(specs):02} in order; "
+                f"found {spec.task_id!r} where {expected_id!r} was expected"
+            )
+        if spec.task_id in seen:
+            raise ValueError(f"duplicate task id {spec.task_id!r}")
+        seen.add(spec.task_id)
+        for dependency in spec.depends_on:
+            if dependency not in seen:
+                raise ValueError(
+                    f"task {spec.task_id!r} depends on {dependency!r}, "
+                    "which is missing or appears later in the graph"
+                )
+    if len(specs) != 17:
+        raise ValueError(f"task graph must contain 17 tasks, found {len(specs)}")
+
 
 
 class Capability(Protocol):

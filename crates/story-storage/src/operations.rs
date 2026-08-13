@@ -37,6 +37,7 @@ pub struct BackupManifest {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RepairReport {
     pub removed_partial_files: Vec<String>,
+    pub removed_partial_dirs: Vec<String>,
     pub verified_files: usize,
 }
 
@@ -86,9 +87,18 @@ pub fn repair_store(root: &Path) -> Result<RepairReport, StoreOperationError> {
             verified += 1;
         }
     }
+    let mut partial_dirs = Vec::new();
+    collect_partial_dirs(root, root, &mut partial_dirs)?;
+    let mut removed_dirs = Vec::new();
+    for (relative, path) in partial_dirs {
+        std::fs::remove_dir_all(&path).map_err(|_| StoreOperationError::Io)?;
+        removed_dirs.push(relative);
+    }
     removed.sort();
+    removed_dirs.sort();
     Ok(RepairReport {
         removed_partial_files: removed,
+        removed_partial_dirs: removed_dirs,
         verified_files: verified,
     })
 }
@@ -232,6 +242,37 @@ fn collect_files(
     Ok(())
 }
 
+fn collect_partial_dirs(
+    root: &Path,
+    directory: &Path,
+    dirs: &mut Vec<(String, PathBuf)>,
+) -> Result<(), StoreOperationError> {
+    for entry in std::fs::read_dir(directory).map_err(|_| StoreOperationError::Io)? {
+        let entry = entry.map_err(|_| StoreOperationError::Io)?;
+        let path = entry.path();
+        let kind = entry.file_type().map_err(|_| StoreOperationError::Io)?;
+        if kind.is_symlink() {
+            return Err(StoreOperationError::InvalidPath);
+        }
+        if kind.is_dir() {
+            let relative = path
+                .strip_prefix(root)
+                .map_err(|_| StoreOperationError::InvalidPath)?
+                .components()
+                .map(|component| component.as_os_str().to_string_lossy())
+                .collect::<Vec<_>>()
+                .join("/");
+            if is_partial(&relative) {
+                // Remove the whole partial directory; do not descend into it.
+                dirs.push((relative, path));
+            } else {
+                collect_partial_dirs(root, &path, dirs)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 fn join_portable(root: &Path, relative: &str) -> Result<PathBuf, StoreOperationError> {
     if relative.is_empty()
         || relative.contains('\\')
@@ -291,6 +332,13 @@ mod tests {
         std::fs::write(root.join("runs/run_1/story.json"), b"story").unwrap();
         std::fs::write(root.join("revisions/rev_1/approval.json"), b"approved").unwrap();
         std::fs::write(root.join("runs/run_1/story.partial.json"), b"incomplete").unwrap();
+        // A leftover partial directory from an interrupted backup/restore.
+        std::fs::create_dir_all(root.join("runs/run_1/.backup.partial")).unwrap();
+        std::fs::write(
+            root.join("runs/run_1/.backup.partial/story.json"),
+            b"partial",
+        )
+        .unwrap();
 
         assert_eq!(migrate_store(&root).unwrap(), 1);
         assert_eq!(migrate_store(&root).unwrap(), 1);
@@ -299,6 +347,11 @@ mod tests {
             repair.removed_partial_files,
             vec!["runs/run_1/story.partial.json"]
         );
+        assert_eq!(
+            repair.removed_partial_dirs,
+            vec!["runs/run_1/.backup.partial"]
+        );
+        assert!(!root.join("runs/run_1/.backup.partial").exists());
 
         let backup = directory.path().join("backup");
         let manifest = create_backup(&root, &backup).unwrap();

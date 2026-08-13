@@ -66,6 +66,10 @@
     lastAudit = audit.at(-1) ?? null;
   }
 
+  function updateRoute(provider: Provider, field: "endpoint" | "model", value: string) {
+    routes[provider] = { ...routes[provider], [field]: value };
+  }
+
   async function saveRoute(provider: Provider) {
     busy = provider;
     message = "";
@@ -182,14 +186,16 @@
             <input
               type="url"
               placeholder="https://…/chat/completions"
-              bind:value={routes[provider as Provider].endpoint}
+              value={routes[provider as Provider].endpoint}
+              oninput={(event) => updateRoute(provider as Provider, "endpoint", event.currentTarget.value)}
             />
           </label>
           <label class="field">
             <span>Model ID</span>
             <input
               placeholder="模型 ID"
-              bind:value={routes[provider as Provider].model}
+              value={routes[provider as Provider].model}
+              oninput={(event) => updateRoute(provider as Provider, "model", event.currentTarget.value)}
             />
           </label>
           <button

@@ -173,17 +173,19 @@ def check() -> list[str]:
     ):
         if smoke_properties.get(result, {}).get("const") is not True:
             errors.append(f"bundle smoke evidence must require {result}=true")
-    policy_entries = license_policy.get("dependencies", [])
+    policy_entries = {
+        (entry.get("ecosystem"), entry.get("name")): entry
+        for entry in license_policy.get("dependencies", [])
+    }
     if (
         license_policy.get("schema") != "distribution-license-policy/v1"
-        or len(policy_entries) != 1
+        or len(policy_entries) != 2
     ):
         errors.append("distribution license policy shape is invalid")
     else:
-        campaign_policy = policy_entries[0]
+        campaign_policy = policy_entries.get(("python", "campaign-muti-agent"), {})
         if (
-            campaign_policy.get("name") != "campaign-muti-agent"
-            or campaign_policy.get("revision")
+            campaign_policy.get("revision")
             != "1d935714449d18cad5bdc6711a498297ed73a5fb"
             or campaign_policy.get("approved_for_distribution") is not True
             or campaign_policy.get("license") != "MIT"
@@ -191,6 +193,17 @@ def check() -> list[str]:
             != "third_party/licenses/campaign-muti-agent/LICENSE"
         ):
             errors.append("Campaign distribution license policy is inconsistent")
+        css_value_policy = policy_entries.get(("npm", "css-value"), {})
+        if (
+            css_value_policy.get("version") != "0.0.1"
+            or css_value_policy.get("integrity")
+            != "sha512-FUV3xaJ63buRLgHrLQVlVgQnQdR4yqdLGaDu7g8CQcWjInDfM9plBTPI9FRfpahju1UBSaMckeb2/46ApS/V1Q=="
+            or css_value_policy.get("approved_for_distribution") is not True
+            or css_value_policy.get("license") != "MIT"
+            or css_value_policy.get("evidence_path")
+            != "third_party/licenses/css-value-0.0.1/Readme.md"
+        ):
+            errors.append("css-value distribution license policy is inconsistent")
     return errors
 
 

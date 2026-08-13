@@ -34,8 +34,13 @@ RUNS = ROOT / "eval" / "runs"
 ARCHIVE = ROOT / "eval" / "baselines"
 
 
+def canonical_bytes(path: Path) -> bytes:
+    """Return stable bytes for text artifacts across Git checkout platforms."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def sha256(path: Path) -> str:
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    return "sha256:" + hashlib.sha256(canonical_bytes(path)).hexdigest()
 
 
 def load(path: Path) -> dict[str, Any]:

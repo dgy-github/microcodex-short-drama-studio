@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/svelte";
 import ArtifactBrowser from "./ArtifactBrowser.svelte";
 import * as api from "./api";
+import type { RunSummary, WorkflowResult } from "./types";
 
 // Mock the API module
 vi.mock("./api", () => ({
@@ -15,9 +16,13 @@ vi.mock("./api", () => ({
 }));
 
 describe("ArtifactBrowser", () => {
-  const mockRuns = [
+  const mockRuns: RunSummary[] = [
     {
+      schema: "desktop-run-summary/v1",
       run_id: "run_001",
+      job_id: "job_001",
+      status: "advisory",
+      promotion: "non-promotable",
       logline: "测试故事1",
       generation_model: "gpt-4",
       review_model: "claude-3",
@@ -27,7 +32,11 @@ describe("ArtifactBrowser", () => {
       completed_at_unix_ms: Date.now(),
     },
     {
+      schema: "desktop-run-summary/v1",
       run_id: "run_002",
+      job_id: "job_002",
+      status: "advisory",
+      promotion: "non-promotable",
       logline: "测试故事2",
       generation_model: "gpt-4",
       review_model: "claude-3",
@@ -38,7 +47,12 @@ describe("ArtifactBrowser", () => {
     },
   ];
 
-  const mockRunDetail = {
+  const mockRunDetail: WorkflowResult = {
+    schema: "story-workflow-result/v1",
+    run_id: "run_001",
+    job_id: "job_001",
+    status: "advisory",
+    promotion: "non-promotable",
     package: {
       package_id: "pkg_001",
       logline: { text: "一个关于勇气的故事" },
@@ -89,8 +103,10 @@ describe("ArtifactBrowser", () => {
     },
     reviews: [
       {
+        task_id: "task_review_001",
         review_type: "coherence",
         status: "completed",
+        summary: "未发现一致性问题",
         findings: [],
       },
     ],
@@ -273,7 +289,7 @@ describe("ArtifactBrowser", () => {
 
   describe("阅读模式", () => {
     // TODO: 修复复杂组件嵌套渲染问题
-    it.skip("应该打开完整故事阅读器", async () => {
+    it("应该打开完整故事阅读器", async () => {
       render(ArtifactBrowser);
 
       await waitFor(() => {
@@ -288,11 +304,9 @@ describe("ArtifactBrowser", () => {
         expect(screen.getByText("完整故事")).toBeInTheDocument();
       }, { timeout: 10000 });
 
-      // 验证人物信息也出现了
-      await waitFor(() => {
-        expect(screen.getByText("李明")).toBeInTheDocument();
-      }, { timeout: 10000 });
-    }, 15000); // 设置测试超时为 15 秒
+      const reader = screen.getByRole("dialog", { name: "完整故事" });
+      expect(reader.querySelector(".character-card h4")).toHaveTextContent("李明");
+    });
 
     it("应该通过双击打开阅读器", async () => {
       render(ArtifactBrowser);
@@ -310,7 +324,7 @@ describe("ArtifactBrowser", () => {
     });
 
     // TODO: 修复复杂组件嵌套渲染问题
-    it.skip("应该显示人物信息", async () => {
+    it("应该显示人物信息", async () => {
       render(ArtifactBrowser);
 
       const readButton = await screen.findByText("查看完整故事", {}, { timeout: 10000 });
@@ -320,12 +334,11 @@ describe("ArtifactBrowser", () => {
         expect(screen.getByText("完整故事")).toBeInTheDocument();
       }, { timeout: 10000 });
 
-      await waitFor(() => {
-        expect(screen.getByText("李明")).toBeInTheDocument();
-        expect(screen.getByText("寻找真相")).toBeInTheDocument();
-        expect(screen.getByText("失去家人")).toBeInTheDocument();
-      }, { timeout: 10000 });
-    }, 15000); // 设置测试超时为 15 秒
+      const reader = screen.getByRole("dialog", { name: "完整故事" });
+      expect(reader.querySelector(".character-card h4")).toHaveTextContent("李明");
+      expect(screen.getByText("寻找真相")).toBeInTheDocument();
+      expect(screen.getByText("失去家人")).toBeInTheDocument();
+    });
 
     it("应该显示分集内容", async () => {
       render(ArtifactBrowser);
@@ -500,7 +513,7 @@ describe("ArtifactBrowser", () => {
 
   describe("修订工作区", () => {
     // TODO: 修复子组件条件渲染问题
-    it.skip("应该打开修订工作区", async () => {
+    it("应该打开修订工作区", async () => {
       render(ArtifactBrowser);
 
       await waitFor(() => {
@@ -517,12 +530,9 @@ describe("ArtifactBrowser", () => {
       // 点击按钮
       await fireEvent.click(revisionButton);
 
-      // 验证点击成功（按钮仍然存在，因为组件在同一区域渲染）
-      await waitFor(() => {
-        // 按钮应该还在文档中（修订工作区有返回按钮）
-        expect(revisionButton).toBeInTheDocument();
-      }, { timeout: 5000 });
-    }, 15000); // 设置测试超时为 15 秒
+      expect(await screen.findByText("定向修订与审批")).toBeInTheDocument();
+      expect(screen.getByText("返回作品")).toBeInTheDocument();
+    });
   });
 
   describe("使用 initialRunId 参数", () => {

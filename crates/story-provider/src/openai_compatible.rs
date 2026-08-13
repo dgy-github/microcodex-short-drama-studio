@@ -211,8 +211,8 @@ impl OpenAiCompatibleProvider {
             .map(|choice| choice.message.content.trim())
             .filter(|content| !content.is_empty())
             .ok_or(ProviderRouteError::InvalidResponse)?;
-        let artifact: serde_json::Value =
-            serde_json::from_str(content).map_err(|_| ProviderRouteError::InvalidResponse)?;
+        let artifact: serde_json::Value = serde_json::from_str(strip_code_fence(content))
+            .map_err(|_| ProviderRouteError::InvalidResponse)?;
         if !artifact.is_object() {
             return Err(ProviderRouteError::InvalidResponse);
         }
@@ -222,6 +222,22 @@ impl OpenAiCompatibleProvider {
             model: route.model.clone(),
         })
     }
+}
+
+/// Tolerate providers that wrap the JSON body in a Markdown code fence
+/// (```` ```json ... ``` ````). Returns the inner JSON when a fence is present,
+/// otherwise the trimmed content unchanged.
+fn strip_code_fence(content: &str) -> &str {
+    let trimmed = content.trim();
+    if !trimmed.starts_with("```") {
+        return trimmed;
+    }
+    let after_open = &trimmed[3..];
+    let after_lang = after_open
+        .split_once(['\n', '\r'])
+        .map_or(after_open, |(_, rest)| rest);
+    let inner = after_lang.trim_start();
+    inner.find("```").map_or(trimmed, |end| inner[..end].trim())
 }
 
 #[cfg(test)]
@@ -263,5 +279,13 @@ mod tests {
             "model"
         )
         .is_err());
+    }
+
+    #[test]
+    fn strip_code_fence_extracts_inner_json_and_passes_plain_through() {
+        assert_eq!(strip_code_fence("```json\n{\"a\":1}\n```"), "{\"a\":1}");
+        assert_eq!(strip_code_fence("```\n{\"a\":1}\n```"), "{\"a\":1}");
+        assert_eq!(strip_code_fence("  {\"a\":1}  "), "{\"a\":1}");
+        assert_eq!(strip_code_fence("plain text"), "plain text");
     }
 }

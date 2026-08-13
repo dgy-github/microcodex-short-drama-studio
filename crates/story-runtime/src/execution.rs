@@ -7,6 +7,11 @@ pub struct ExecutionTask {
     pub depends_on: &'static [&'static str],
 }
 
+// Fixed 17-task story graph. This MUST stay in lock-step with the Python copy
+// in `sidecar/campaign_adapter/workflow.py` (`TASKS`): identical task ids,
+// identical ordering, identical `depends_on`. `validate_fixed_story_execution_order`
+// guards this copy; the Python `validate_task_graph()` guards the other, and
+// `test_task_graph_matches_rust_order` in test_workflow.py pins both.
 const FIXED_STORY_EXECUTION_ORDER: [ExecutionTask; 17] = [
     ExecutionTask {
         id: "t01",

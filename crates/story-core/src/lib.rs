@@ -122,8 +122,14 @@ pub enum ValidationError {
     Schema,
     #[error("job id and input must not be blank")]
     Blank,
+    #[error("audience must not be blank")]
+    Audience,
     #[error("episode count and duration must be positive")]
     Format,
+    #[error("at least one non-blank allowed genre is required")]
+    Genres,
+    #[error("budget token cap and deadline must be positive")]
+    Budget,
 }
 
 impl StoryJob {
@@ -138,8 +144,22 @@ impl StoryJob {
         if self.job_id.trim().is_empty() || self.input.trim().is_empty() {
             return Err(ValidationError::Blank);
         }
+        if self.audience.trim().is_empty() {
+            return Err(ValidationError::Audience);
+        }
         if self.format.episodes == 0 || self.format.minutes_per_episode == 0 {
             return Err(ValidationError::Format);
+        }
+        if self.allowed_genres.is_empty()
+            || self
+                .allowed_genres
+                .iter()
+                .any(|genre| genre.trim().is_empty())
+        {
+            return Err(ValidationError::Genres);
+        }
+        if self.budget.max_tokens == 0 || self.budget.deadline_seconds == 0 {
+            return Err(ValidationError::Budget);
         }
         Ok(())
     }
@@ -183,6 +203,35 @@ mod tests {
         let mut value = job();
         value.input = " ".into();
         assert_eq!(value.validate(), Err(ValidationError::Blank));
+    }
+
+    #[test]
+    fn blank_audience_fails() {
+        let mut value = job();
+        value.audience = "  ".into();
+        assert_eq!(value.validate(), Err(ValidationError::Audience));
+    }
+
+    #[test]
+    fn empty_allowed_genres_fails() {
+        let mut value = job();
+        value.allowed_genres = vec![];
+        assert_eq!(value.validate(), Err(ValidationError::Genres));
+
+        let mut blank_genre = job();
+        blank_genre.allowed_genres = vec!["family".into(), "  ".into()];
+        assert_eq!(blank_genre.validate(), Err(ValidationError::Genres));
+    }
+
+    #[test]
+    fn zero_budget_fails() {
+        let mut no_tokens = job();
+        no_tokens.budget.max_tokens = 0;
+        assert_eq!(no_tokens.validate(), Err(ValidationError::Budget));
+
+        let mut no_deadline = job();
+        no_deadline.budget.deadline_seconds = 0;
+        assert_eq!(no_deadline.validate(), Err(ValidationError::Budget));
     }
 
     #[test]
