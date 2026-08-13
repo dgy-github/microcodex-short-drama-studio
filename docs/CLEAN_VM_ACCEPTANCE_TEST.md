@@ -481,4 +481,4 @@ Record failures in: `docs/acceptance-test-results/YYYYMMDD-clean-vm-test.md`
 
 **Last Updated**: 2026-08-10  
 **Status**: Script created, awaiting execution  
-**Tracking**: IMPROVEMENT_PLAN.md Phase 3.1
+**Tracking**: HANDOFF.md

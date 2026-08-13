@@ -198,7 +198,7 @@ The installer will be in `apps/desktop/src-tauri/target/release/bundle/`.
 
 **All output must be marked `advisory/non-promotable` until these are resolved.**
 
-See [PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md) for detailed analysis.
+See [CHANGELOG.md](CHANGELOG.md) for the current blocker list.
 
 ---
 
@@ -233,7 +233,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for complete phase sequencing.
 
 - **[Quick Start](#quick-start)** - Get up and running
 - **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md)** - Comprehensive project status
+- **[HANDOFF.md](HANDOFF.md)** - Current state, open blockers, and code review
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design and boundaries
 - **[docs/ROADMAP.md](docs/ROADMAP.md)** - Phase sequencing and exit criteria
 - **[docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md)** - Security controls

@@ -222,7 +222,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 **计划**: 阶段 2.2 - 提升测试覆盖
 
-**跟踪**: IMPROVEMENT_PLAN.md
+**跟踪**: HANDOFF.md
 
 ---
 

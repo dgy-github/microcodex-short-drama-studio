@@ -22,6 +22,29 @@ npm run tauri -- dev --no-watch
 The Rust shell is an independent workspace at `src-tauri` so the Tauri
 dependency graph does not enter the product's root Rust workspace.
 
+## Tests
+
+```powershell
+npm test -- --run            # Vitest component and unit tests
+npm run test:e2e:tauri       # WebdriverIO acceptance against the real binary
+```
+
+`test:e2e:tauri` builds the frontend, then compiles the shell with the
+`custom-protocol` feature into `src-tauri/target-e2e` and drives the resulting
+executable through real Tauri IPC. The feature matters: without it `cargo build`
+produces a development binary that loads `tauri.conf.json`'s `devUrl`, so the
+window shows `ERR_CONNECTION_REFUSED` unless a Vite dev server happens to be
+running.
+
+The acceptance run launches the Python sidecar, which resolves to
+`.venv/Scripts/python.exe` at the repository root unless `MICROCODEX_PYTHON`
+overrides it. Create that environment first:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python -m pip install --editable sidecar
+```
+
 ## Windows release verification
 
 From the repository root, `scripts\build_windows_release.ps1` builds the onedir
