@@ -38,6 +38,25 @@ REQ-320..326（`docs/features/eval-p3a-unlock/`），三笔提交：
 3. 本地 codex（gpt-5.4）默认中转 HK-CLIProxyAPI 返回 401，
    `--config model_provider=openai` 走 auth.json 的 sk- key 也被 401 拒绝。
 
+### 测量已执行 (2026-08-27 晚，抽样)
+判官 glm-5.3-flash + gpt-5.4 经 teamorouter 中转（qwen/glm-5.2 路由因成本/速度暂停，见 judges.json blocked_on 注记）。
+
+**stage-1 六对探针（采样=2/序，48 次调用）——seeded_defect_detection = 0/6（目标 0.75）：**
+六条 masking 配方全部存活。逐对检出率（negative_lower）：
+hook-fake glm 1.0/gpt 0.5；false-payoff **0.0/0.0（最强存活者，双判官全盲）**；
+emotion-unearned 1.0/0.5；voice-collapse 1.0/0.5；plot-convenience 0.5/0.5；trope-stack 1.0/0.5。
+gpt-5.4 在 6 对中 5 对恰为 0.50（n=4 下顺序噪声分不开）；glm-5.3-flash 显著更敏感。
+inter_model_agreement = 0.519（120 项）。defect_localisation = 1.0 但判官引用 span 分散、精确率低，命中有兜底嫌疑。
+窄对（motive-explicit-narrow）为七月旧判官配置的历史测量，指纹已随 judges.json 演进失配，未混入本期 headline。
+报告：`eval/adversarial/evaluator-metrics.json`。
+
+**逐案打分（5 案抽样 × 2 判官 × 3 采样，30 份记录）：** `eval/scores/baseline-20260827/`。
+pillar review 首读已产出（`pillar-review-10records.json`）：5 案下相关矩阵以 NaN/伪 1.0 为主，
+caveat 已标注判官案数 <10——**需要补满 10 案才有可用结论**（每补 1 案 ≈ 6 次调用）。
+
+**解读**：新证据再次确认 P1"判官稳定性差"。§9 分支决策（40 对量产）暂缓——判官读不出差异时，
+量产对抗对测的是噪声。先补打分到 10 案 + 人工盲测（你本人）交叉验证判官是否系统性偏高。
+
 ### 下一步优先级
 1. 🔴 **恢复任一判官路**（见上三条，任选其一即可开测）：
    - 设 `JUDGE_API_KEY` 后：

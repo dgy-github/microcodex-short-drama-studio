@@ -1,13 +1,27 @@
+"""Tests for the set-level evaluator metrics (multi-pair aggregation)."""
+
 import json
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from compute_evaluator_metrics import OUT, PAIR_DIR, load, observations, result_files
+from compute_evaluator_metrics import (
+    DEFAULT_PAIR,
+    load,
+    measure_pair,
+    observations,
+    pooled_agreement,
+    result_files,
+)
+from run_stage0_probe import load_rubric
+
+DIMENSION_IDS = [d["id"] for d in load_rubric()]
 
 
 class ResultDiscoveryTests(unittest.TestCase):
     def test_invalid_span_files_are_excluded(self) -> None:
         self.assertFalse(
-            [p for p in result_files() if ".invalid-span." in p.name]
+            [p for p in result_files(DEFAULT_PAIR) if ".invalid-span." in p.name]
         )
 
 
@@ -35,33 +49,117 @@ class ObservationTests(unittest.TestCase):
         self.assertFalse(rows[0]["localised"])
 
 
-class ReportTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.report = load(OUT)
+class NarrowPairReportTests(unittest.TestCase):
+    """The historical stage-0 narrow pair, measured through the new API."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.measured = measure_pair(DEFAULT_PAIR, DIMENSION_IDS)
 
     def test_stability_rerun_is_not_counted_as_a_third_judge(self) -> None:
-        counted = self.report["judges_counted"]
-        self.assertEqual(len(counted), len(set(counted)))
-        self.assertEqual(self.report["reruns_excluded_from_headline"], [])
+        models = [j["judge_model"] for j in self.measured["primary"]]
+        self.assertEqual(len(models), len(set(models)))
 
-    def test_narrow_pair_makes_localisation_informative(self) -> None:
-        block = self.report["defect_localisation"]
-        self.assertFalse(block["constructively_guaranteed"])
-        self.assertIsNone(block["caveat"])
+    def test_narrow_pair_localisation_is_not_constructively_guaranteed(self) -> None:
+        self.assertFalse(self.measured["constructively_guaranteed_localisation"])
 
-    def test_single_pair_resolution_is_disclosed(self) -> None:
-        self.assertEqual(self.report["pairs_total"], 1)
-        self.assertIn("0.0 and 1.0", self.report["resolution_warning"])
+    def test_every_result_carries_a_matching_fingerprint(self) -> None:
+        self.assertTrue(self.measured["all_inputs_fingerprinted"])
+        self.assertEqual(len(self.measured["input_fingerprints"]), 1)
 
-    def test_uncomputable_metrics_are_named_with_reasons(self) -> None:
-        missing = self.report["not_computable_here"]
-        self.assertNotIn("inter_model_agreement", missing)
-        self.assertIn("spot_check_agreement", missing)
 
-    def test_inter_model_agreement_is_reported(self) -> None:
-        agreement = self.report["inter_model_agreement"]
-        self.assertEqual(agreement["method"], "krippendorff_alpha_interval")
-        self.assertEqual(agreement["raters"], 3)
+class AggregationTests(unittest.TestCase):
+    def _fixture(self, root: Path, name: str, detect: bool, judge: str) -> dict:
+        pair_dir = root / name
+        pair_dir.mkdir(parents=True)
+        negative = load(DEFAULT_PAIR / "negative.story-package.json")
+        (pair_dir / "negative.story-package.json").write_text(
+            json.dumps(negative, ensure_ascii=False), encoding="utf-8"
+        )
+        defect_spans = load(DEFAULT_PAIR / "pair.json")["seeded_defects"][0]["spans"]
+        (pair_dir / "pair.json").write_text(
+            json.dumps(
+                {"pair_id": f"{name}", "seeded_defects": [{"spans": defect_spans}]},
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        span = defect_spans[0]
+        base_score, negative_score = (4, 2) if detect else (4, 4)
+        forward = []
+        reverse = []
+        for _ in range(3):
+            forward.append(
+                {
+                    "A": {d: {"score": base_score, "spans": [span]} for d in DIMENSION_IDS},
+                    "B": {d: {"score": negative_score, "spans": [span]} for d in DIMENSION_IDS},
+                    "preferred": "A",
+                }
+            )
+            # in the reverse order the labels swap sides, as the probe presents them
+            reverse.append(
+                {
+                    "A": {d: {"score": negative_score, "spans": [span]} for d in DIMENSION_IDS},
+                    "B": {d: {"score": base_score, "spans": [span]} for d in DIMENSION_IDS},
+                    "preferred": "B",
+                }
+            )
+        (pair_dir / f"judge-{judge}.result.json").write_text(
+            json.dumps(
+                {
+                    "forward": forward,
+                    "reverse": reverse,
+                    "summary": {
+                        "judge_model": judge,
+                        "route_provider": "fixture",
+                        "input_fingerprint": f"sha256:{name}",
+                        "samples_per_artifact": 3,
+                        "baseline_scores": {d: base_score for d in DIMENSION_IDS},
+                        "negative_scores": {d: negative_score for d in DIMENSION_IDS},
+                    },
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        return measure_pair(pair_dir, DIMENSION_IDS)
+
+    def test_detection_requires_all_primary_judges(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            detected = self._fixture(root, "p-detected", True, "judge-x")
+            self.assertTrue(detected["detected"])
+            missed = self._fixture(root, "p-missed", False, "judge-x")
+            self.assertFalse(missed["detected"])
+
+    def test_pooled_agreement_needs_judges_in_every_pair(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            pair_one = self._fixture(root, "q1", True, "judge-x")
+            pair_two = self._fixture(root, "q2", True, "judge-x")
+            pooled = pooled_agreement([pair_one, pair_two], DIMENSION_IDS)
+            self.assertIsNone(pooled)  # one judge alone cannot agree
+
+    def test_pooled_agreement_pools_items_across_pairs(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            pairs = []
+            for index in range(2):
+                pair_dir = root / f"r{index}"
+                self._fixture(root, f"r{index}", True, "judge-x")
+                # clone the fixture with a second judge at identical scores
+                first = load(pair_dir / "judge-judge-x.result.json")
+                second = json.loads(json.dumps(first))
+                second["summary"]["judge_model"] = "judge-y"
+                (pair_dir / "judge-judge-y.result.json").write_text(
+                    json.dumps(second, ensure_ascii=False), encoding="utf-8"
+                )
+                pairs.append(measure_pair(pair_dir, DIMENSION_IDS))
+            pooled = pooled_agreement(pairs, DIMENSION_IDS)
+            self.assertIsNotNone(pooled)
+            self.assertEqual(pooled["raters"], 2)
+            self.assertEqual(pooled["items"], len(pairs) * len(DIMENSION_IDS) * 2)
+            self.assertEqual(pooled["value"], 1.0)
 
 
 if __name__ == "__main__":

@@ -250,7 +250,7 @@ def markdown(review: dict[str, Any]) -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--runs", action="append", required=True,
+        "--runs", action="append", required=True, type=Path,
         help="eval/scores run directory; repeatable, later runs supersede",
     )
     parser.add_argument("--report", type=Path, default=None)

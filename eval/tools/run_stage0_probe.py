@@ -142,11 +142,16 @@ def urlopen_with_retry(
     request: urllib.request.Request,
     timeout: int,
     attempts: int = 4,
-):
-    """Retry transient transport and throttling failures on one fixed route."""
+) -> bytes:
+    """Retry transient transport and throttling failures on one fixed route.
+
+    Reads the body inside the loop too: a slow judge that sends headers and
+    then stalls times out during read(), which is just as transient.
+    """
     for attempt in range(1, attempts + 1):
         try:
-            return urllib.request.urlopen(request, timeout=timeout)
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return response.read()
         except urllib.error.HTTPError as error:
             retryable = error.code == 429 or 500 <= error.code < 600
             if not retryable or attempt == attempts:
@@ -160,6 +165,8 @@ def urlopen_with_retry(
             urllib.error.URLError,
             TimeoutError,
             http.client.RemoteDisconnected,
+            ConnectionResetError,
+            ConnectionAbortedError,
         ) as error:
             if attempt == attempts:
                 raise
@@ -385,6 +392,28 @@ def request_codex(
         return result
 
 
+def parse_content(content: str) -> dict[str, Any]:
+    """Parse judge JSON, tolerating markdown fences some relays allow through.
+
+    The OpenAI-compatible `response_format: json_object` is honoured by the
+    model providers but not always enforced by relay frontends; glm-5.2 behind
+    one such relay emits ```json-fenced output. Stripping the fence is safe:
+    clean JSON passes through unchanged.
+    """
+    text = (content or "").strip()
+    if not text:
+        # relays occasionally answer with null content; treat as unparseable
+        # so the retry loop re-asks instead of crashing the measurement
+        raise ValueError("judge returned empty content")
+    if text.startswith("```"):
+        first_newline = text.find("\n")
+        if first_newline != -1:
+            text = text[first_newline + 1 :]
+        if text.rstrip().endswith("```"):
+            text = text.rstrip()[:-3]
+    return json.loads(text)
+
+
 def request(
     route: dict[str, Any],
     model: str,
@@ -430,13 +459,17 @@ def request(
         },
         method="POST",
     )
-    with urlopen_with_retry(
+    response_body = urlopen_with_retry(
         http,
         timeout=int(route.get("request_timeout_seconds", 120)),
         attempts=int(route.get("transport_attempts", 2)),
-    ) as response:
-        raw = json.loads(response.read().decode("utf-8"))
-    result = json.loads(raw["choices"][0]["message"]["content"])
+    )
+    try:
+        raw = json.loads(response_body.decode("utf-8"))
+    except json.JSONDecodeError as error:
+        # a relay can cut the HTTP body mid-stream; as retryable as a timeout
+        raise ValueError(f"truncated HTTP body from relay: {error}")
+    result = parse_content(raw["choices"][0]["message"]["content"])
     result["_provider_usage"] = raw.get("usage")
     return result
 
@@ -475,8 +508,23 @@ def normalize_span_list(
     spans: list[Any], artifact: dict[str, Any], allowed: set[str]
 ) -> list[Any]:
     """Map each cited span back to an unambiguous owning addressable node."""
+    collections = {
+        "story-package/characters": artifact["characters"],
+        "story-package/beats": artifact["beats"],
+        "story-package/episodes": artifact["episodes"],
+        "story-package/scenes": artifact["scenes"],
+    }
     normalized: list[Any] = []
     for span in spans:
+        # glm sometimes pluralises the fixed prefix ("story-packages/char-1");
+        # repair that one typo before any other matching
+        if isinstance(span, str) and span.startswith("story-packages/"):
+            span = "story-package/" + span[len("story-packages/"):]
+        if span in collections:
+            normalized.extend(
+                f"story-package/{node['node_id']}" for node in collections[span]
+            )
+            continue
         if span in {
             "story-package/production",
             "story-package/production/locations",
@@ -545,7 +593,9 @@ def request_validated(
                 temperature,
                 validation_error,
             )
-        except (json.JSONDecodeError, KeyError, TypeError) as error:
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
+            # ValueError covers the empty-content and fence-trim cases a relay
+            # produces; they are as retryable as malformed JSON
             validation_error = f"{type(error).__name__}: {error}"
             if attempt == max_attempts:
                 raise
@@ -695,6 +745,31 @@ def resolve_pair_dir(value: Path) -> Path:
     if not (pair_dir / "pair.json").exists():
         raise SystemExit(f"no pair.json under {pair_dir}")
     return pair_dir
+
+
+def runnable_judges(judges: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Drop judges whose every route is blocked; keep the manifest's minimum.
+
+    A blocked judge is a configuration state (billing, auth), not a probe
+    failure: crashing mid-pair would discard paid samples for the judges that
+    can run. Dropping below two families, however, is a real failure because
+    the measurement would violate `min_judge_models`.
+    """
+    runnable = []
+    for judge in judges:
+        try:
+            resolve_route(judge)
+        except SystemExit as error:
+            print(f"SKIP {judge['model']}: {error}")
+            continue
+        runnable.append(judge)
+    families = {judge["family"] for judge in runnable}
+    if len(families) < 2:
+        raise SystemExit(
+            f"fewer than 2 runnable judge families ({sorted(families)}); "
+            "unblock a route before measuring"
+        )
+    return runnable
 
 
 def saved_result_is_reusable(
@@ -1005,6 +1080,8 @@ def main() -> int:
     if args.check_connectivity:
         return 1 if check_connectivity(config["judges"]) else 0
     judges, _, judge_families = select_judges(config, args.only_judge)
+    judges = runnable_judges(judges)
+    judge_families = {judge["family"] for judge in judges}
     sampling = config["sampling"]
     samples_per_artifact = args.samples or sampling["samples_per_artifact"]
     dimensions = load_rubric()

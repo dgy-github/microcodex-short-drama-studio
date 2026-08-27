@@ -48,6 +48,7 @@ from run_stage0_probe import (
     normalize_span_list,
     request,
     resolve_route,
+    runnable_judges,
     select_judges,
     valid_line_spans,
 )
@@ -138,7 +139,10 @@ def request_validated_pointwise(
     dimension_ids: list[str],
     retry_limit: int,
 ) -> dict[str, Any]:
-    attempts = retry_limit + 1
+    # Three attempts matches the stage-0 probe's empirically tuned budget:
+    # GLM intermittently truncates its JSON or mistypes the span prefix, and
+    # two attempts (the manifest's literal retry limit) lose whole cases to it.
+    attempts = max(3, retry_limit + 1)
     validation_error: str | None = None
     for attempt in range(1, attempts + 1):
         try:
@@ -155,7 +159,7 @@ def request_validated_pointwise(
                     + build_pointwise_user_prompt(case_id, artifact, validation_error)
                 ),
             )
-        except (json.JSONDecodeError, KeyError, TypeError) as error:
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
             validation_error = f"{type(error).__name__}: {error}"
             if attempt == attempts:
                 raise
@@ -475,6 +479,7 @@ def main() -> int:
     if not args.run_id:
         raise SystemExit("--run-id is required unless --check-connectivity is used")
     judges, _, _ = select_judges(config, args.only_judge)
+    judges = runnable_judges(judges)
     sampling = config["sampling"]
     samples_per_artifact = args.samples or sampling["samples_per_artifact"]
     manifest = load(MANIFEST)

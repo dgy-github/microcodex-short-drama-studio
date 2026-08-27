@@ -130,6 +130,24 @@ class ValidationTests(unittest.TestCase):
         )
         validate_judgment(value, self.baseline, self.baseline, self.ids)
 
+    def test_collection_fields_expand_to_member_nodes(self) -> None:
+        artifact = load(PAIR_DIR / "baseline.story-package.json")
+        value = {"A": {}, "B": {}}
+        for label, source in (("A", artifact), ("B", artifact)):
+            value[label] = {
+                "producibility": {
+                    "score": 3,
+                    "reason": "r",
+                    "spans": ["story-package/scenes"],
+                }
+            }
+            break
+        normalize_owned_field_spans(value, artifact, artifact)
+        self.assertEqual(
+            sorted(value["A"]["producibility"]["spans"]),
+            sorted(f"story-package/{scene['node_id']}" for scene in artifact["scenes"]),
+        )
+
     def test_production_fields_expand_to_real_source_nodes(self) -> None:
         value = sample(
             {d: 3 for d in self.ids},
@@ -308,11 +326,16 @@ class RouteTests(unittest.TestCase):
     def setUp(self) -> None:
         self.config = load(JUDGES)
 
-    def test_alternate_vendor_does_not_add_a_judge_family(self) -> None:
+    def test_alternate_vendor_does_not_duplicate_a_model(self) -> None:
         glm = next(j for j in self.config["judges"] if j["family"] == "zhipu")
         self.assertGreater(len(glm["routes"]), 1)
-        families = [j["family"] for j in self.config["judges"]]
-        self.assertEqual(len(families), len(set(families)))
+        models = [j["model"] for j in self.config["judges"]]
+        # one judge per MODEL: a model behind two vendors is one opinion, and
+        # counting it twice would inflate min_judge_models and agreement
+        self.assertEqual(len(models), len(set(models)))
+        # distinct models of one family may coexist (e.g. a paused flagship and
+        # a running flash tier); they add raters, not family diversity
+        self.assertGreaterEqual(len(set(models)), 2)
 
     def test_every_judge_uses_the_routes_shape(self) -> None:
         for judge in self.config["judges"]:
@@ -443,9 +466,13 @@ class RouteTests(unittest.TestCase):
             BytesIO(b"{}"),
         )
         response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = b'{"ok": true}'
         urlopen.side_effect = [throttled, response]
         request = urllib.request.Request("https://example.test")
-        self.assertIs(urlopen_with_retry(request, timeout=1), response)
+        self.assertEqual(
+            urlopen_with_retry(request, timeout=1), b'{"ok": true}'
+        )
         sleep.assert_called_once_with(1.0)
 
     @patch("run_stage0_probe.time.sleep")
@@ -454,12 +481,16 @@ class RouteTests(unittest.TestCase):
         self, urlopen: MagicMock, sleep: MagicMock
     ) -> None:
         response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = b'{"ok": true}'
         urlopen.side_effect = [
             http.client.RemoteDisconnected("closed"),
             response,
         ]
         request = urllib.request.Request("https://example.test")
-        self.assertIs(urlopen_with_retry(request, timeout=1), response)
+        self.assertEqual(
+            urlopen_with_retry(request, timeout=1), b'{"ok": true}'
+        )
         sleep.assert_called_once_with(2)
 
 

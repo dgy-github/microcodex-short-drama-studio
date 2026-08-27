@@ -1,0 +1,273 @@
+{
+  "defect_localisation": {
+    "constructively_guaranteed_pairs": [],
+    "meets_target": true,
+    "target": 0.5,
+    "value": 1.0
+  },
+  "inter_model_agreement": {
+    "items": 120,
+    "judges": [
+      "glm-5.3-flash",
+      "gpt-5.4"
+    ],
+    "method": "krippendorff_alpha_interval",
+    "raters": 2,
+    "value": 0.519086367161044
+  },
+  "judges_counted": [
+    "glm-5.3-flash",
+    "gpt-5.4"
+  ],
+  "manifest": "eval-v0.1.0",
+  "not_computable_here": {
+    "spot_check_agreement": "needs the internal human spot check, which has never been run"
+  },
+  "pair_ids": [
+    "stage1-comedy-002-hook-fake-001",
+    "stage1-comedy-002-false-payoff-001",
+    "stage1-comedy-002-emotion-unearned-001",
+    "stage1-comedy-002-voice-collapse-001",
+    "stage1-comedy-002-plot-convenience-001",
+    "stage1-comedy-002-trope-stack-001"
+  ],
+  "pairs_total": 6,
+  "per_pair": [
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:e62df6575df585e68c7f632e490b5cb6576e222bebbeae0ea69051657c9d7108"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/hook-fake",
+      "pair_id": "stage1-comedy-002-hook-fake-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 4,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\hook-fake\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\hook-fake\\judge-gpt-5.4.result.json"
+      }
+    },
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:d1a7644e634e9e0e853b4b8c4ca856684c0b5d1107f5b4e516b3564d53c61fe8"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/false-payoff",
+      "pair_id": "stage1-comedy-002-false-payoff-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.0,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.0,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\false-payoff\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\false-payoff\\judge-gpt-5.4.result.json"
+      }
+    },
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:f8eb8dbf0ec1be53aff11d18b30bef953642cf74780adde00491c4339fb703e4"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/emotion-unearned",
+      "pair_id": "stage1-comedy-002-emotion-unearned-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 4,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\emotion-unearned\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\emotion-unearned\\judge-gpt-5.4.result.json"
+      }
+    },
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:1063ba0b4e59e955e916c29fabe8c6da87352429a6d65fbe10ab2047e33e783c"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/voice-collapse",
+      "pair_id": "stage1-comedy-002-voice-collapse-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 4,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\voice-collapse\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\voice-collapse\\judge-gpt-5.4.result.json"
+      }
+    },
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:44200b75146af3985bd0af4589f77d2747b6d617c54a40b5d54dcb8e64fd17f5"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/plot-convenience",
+      "pair_id": "stage1-comedy-002-plot-convenience-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\plot-convenience\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\plot-convenience\\judge-gpt-5.4.result.json"
+      }
+    },
+    {
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": false,
+      "detected": false,
+      "input_fingerprints": [
+        "sha256:c1ee0d27a9cf14546f04d2b6729f1ab1cf288bde3ff3b03acf3af2f344a3dfb9"
+      ],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage1/trope-stack",
+      "pair_id": "stage1-comedy-002-trope-stack-001",
+      "per_judge": [
+        {
+          "judge_model": "glm-5.3-flash",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 4,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-glm-5.3-flash.result.json"
+        },
+        {
+          "judge_model": "gpt-5.4",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 0.5,
+          "observations": 4,
+          "pair_detected": false,
+          "pair_localised": true,
+          "route_provider": "teamorouter",
+          "source": "judge-gpt-5.4.result.json"
+        }
+      ],
+      "reruns_excluded_from_headline": [],
+      "result_paths": {
+        "judge-glm-5.3-flash.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\trope-stack\\judge-glm-5.3-flash.result.json",
+        "judge-gpt-5.4.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage1\\trope-stack\\judge-gpt-5.4.result.json"
+      }
+    }
+  ],
+  "resolution_note": "Both headline figures are defined over pairs; with 6 pair(s) the granularity is 1/6. Read the per-judge observation rates for texture.",
+  "schema": "evaluator-metrics/v1",
+  "seeded_defect_detection": {
+    "detected_pairs": 0,
+    "meets_target": false,
+    "target": 0.75,
+    "value": 0.0
+  }
+}

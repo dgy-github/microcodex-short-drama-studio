@@ -15,7 +15,8 @@
           "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
           "api_key_env": "JUDGE_API_KEY",
           "endpoint_verified": true,
-          "note": "Verified 2026-07-27 with a real Chat Completions request; qwen3-vl-plus honoured JSON mode and completed the full stage-0 probe."
+          "note": "Verified 2026-07-27 and again 2026-08-27 with real Chat Completions requests. Paused by the operator on 2026-08-27 for cost control: this family is billed per token on the Bailian plan while the zhipu and openai families run on the cheaper teamorouter relay. Unblocking is a one-line edit.",
+          "blocked_on": "operator_cost_control_2026-08-27"
         }
       ],
       "note": "A vision-language variant was chosen without a recorded rationale; a text variant of the same family is the more obvious choice for prose."
@@ -24,6 +25,24 @@
       "model": "glm-5.2",
       "family": "zhipu",
       "routes": [
+        {
+          "provider": "teamorouter",
+          "endpoint": "https://api.teamorouter.cn/v1/chat/completions",
+          "api_key_env": "JUDGE_API_KEY_TEAMO",
+          "endpoint_verified": true,
+          "note": "Verified 2026-08-27 with a real Chat Completions request (model id glm-5.2, JSON mode honoured). Same model as the zhipu and Bailian routes at a cheaper price point; preferred route while it stays unblocked.",
+          "request_timeout_seconds": 300,
+          "transport_attempts": 4,
+          "blocked_on": "operator_speed_control_2026-08-27"
+        },
+        {
+          "provider": "aliyun_bailian",
+          "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+          "api_key_env": "JUDGE_API_KEY",
+          "endpoint_verified": true,
+          "note": "Verified 2026-08-27 with a real Chat Completions request (model id glm-5.2, JSON mode honoured); billed on the Bailian token plan that also serves the qwen judge.",
+          "blocked_on": "operator_speed_control_2026-08-27"
+        },
         {
           "provider": "zhipu",
           "endpoint": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
@@ -43,16 +62,26 @@
           },
           "model_override_required": false,
           "blocked_on": "account_overdue",
-          "note": "Verified 2026-07-27 with a real Chat Completions request: the authenticated Ark route accepted model id glm-5-2-260617 and honoured JSON mode. Deep thinking is disabled for bounded stage-0 judge latency. The judge-level model remains glm-5.2 as the provider-neutral identity. Re-probed 2026-07-29: HTTP 403 AccountOverdueError. Both GLM routes are now blocked on billing, so the zhipu family cannot run at all until one is topped up."
+          "note": "Verified 2026-07-27 with a real Chat Completions request: the authenticated Ark route accepted model id glm-5-2-260617 and honoured JSON mode. Deep thinking is disabled for bounded stage-0 judge latency. The judge-level model remains glm-5.2 as the provider-neutral identity. Re-probed 2026-07-29: HTTP 403 AccountOverdueError."
         }
       ],
       "model_id_verified": true,
-      "routes_note": "Routes are alternate vendors for ONE model, tried in order. They are deliberately not separate judges: the same model behind two vendors would satisfy min_judge_models on paper while being one opinion counted twice."
+      "routes_note": "Routes are alternate vendors for ONE model, tried in order. They are deliberately not separate judges: the same model behind two vendors would satisfy min_judge_models on paper while being one opinion counted twice. The Bailian route runs first because it is the only unblocked one; vendor mixing inside one measurement never happens because a route is picked once up front.",
+      "note": "Paused 2026-08-27: the only unblocked route (teamorouter) answers real judge workloads in ~182s per call. The zhipu family is served by glm-5.3-flash on the same relay until a faster glm-5.2 route returns."
     },
     {
       "model": "gpt-5.4",
       "family": "openai",
       "routes": [
+        {
+          "provider": "teamorouter",
+          "endpoint": "https://api.teamorouter.cn/v1/chat/completions",
+          "api_key_env": "JUDGE_API_KEY_TEAMO",
+          "endpoint_verified": true,
+          "note": "Verified 2026-08-27 with a real Chat Completions request (model id gpt-5.4, JSON mode honoured). Serves the same model the local codex route used, through an OpenAI-compatible HTTP endpoint, so the non-Chinese-native family no longer depends on the operator's codex login.",
+          "request_timeout_seconds": 300,
+          "transport_attempts": 4
+        },
         {
           "provider": "local_codex_exec",
           "command": "codex",
@@ -60,12 +89,28 @@
           "api_key_env": null,
           "output_schema": "schemas/stage0-judge-output-v1.json",
           "endpoint_verified": true,
-          "blocked_on": null,
-          "note": "Runs through the local Codex CLI in --ephemeral --sandbox read-only mode, so no API key is held by this repository. Verified 2026-07-29: completed the full stage-0 narrow probe, order-consistent, and recorded its own judge_config_fingerprint."
+          "blocked_on": "codex_auth_unauthorized_2026-08-27",
+          "note": "Runs through the local Codex CLI in --ephemeral --sandbox read-only mode, so no API key is held by this repository. Verified 2026-07-29: completed the full stage-0 narrow probe, order-consistent, and recorded its own judge_config_fingerprint. Re-probed 2026-08-27: the operator's default relay (HK-CLIProxyAPI) returns 401 and the stored OpenAI key is also rejected — blocked until codex auth is repaired. The zhipu and openai families are therefore served by different vendors on different accounts, which the family-diversity requirement needs anyway."
         }
       ],
       "sampling_control": "codex_cli_provider_default",
       "note": "Promoted from supplemental to a formal judge on 2026-07-29. It is the only non-Chinese-native family in the set and the only judge that stayed order-consistent on the narrow pair, which is exactly why it counts."
+    },
+    {
+      "model": "glm-5.3-flash",
+      "family": "zhipu",
+      "routes": [
+        {
+          "provider": "teamorouter",
+          "endpoint": "https://api.teamorouter.cn/v1/chat/completions",
+          "api_key_env": "JUDGE_API_KEY_TEAMO",
+          "endpoint_verified": true,
+          "request_timeout_seconds": 300,
+          "transport_attempts": 4,
+          "note": "Verified 2026-08-27 with a real-size judge prompt (full story package, ten dimensions): 87s, finish=stop, valid JSON with span citations. Flash tier: cheaper and faster than glm-5.2 on this relay, and the tier is recorded in every result's provenance."
+        }
+      ],
+      "note": "The running zhipu-family judge while glm-5.2's routes are speed-paused. A different model, not a glm-5.2 alias: judge results name it explicitly."
     }
   ],
   "sampling": {
