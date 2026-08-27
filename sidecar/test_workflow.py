@@ -253,6 +253,15 @@ class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
             with patch.object(sys, "_MEIPASS", directory, create=True):
                 self.assertEqual(package_schema(), '{"schema":"frozen-test"}')
 
+    def test_package_schema_resolves_the_repository_copy_when_not_frozen(self) -> None:
+        """The unfrozen branch is `__file__`-relative, so moving this module
+        between directories silently breaks it. Only the frozen branch used to
+        be covered, and splitting workflow.py into a package did break it."""
+        schema = json.loads(package_schema())
+        self.assertEqual(
+            schema["$id"], "https://microcodex.local/schemas/story-package-v1.json"
+        )
+
     def test_review_severity_aliases_are_normalized_to_contract_values(self) -> None:
         spec = next(spec for spec in TASKS if spec.task_id == "t11")
         artifact = {
@@ -514,3 +523,113 @@ class FailureClassificationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(context.failure_code, "final_review_rejected")
         self.assertEqual(context.failure_task_id, "t17")
         self.assertEqual(context.failure_detail, "first")
+
+
+class FailedRunStopsSpendingTests(unittest.IsolatedAsyncioTestCase):
+    """A failed run used to keep paying for work it had already thrown away.
+
+    `asyncio.gather` hands the first exception to the caller but does not
+    cancel its siblings, so one failing episode writer left the rest running:
+    real flagship calls, discarded output, and usage that never reaches
+    `retain()` to be counted against the budget.
+    """
+
+    async def asyncSetUp(self) -> None:
+        descriptor, self.path = tempfile.mkstemp(
+            suffix=".db", prefix="story_spend_stop_"
+        )
+        os.close(descriptor)
+        self.log = SqliteEventLog(self.path)
+
+    async def asyncTearDown(self) -> None:
+        self.log.close()
+        try:
+            os.unlink(self.path)
+        except OSError:
+            pass
+
+    async def test_one_failed_episode_cancels_its_siblings(self) -> None:
+        class OneEpisodeFails(FakeCapability):
+            def __init__(self) -> None:
+                super().__init__()
+                self.completed_after_failure: list[int] = []
+                self.failed = False
+
+            async def generate(self, route, system, prompt):
+                task_name = prompt.splitlines()[0].split("=", 1)[1]
+                if task_name.startswith("write_episode_"):
+                    index = int(task_name.rsplit("_", 1)[1])
+                    if index == 2:
+                        self.failed = True
+                        raise RuntimeError("episode 2 provider failure")
+                    await asyncio.sleep(0.2)
+                    if self.failed:
+                        self.completed_after_failure.append(index)
+                return await super().generate(route, system, prompt)
+
+        capability = OneEpisodeFails()
+        workflow = AdvisoryStoryWorkflow(self.log, capability)
+        with self.assertRaisesRegex(RuntimeError, "episode 2 provider failure"):
+            await workflow.run(
+                story_job(capability), "run_episode_fail", "req_episode_fail"
+            )
+        await asyncio.sleep(0.5)
+        self.assertEqual(
+            capability.completed_after_failure,
+            [],
+            "no episode writer may finish a paid call after the run has failed",
+        )
+
+
+class BudgetSurvivesRecoveryTests(unittest.IsolatedAsyncioTestCase):
+    """`max_tokens` has to cap the run, not each attempt.
+
+    A recovered run re-enters `run()` with a fresh context. While the counter
+    restarted at zero, a restart loop could spend an unbounded multiple of the
+    operator's budget, and the sidecar disagreed with the Rust projection,
+    which accumulates consumption across the whole run.
+    """
+
+    async def asyncSetUp(self) -> None:
+        descriptor, self.path = tempfile.mkstemp(
+            suffix=".db", prefix="story_budget_recovery_"
+        )
+        os.close(descriptor)
+        self.log = SqliteEventLog(self.path)
+
+    async def asyncTearDown(self) -> None:
+        self.log.close()
+        try:
+            os.unlink(self.path)
+        except OSError:
+            pass
+
+    async def test_consumed_tokens_are_restored_from_the_event_log(self) -> None:
+        capability = FakeCapability()
+        run_id = "run_budget_recovery"
+        first = AdvisoryStoryWorkflow(self.log, capability)
+        await first.run(story_job(capability), run_id, "req_budget_recovery")
+
+        spent = sum(
+            event.payload["data"].get("usage", {}).get("total_tokens", 0)
+            for event in await self.log.replay(0)
+            if event.type == "task.completed"
+            and event.payload.get("run_id") == run_id
+        )
+        self.assertGreater(spent, 0, "the first attempt must have spent tokens")
+
+        context = WorkflowContext(
+            self.log, story_job(capability), run_id, "req_budget_recovery"
+        )
+        self.assertEqual(await context.restore_consumed_tokens(), spent)
+        self.assertEqual(context.consumed_tokens, spent)
+
+    async def test_a_different_run_does_not_inherit_consumption(self) -> None:
+        capability = FakeCapability()
+        workflow = AdvisoryStoryWorkflow(self.log, capability)
+        await workflow.run(story_job(capability), "run_budget_other", "req_other")
+
+        context = WorkflowContext(
+            self.log, story_job(capability), "run_budget_fresh", "req_fresh"
+        )
+        self.assertEqual(await context.restore_consumed_tokens(), 0)

@@ -75,6 +75,13 @@
 | `sidecar/campaign_adapter/__init__.py` | Python |
 | `sidecar/campaign_adapter/protocol.py` | Python |
 | `sidecar/campaign_adapter/server.py` | Python |
-| `sidecar/campaign_adapter/workflow.py` | Python |
+| `sidecar/campaign_adapter/workflow/__init__.py` | Python |
+| `sidecar/campaign_adapter/workflow/agents.py` | Python |
+| `sidecar/campaign_adapter/workflow/capability.py` | Python |
+| `sidecar/campaign_adapter/workflow/context.py` | Python |
+| `sidecar/campaign_adapter/workflow/graph.py` | Python |
+| `sidecar/campaign_adapter/workflow/packaging.py` | Python |
+| `sidecar/campaign_adapter/workflow/prompts.py` | Python |
+| `sidecar/campaign_adapter/workflow/runner.py` | Python |
 | `sidecar/reliability_sustained.py` | Python |
 | `sidecar/story_sidecar.py` | Python |

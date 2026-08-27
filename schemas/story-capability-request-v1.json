@@ -28,6 +28,32 @@
         "artifact": {"$ref": "story-package-v1.json"},
         "expected_episodes": {"type": "integer", "minimum": 1}
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "capability", "request_id", "run_id", "task_id", "artifact_schema", "artifact"],
+      "properties": {
+        "schema": {"const": "story-capability-request/v1"},
+        "capability": {"const": "retain_artifact"},
+        "request_id": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "task_id": {"pattern": "^t(0[1-9]|1[0-7])$", "type": "string"},
+        "artifact_schema": {"type": "string", "minLength": 1},
+        "artifact": {"type": "object"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "capability", "request_id", "content_ref", "content_sha256"],
+      "properties": {
+        "schema": {"const": "story-capability-request/v1"},
+        "capability": {"const": "load_artifact"},
+        "request_id": {"type": "string", "minLength": 1},
+        "content_ref": {"type": "string", "pattern": "^artifact://sha256/[0-9a-f]{64}$"},
+        "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
     }
   ]
 }

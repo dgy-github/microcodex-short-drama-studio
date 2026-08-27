@@ -10113,210 +10113,266 @@
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/__init__.py",
     "kind": "module",
-    "name": "workflow",
+    "name": "__init__",
     "line": 1,
     "public": false
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/agents.py",
+    "kind": "module",
+    "name": "agents",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/agents.py",
     "kind": "ClassDef",
-    "name": "TaskSpec",
+    "name": "ContractReviewer",
+    "line": 22,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/agents.py",
+    "kind": "ClassDef",
+    "name": "StoryAgent",
+    "line": 38,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/capability.py",
+    "kind": "module",
+    "name": "capability",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/capability.py",
+    "kind": "ClassDef",
+    "name": "Capability",
+    "line": 13,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/capability.py",
+    "kind": "ClassDef",
+    "name": "ReviewRejected",
+    "line": 23,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/capability.py",
+    "kind": "ClassDef",
+    "name": "PackageValidationFailed",
+    "line": 32,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/capability.py",
+    "kind": "ClassDef",
+    "name": "RustCapabilityClient",
     "line": 39,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "validate_task_graph",
-    "line": 75,
-    "public": true
+    "path": "sidecar/campaign_adapter/workflow/context.py",
+    "kind": "module",
+    "name": "context",
+    "line": 1,
+    "public": false
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "ClassDef",
-    "name": "Capability",
-    "line": 104,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "ClassDef",
-    "name": "ReviewRejected",
-    "line": 114,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "ClassDef",
-    "name": "PackageValidationFailed",
-    "line": 123,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "ClassDef",
-    "name": "RustCapabilityClient",
-    "line": 130,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/context.py",
     "kind": "ClassDef",
     "name": "WorkflowContext",
-    "line": 190,
+    "line": 12,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/graph.py",
+    "kind": "module",
+    "name": "graph",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/graph.py",
     "kind": "ClassDef",
-    "name": "ContractReviewer",
-    "line": 277,
+    "name": "TaskSpec",
+    "line": 25,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "ClassDef",
-    "name": "StoryAgent",
-    "line": 293,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/graph.py",
     "kind": "FunctionDef",
-    "name": "build_prompt",
-    "line": 524,
+    "name": "validate_task_graph",
+    "line": 61,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "episode_writer_prompt",
-    "line": 587,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "human_writing_directives",
-    "line": 616,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "merge_usage",
-    "line": 637,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "review_instruction",
-    "line": 648,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/graph.py",
     "kind": "FunctionDef",
     "name": "relevant_context",
-    "line": 658,
+    "line": 89,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "targeted_revision_context",
-    "line": 678,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "package_schema",
-    "line": 705,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "normalize_artifact",
-    "line": 711,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "canonical_package",
-    "line": 733,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "text_value",
-    "line": 885,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "character_reference",
-    "line": 889,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "episode_index",
-    "line": 904,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
-    "kind": "FunctionDef",
-    "name": "string_list",
-    "line": 916,
-    "public": true
-  },
-  {
-    "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/graph.py",
     "kind": "FunctionDef",
     "name": "execution_order",
-    "line": 922,
+    "line": 109,
     "public": true
   },
   {
     "language": "Python",
-    "path": "sidecar/campaign_adapter/workflow.py",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "module",
+    "name": "packaging",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "merge_usage",
+    "line": 12,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "package_schema",
+    "line": 23,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "normalize_artifact",
+    "line": 30,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "canonical_package",
+    "line": 52,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "text_value",
+    "line": 204,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "character_reference",
+    "line": 208,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "episode_index",
+    "line": 223,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/packaging.py",
+    "kind": "FunctionDef",
+    "name": "string_list",
+    "line": 235,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "module",
+    "name": "prompts",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "FunctionDef",
+    "name": "build_prompt",
+    "line": 20,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "FunctionDef",
+    "name": "episode_writer_prompt",
+    "line": 83,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "FunctionDef",
+    "name": "human_writing_directives",
+    "line": 112,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "FunctionDef",
+    "name": "review_instruction",
+    "line": 133,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/prompts.py",
+    "kind": "FunctionDef",
+    "name": "targeted_revision_context",
+    "line": 143,
+    "public": true
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/runner.py",
+    "kind": "module",
+    "name": "runner",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Python",
+    "path": "sidecar/campaign_adapter/workflow/runner.py",
     "kind": "ClassDef",
     "name": "AdvisoryStoryWorkflow",
-    "line": 942,
+    "line": 16,
     "public": true
   },
   {

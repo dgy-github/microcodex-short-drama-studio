@@ -10,6 +10,7 @@
     "request_id": {"type": "string", "minLength": 1},
     "status": {"const": "ok"},
     "artifact": {"type": "object"},
+    "artifact_ref": {"$ref": "story-artifact-ref-v1.json"},
     "usage": {
       "type": "object",
       "additionalProperties": false,
