@@ -400,7 +400,10 @@ impl RevisionRepository {
         revision_id: &str,
         target: &Path,
     ) -> Result<(), RevisionError> {
-        use crate::export_formats::{package_to_html, package_to_markdown, package_to_plain_text, ExportFormat, ExportOptions};
+        use crate::export_formats::{
+            package_to_html, package_to_markdown, package_to_plain_text, ExportFormat,
+            ExportOptions,
+        };
 
         // Validate path
         if !target.is_absolute() || target.exists() || !target.parent().is_some_and(Path::is_dir) {

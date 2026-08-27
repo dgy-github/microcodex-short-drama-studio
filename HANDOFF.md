@@ -1,11 +1,63 @@
 # HANDOFF
 status: active
-date: 2026-08-10
-agent: Claude Fable 5
-branch: main
+date: 2026-08-27
+agent: ZCode (GLM-5.3)
+branch: feature/eval-p3a-unlock
 origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
-## 最新改进 (2026-08-10)
+## 最新改进 (2026-08-27) · 评测体系补完（P1/P3a 解锁线）
+
+REQ-320..326（`docs/features/eval-p3a-unlock/`），三笔提交：
+`9ead9e0` 工具链、`184b951` stage-1 对抗对、`72efc51` 120 案。
+
+### 已完成
+- ✅ 逐案打分管线 `eval/tools/score_artifacts.py`：归档 baseline × 判官 × 3 采样，
+  `eval-score-record/v1` 输出到 `eval/scores/<run-id>/`（scores.jsonl + 逐判官结果），
+  六文件输入指纹、断点续跑、复用/失效判定（REQ-320）
+- ✅ 维度相关矩阵 `compute_pillar_review.py`：Spearman 10×10 + manifest 阈值并柱建议，
+  `pillar_grouping_review` 等待的证据可产出（REQ-321）
+- ✅ `compute_spot_check_agreement.py`：桌面盲测人评 × 判官分按 artifact_id 连接，
+  逐产物完整块 nominal alpha + 逐维判官-人均差（REQ-322）
+- ✅ `eval-governance.html` 改为生成物（模板 + manifest/仓库状态注入），`--check` 入
+  governance CI；修复三处陈旧漂移（REQ-323）
+- ✅ 冻结机制：`eval/manifests/FREEZE.json` + `scripts/check_eval_freeze.py` 入 CI，
+  冻结后哈希漂移即 fail（MAJOR bump 语义）（REQ-324）
+- ✅ stage-1 七路 masking 探针**创作侧**：六路定向降级同底 comedy_002
+  （HOOK_FAKE/FALSE_PAYOFF/EMOTION_UNEARNED/VOICE_COLLAPSE/PLOT_CONVENIENCE/TROPE_STACK），
+  全过准入门、字节级改动断言、char delta ≤0.51%（REQ-325）
+- ✅ 案例集 **30→120**：90 个内部原创案，父契约配额 ×4，30:30:24:12（dev 38/train 37/
+  validation 30/challenge 15），holdout 保持 0 封存，53 个新 premise family 零跨 split（REQ-326）
+- ✅ 修复：`load_probe_config` 补充判官与正式判官重复计数（虚高 agreement）；
+  `archive_baselines` 哈希换行归一化（修 Windows autocrlf 下 21 个误报）；
+  pair schema 补 FALSE_PAYOFF 码与 rationale 字段
+
+### 测量被凭证阻塞（非工具问题）
+2026-08-27 实测：三条判官路全部不可用——
+1. `JUDGE_API_KEY`（Qwen/阿里百炼）当前环境未设；
+2. GLM 智谱/火山两条路由均欠费（历史记录）；
+3. 本地 codex（gpt-5.4）默认中转 HK-CLIProxyAPI 返回 401，
+   `--config model_provider=openai` 走 auth.json 的 sk- key 也被 401 拒绝。
+
+### 下一步优先级
+1. 🔴 **恢复任一判官路**（见上三条，任选其一即可开测）：
+   - 设 `JUDGE_API_KEY` 后：
+     `python eval/tools/run_stage0_probe.py --pair-dir eval/adversarial/stage1/<name>`（六对）
+     `python eval/tools/score_artifacts.py --run-id <id>`（10 baseline × 3 采样）
+2. 🔴 **P1 人工盲测（你本人）**：桌面端 EvaluationCenter → 人工盲测 → 选 offline
+   数据集抽样（manifest 20% + 全部对抗对）创建分派并逐份评分；随后
+   `python eval/tools/compute_spot_check_agreement.py --runs eval/scores/<id>`
+   （本机桌面尚无 evaluation 目录，需先跑一次桌面端建目录）
+3. 🟡 打分齐 30 份记录后：`compute_pillar_review.py --runs ...` → 复核结论
+4. 🟡 三族齐 → 重算 evaluator-metrics → stage-1 分支决策（≥4 路有效→40 对）
+5. 🟢 冻结（等 2+3 完成）：写 `FREEZE.json`（hash + 证据链接），VERSIONS.md §4 置 frozen
+6. 🟢 GLM 充值恢复第三族；编剧面板（P7）仍是纯外部依赖
+
+## 接手必读
+
+依次读 `docs/ROADMAP.md`、本文件、`docs/SECURITY_REVIEW.md` 和
+`docs/STORY_EVAL_V1.md`。
+
+## 历史记录 (2026-08-10)
 
 由 Claude Fable 5 完成的代码质量提升工作：
 

@@ -30,10 +30,10 @@ capabilities:
     reuse_rule: Add typed capabilities here; never expose unrestricted shell access.
   - id: CAP-005
     name: Adversarial evaluator metrics
-    summary: Owns stage-0 metrics, rubric aggregation, offline and online sample evaluation, blind review records, holdout commitments and human-gated release decisions.
-    keywords: [evaluation, specificity, metrics, discrimination, blind-review, offline, online, holdout, professional-gate, promotion]
+    summary: Owns stage-0 metrics, rubric aggregation, offline and online sample evaluation, blind review records, holdout commitments, the governance page, the freeze record and human-gated release decisions.
+    keywords: [evaluation, specificity, metrics, discrimination, blind-review, offline, online, holdout, professional-gate, promotion, pointwise-scoring, pillar-review, freeze]
     owner: eval/tools/run_stage0_probe.py
-    interfaces: [IFACE-005, IFACE-016, IFACE-021]
+    interfaces: [IFACE-005, IFACE-016, IFACE-021, IFACE-024, IFACE-025, IFACE-026, IFACE-027, IFACE-028]
     reuse_rule: Extend these metric helpers and manifest definitions instead of calculating competing probe metrics elsewhere.
   - id: CAP-006
     name: Candidate decision retention
@@ -285,3 +285,48 @@ interfaces:
     outputs: [provider-soak-result/v1]
     errors: [invalid iteration count, missing credential, concurrent soak, provider degradation, unavailable evidence storage]
     side_effects: [bounded paid provider requests, immutable soak result write]
+  - id: IFACE-024
+    name: pointwise score run
+    kind: JSON artifact contract
+    location: eval/tools/score_artifacts.py
+    purpose: Score archived artifacts with the configured judge set into eval-score-record/v1 rows with fingerprint-checked reuse.
+    inputs: [archived baseline packages, judge set, rubric, manifest]
+    outputs: [pointwise-score-result/v1, eval-score-record/v1, scores.jsonl]
+    errors: [missing baseline, stale fingerprint, invalid judge output, incomplete sample set]
+    side_effects: [paid judge requests, atomic result and checkpoint writes]
+  - id: IFACE-025
+    name: pillar grouping review report
+    kind: JSON artifact contract
+    location: eval/tools/compute_pillar_review.py
+    purpose: Dimension correlation matrix and cross-pillar merge recommendations from pointwise score records.
+    inputs: [score run directories, rubric pillars, manifest merge threshold]
+    outputs: [pillar-review/v1]
+    errors: [incomplete sample set, missing dimension medians]
+    side_effects: [atomic review report write]
+  - id: IFACE-026
+    name: spot check agreement report
+    kind: JSON artifact contract
+    location: eval/tools/compute_spot_check_agreement.py
+    purpose: Agreement between blind internal human scores and judge scores joined on artifact identity.
+    inputs: [desktop evaluation root human scores, score run directories]
+    outputs: [spot-check-agreement/v1]
+    errors: [no human scores, no joined artifacts, incomplete sample set]
+    side_effects: [atomic agreement report write]
+  - id: IFACE-027
+    name: generated governance page
+    kind: Generated documentation artifact
+    location: eval/tools/generate_governance_page.py
+    purpose: Regenerate docs/eval-governance.html from the manifest and repository state; fail CI on hand edits.
+    inputs: [eval manifest, rubric pillars, repository case and adversarial state]
+    outputs: [docs/eval-governance.html]
+    errors: [template drift, missing manifest numbers]
+    side_effects: [tracked page rewrite]
+  - id: IFACE-028
+    name: evaluation freeze record
+    kind: JSON artifact contract
+    location: scripts/check_eval_freeze.py
+    purpose: Pin manifest and rubric hashes with freeze evidence; drift fails the governance CI.
+    inputs: [manifest hash, rubric hash, evidence links]
+    outputs: [eval-freeze-record/v1]
+    errors: [hash drift, missing evidence, incomplete record]
+    side_effects: [freeze enforcement via scripts/check_eval_freeze.py]

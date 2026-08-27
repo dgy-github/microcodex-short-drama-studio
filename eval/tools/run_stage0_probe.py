@@ -123,7 +123,17 @@ def load_probe_config() -> dict[str, Any]:
     """Merge supplemental local judges without changing the remote input hash."""
     config = load(JUDGES)
     supplemental = load(CODEX_JUDGES)
-    config["judges"] = [*config["judges"], *supplemental["judges"]]
+    formal_models = {judge["model"] for judge in config["judges"]}
+    # A supplemental judge promoted into the formal set must not be counted
+    # twice: a duplicated rater silently inflates inter-model agreement.
+    config["judges"] = [
+        *config["judges"],
+        *(
+            judge
+            for judge in supplemental["judges"]
+            if judge["model"] not in formal_models
+        ),
+    ]
     config["independence_caveat"] = supplemental["independence_caveat"]
     return config
 

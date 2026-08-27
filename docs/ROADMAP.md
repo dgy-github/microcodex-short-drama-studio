@@ -261,10 +261,16 @@ the 10 archived baselines.
 
 ### Deferred within P3
 
-**Stage 1 seven-path masking probe.** It serves mass production of the
+**Stage 1 seven-path masking probe — authored 2026-08-27, measurement pending.**
+The six new degradations (hook-fake, false-payoff, emotion-unearned,
+voice-collapse, plot-convenience, trope-stack) live under
+`eval/adversarial/stage1/` on the shared comedy_002 base; MOTIVE_EXPLICIT
+remains the stage-0 narrow pair. Measurement through `run_stage0_probe.py` is
+blocked on judge credentials (see `HANDOFF.md`), not on tooling. The §9 branch
+decision (15-40 pairs vs perturbation) still follows the reading. Its original
+deferral rationale stands recorded: it serves mass production of the
 adversarial set; the adversarial set serves discrimination measurement; and
-discrimination is not measurable in v1 at all, for want of a hard positive. It
-ranks below reaching 30 scored cases and freezing.
+discrimination is not measurable in v1 at all, for want of a hard positive.
 
 ---
 
@@ -570,11 +576,13 @@ commitment.
 Prerequisite for P12: the parent contract forbids automatic skill promotion on a
 30-case set.
 
-- expand the case set from 30 to the 120-case target distribution;
+- expand the case set from 30 to the 120-case target distribution —
+  **done 2026-08-27, pulled ahead of the first freeze** (REQ-326) so one
+  freeze covers the target scale instead of a MAJOR bump right after;
 - add a **non-Chinese-native judge family**, so `inter_model_agreement` stops
   measuring shared priors between two Chinese-native models;
 - MinHash / embedding premise-family checking, deferred at 30 cases where
-  reading them sufficed;
+  reading them sufficed — at 120 it becomes due before freezing;
 - similarity search of every premise against existing screen works;
 - re-freeze the manifest and rubric at the larger scale.
 

@@ -9265,168 +9265,168 @@
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "urlopen_with_retry",
-    "line": 131
+    "line": 141
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "load_rubric",
-    "line": 162
+    "line": 172
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_system",
-    "line": 167
+    "line": 177
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "valid_line_spans",
-    "line": 179
+    "line": 189
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_route",
-    "line": 207
+    "line": 217
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_user_prompt",
-    "line": 236
+    "line": 246
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "write_compatible_model_catalog",
-    "line": 260
+    "line": 270
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request_codex",
-    "line": 306
+    "line": 316
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request",
-    "line": 378
+    "line": 388
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "validate_judgment",
-    "line": 434
+    "line": 444
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "normalize_span_list",
-    "line": 464
+    "line": 474
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "normalize_owned_field_spans",
-    "line": 497
+    "line": 507
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request_validated",
-    "line": 514
+    "line": 524
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "check_connectivity",
-    "line": 562
+    "line": 572
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 644
+    "line": 654
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "select_judges",
-    "line": 660
+    "line": 670
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_pair_dir",
-    "line": 683
+    "line": 693
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "saved_result_is_reusable",
-    "line": 690
+    "line": 700
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "refresh_saved_summary",
-    "line": 714
+    "line": 724
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "collect_samples",
-    "line": 730
+    "line": 740
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "summarize_judge",
-    "line": 756
+    "line": 766
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "run_judge",
-    "line": 801
+    "line": 811
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_probe_summary",
-    "line": 933
+    "line": 943
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 992
+    "line": 1002
   },
   {
     "language": "Python",

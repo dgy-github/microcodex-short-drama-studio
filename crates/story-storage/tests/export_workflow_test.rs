@@ -2,8 +2,10 @@
 // 测试从创建包到导出各种格式的完整流程
 
 use serde_json::json;
-use story_storage::{ExportFormat, ExportOptions, package_to_markdown, package_to_html, package_to_plain_text};
 use std::fs;
+use story_storage::{
+    package_to_html, package_to_markdown, package_to_plain_text, ExportFormat, ExportOptions,
+};
 
 /// 创建一个完整的测试故事包
 fn create_full_story_package() -> serde_json::Value {
