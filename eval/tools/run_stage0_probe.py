@@ -310,9 +310,14 @@ def request_codex(
     first: dict[str, Any],
     second: dict[str, Any],
     validation_error: str | None,
+    user_prompt: str | None = None,
 ) -> dict[str, Any]:
     schema_path = ROOT / route["output_schema"]
-    prompt = f"{system}\n\n{build_user_prompt(first, second, validation_error)}"
+    prompt = (
+        user_prompt
+        if user_prompt is not None
+        else f"{system}\n\n{build_user_prompt(first, second, validation_error)}"
+    )
     with tempfile.TemporaryDirectory(prefix="story-judge-") as directory:
         workdir = Path(directory)
         output_path = workdir / "final.json"
@@ -379,14 +384,20 @@ def request(
     second: dict[str, Any],
     temperature: float,
     validation_error: str | None = None,
+    user_prompt: str | None = None,
 ) -> dict[str, Any]:
     if route["provider"] == "local_codex_exec":
         return request_codex(
-            route, model, system, first, second, validation_error
+            route, model, system, first, second, validation_error,
+            user_prompt=user_prompt,
         )
     if not api_key:
         raise RuntimeError(f"{route['provider']}: missing API key")
-    prompt = build_user_prompt(first, second, validation_error)
+    prompt = (
+        user_prompt
+        if user_prompt is not None
+        else build_user_prompt(first, second, validation_error)
+    )
     request_body = {
         "model": route.get("model", model),
         "messages": [
@@ -450,6 +461,39 @@ def validate_judgment(
         raise ValueError("preferred must be A, B, or tie")
 
 
+def normalize_span_list(
+    spans: list[Any], artifact: dict[str, Any], allowed: set[str]
+) -> list[Any]:
+    """Map each cited span back to an unambiguous owning addressable node."""
+    normalized: list[Any] = []
+    for span in spans:
+        if span in {
+            "story-package/production",
+            "story-package/production/locations",
+        }:
+            normalized.extend(
+                f"story-package/{scene['node_id']}"
+                for scene in artifact["scenes"]
+            )
+            if span != "story-package/production":
+                continue
+        if span in {
+            "story-package/production",
+            "story-package/production/speaking_cast",
+        }:
+            normalized.extend(artifact["production"]["speaking_cast"])
+            continue
+        candidate = span.split(".", 1)[0] if isinstance(span, str) else span
+        while (
+            isinstance(candidate, str)
+            and candidate not in allowed
+            and "/" in candidate.removeprefix("story-package/")
+        ):
+            candidate = candidate.rsplit("/", 1)[0]
+        normalized.append(candidate if candidate in allowed else span)
+    return list(dict.fromkeys(normalized))
+
+
 def normalize_owned_field_spans(
     value: dict[str, Any],
     first: dict[str, Any],
@@ -462,35 +506,9 @@ def normalize_owned_field_spans(
         for entry in value.get(label, {}).values():
             if not isinstance(entry, dict) or not isinstance(entry.get("spans"), list):
                 continue
-            normalized: list[Any] = []
-            for span in entry["spans"]:
-                if span in {
-                    "story-package/production",
-                    "story-package/production/locations",
-                }:
-                    normalized.extend(
-                        f"story-package/{scene['node_id']}"
-                        for scene in artifacts[label]["scenes"]
-                    )
-                    if span != "story-package/production":
-                        continue
-                if span in {
-                    "story-package/production",
-                    "story-package/production/speaking_cast",
-                }:
-                    normalized.extend(artifacts[label]["production"]["speaking_cast"])
-                    continue
-                candidate = span.split(".", 1)[0] if isinstance(span, str) else span
-                while (
-                    isinstance(candidate, str)
-                    and candidate not in allowed[label]
-                    and "/" in candidate.removeprefix("story-package/")
-                ):
-                    candidate = candidate.rsplit("/", 1)[0]
-                normalized.append(
-                    candidate if candidate in allowed[label] else span
-                )
-            entry["spans"] = list(dict.fromkeys(normalized))
+            entry["spans"] = normalize_span_list(
+                entry["spans"], artifacts[label], allowed[label]
+            )
 
 
 def request_validated(

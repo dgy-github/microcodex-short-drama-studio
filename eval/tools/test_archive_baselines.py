@@ -33,8 +33,7 @@ class ArchiveIntegrityTests(unittest.TestCase):
             for case in index["cases"]:
                 with self.subTest(case=case["case_id"]):
                     wrapper = load(archive / case["wrapper"])
-                    body = (archive / case["package"]).read_bytes()
-                    digest = "sha256:" + hashlib.sha256(body).hexdigest()
+                    digest = sha256(archive / case["package"])
                     self.assertEqual(wrapper["content_hash"], digest)
                     self.assertEqual(wrapper["artifact_id"], case["artifact_id"])
 

@@ -35,7 +35,14 @@ ARCHIVE = ROOT / "eval" / "baselines"
 
 
 def sha256(path: Path) -> str:
-    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    """Hash the content with line endings normalized to LF.
+
+    Windows checkouts with autocrlf smudge the archived packages to CRLF,
+    which changes the bytes without changing the content; recorded hashes
+    were produced from LF files. Tampering still changes the digest.
+    """
+    normalized = path.read_bytes().replace(b"\r\n", b"\n")
+    return "sha256:" + hashlib.sha256(normalized).hexdigest()
 
 
 def load(path: Path) -> dict[str, Any]:

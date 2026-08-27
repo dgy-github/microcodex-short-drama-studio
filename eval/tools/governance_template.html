@@ -157,14 +157,9 @@ li{margin:0 0 .4rem}
 
 <h3>3.1 维度不是越多越好，而是要正交</h3>
 <p>原设计有 11 个维度。问题不在数量，在于它们高度相关：人的可信度、人物区分度、台词与潜台词衡量的是同一件事的三个侧面。加权求和对相关维度会<strong>重复计权</strong>——名义上人的可信度占 20%，但由于三个相关维度共占 40%，实际权重远高于此。这使得权重表上的数字不再表达设计意图。</p>
-<p>处理方式不是删维度（细粒度对归因有价值），而是分组：相关维度合成一个支柱，权重加在支柱上，组内允许互相补偿，组间不允许。分组当前是<strong>先验</strong>，等 30 份打分记录落地后用维度相关矩阵复核，相关系数超过阈值的维度合并。</p>
+<p>处理方式不是删维度（细粒度对归因有价值），而是分组：相关维度合成一个支柱，权重加在支柱上，组内允许互相补偿，组间不允许。分组当前是<strong>先验</strong>，等 %%SCORED_TRIGGER%% 份打分记录落地后用维度相关矩阵复核，相关系数超过阈值的维度合并。</p>
 
-<div class="grid g4">
-<div class="tile"><h4>人物可信 25%</h4><p>可信度、区分度、台词潜台词</p></div>
-<div class="tile"><h4>结构因果 25%</h4><p>因果一致性、连续性</p></div>
-<div class="tile"><h4>观看驱动 25%</h4><p>情感推进、短剧节奏、题材兑现</p></div>
-<div class="tile"><h4>原创可交付 25%</h4><p>原创性、可制作性</p></div>
-</div>
+%%PILLAR_TILES%%
 
 <div class="note"><strong>一个反直觉的点。</strong>"均衡加权"如果按字面理解成 11 个维度各占 1/11，人的可信度会从 20% 掉到 9%，与产品主张直接冲突。均衡必须发生在支柱层，不是维度层。分组之后人物可信反而升到 25%。</div>
 
@@ -286,15 +281,15 @@ li{margin:0 0 .4rem}
 </div>
 
 <h2>七、当前状态与下一步</h2>
-<p>已落地：准入门与四支柱的判定逻辑（<code>crates/story-eval</code>，13 个测试）、rubric 与阈值清单、四份契约 schema（用例、评分记录、对抗对、产物引用）、30 个原创中文用例（dev 10 / train 9 / validation 7 / challenge 4 / holdout（封存） 0）、10 个归档 baseline 包、4 名判官（openai、qwen、zhipu）、对抗集 2 对（motive-explicit、motive-explicit-narrow）。</p><p>维度相关矩阵尚未产出（等待逐案打分记录齐备后运行 <code>compute_pillar_review.py</code>）。</p><p>未落地：判官稳定性校准（P1）仍未通过；内部人工盲测 未开始（等待桌面端人工盲测提交后运行 <code>compute_spot_check_agreement.py</code>）；职业编剧面板未接入（skill 注册表为空，晋升门禁全部关闭）。</p><p>评测契约未冻结——<code>eval-v0.1.0</code> 与 <code>judge-v1</code> 仍为占位阈值，冻结前置是支柱分组复核与内部人工抽查。</p><p>下一步：补齐逐案判官打分（<code>score_artifacts.py</code>）至 30 份记录，运行维度相关矩阵复核支柱分组，完成内部盲测抽查，然后冻结评测契约；对抗集按 stage-1 七路探针的读数决定量产规模。</p>
+%%SECTION_SEVEN%%
 
-<p class="foot">本文档解释设计意图，规范性条款以 <code>STORY_EVAL_V1.md</code> 与 <code>eval/manifests/eval-v0.1.0.json</code> 为准。所有阈值随评测集版本一同变更。本页由 <code>eval/tools/generate_governance_page.py</code> 生成于 2026-08-27，请勿手工编辑。</p>
+<p class="foot">本文档解释设计意图，规范性条款以 <code>STORY_EVAL_V1.md</code> 与 <code>eval/manifests/eval-v0.1.0.json</code> 为准。所有阈值随评测集版本一同变更。%%GENERATED_NOTE%%</p>
 
 </div>
 
 <script>
-var P=[["人物可信", 2.5], ["结构因果", 2.5], ["观看驱动", 2.5], ["原创可交付", 2.5]];
-var FLOOR=3.0,PASS=3.5;
+var P=%%PILLAR_JS%%;
+var FLOOR=%%FLOOR%%,PASS=%%PASS%%;
 document.getElementById('sl').innerHTML=P.map(function(p,i){
 return '<div class="srow"><label for="r'+i+'">'+p[0]+'</label>'+
 '<input type="range" id="r'+i+'" min="1" max="5" step="0.1" value="'+p[1]+'">'+

@@ -24,6 +24,8 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install pyyaml
       - run: python scripts/init_project.py --check
+      - run: python eval/tools/generate_governance_page.py --check
+      - run: python scripts/check_eval_freeze.py
 
   rust:
     runs-on: ubuntu-latest

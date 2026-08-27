@@ -1,0 +1,130 @@
+feature: eval-p3a-unlock
+requirements:
+  - id: REQ-320
+    interfaces: [API-154]
+    implementation: [BE-132]
+    tests: [TEST-327, TEST-328, TEST-329, TEST-330]
+  - id: REQ-321
+    interfaces: [API-155]
+    implementation: [BE-133]
+    tests: [TEST-331, TEST-332]
+  - id: REQ-322
+    interfaces: [API-156]
+    implementation: [BE-134]
+    tests: [TEST-333, TEST-334]
+  - id: REQ-323
+    interfaces: [API-157]
+    implementation: [BE-135]
+    tests: [TEST-335, TEST-336]
+  - id: REQ-324
+    interfaces: [API-158]
+    implementation: [BE-136]
+    tests: [TEST-337, TEST-338]
+  - id: REQ-325
+    interfaces: [API-159]
+    implementation: [BE-137]
+    tests: [TEST-339, TEST-340]
+  - id: REQ-326
+    interfaces: [API-160]
+    implementation: [BE-138]
+    tests: [TEST-341, TEST-342]
+interfaces:
+  - id: API-154
+    location: eval/tools/score_artifacts.py
+    status: REVIEWED
+    purpose: pointwise judge scoring of archived artifacts into eval-score-record/v1 rows
+  - id: API-155
+    location: eval/tools/compute_pillar_review.py
+    status: REVIEWED
+    purpose: dimension correlation matrix and pillar merge recommendations from score records
+  - id: API-156
+    location: eval/tools/compute_spot_check_agreement.py
+    status: REVIEWED
+    purpose: agreement between blind internal human scores and judge scores
+  - id: API-157
+    location: eval/tools/generate_governance_page.py
+    status: REVIEWED
+    purpose: regenerate docs/eval-governance.html from the manifest and repository state
+  - id: API-158
+    location: eval/manifests/FREEZE.json
+    status: REVIEWED
+    purpose: freeze record pinning manifest and rubric hashes with evidence links
+  - id: API-159
+    location: eval/adversarial/stage1
+    status: REVIEWED
+    purpose: six masking-recipe degradations of the shared comedy_002 baseline
+  - id: API-160
+    location: eval/cases
+    status: REVIEWED
+    purpose: 120-case set at the parent contract quotas with sealed holdout
+implementation:
+  - id: BE-132
+    location: eval/tools/score_artifacts.py
+    owner: CAP-005
+  - id: BE-133
+    location: eval/tools/compute_pillar_review.py
+    owner: CAP-005
+  - id: BE-134
+    location: eval/tools/compute_spot_check_agreement.py
+    owner: CAP-005
+  - id: BE-135
+    location: eval/tools/generate_governance_page.py
+    owner: CAP-005
+  - id: BE-136
+    location: scripts/check_eval_freeze.py
+    owner: CAP-005
+  - id: BE-137
+    location: eval/tools/build_stage1_masking_pairs.py
+    owner: CAP-005
+  - id: BE-138
+    location: eval/tools/split_cases.py
+    owner: CAP-005
+tests:
+  - id: TEST-327
+    location: eval/tools/test_score_artifacts.py
+    proves: pointwise records are eval-score-record/v1 with medians and fingerprints
+  - id: TEST-328
+    location: eval/tools/test_score_artifacts.py
+    proves: a changed input fingerprint invalidates saved judge results
+  - id: TEST-329
+    location: eval/tools/test_score_artifacts.py
+    proves: complete saved results are reused and partial results resume
+  - id: TEST-330
+    location: eval/tools/test_score_artifacts.py
+    proves: invalid judge output is retried and span validation is enforced
+  - id: TEST-331
+    location: eval/tools/test_compute_pillar_review.py
+    proves: correlated dimensions produce a merge recommendation at the manifest threshold
+  - id: TEST-332
+    location: eval/tools/test_compute_pillar_review.py
+    proves: the matrix rejects ragged or incomplete score records
+  - id: TEST-333
+    location: eval/tools/test_compute_spot_check_agreement.py
+    proves: human and judge scores joined on artifact hash produce agreement
+  - id: TEST-334
+    location: eval/tools/test_compute_spot_check_agreement.py
+    proves: artifacts scored by only one side are reported, not silently dropped
+  - id: TEST-335
+    location: eval/tools/test_generate_governance_page.py
+    proves: the page is regenerated with manifest-derived numbers and repo-derived status
+  - id: TEST-336
+    location: eval/tools/test_generate_governance_page.py
+    proves: --check fails on a hand-edited page
+  - id: TEST-337
+    location: scripts/test_check_eval_freeze.py
+    proves: absence of a freeze record passes and drift after a record fails
+  - id: TEST-338
+    location: scripts/test_check_eval_freeze.py
+    proves: the record pins both manifest and rubric with evidence links
+  - id: TEST-339
+    location: eval/tools/test_build_stage1_masking_pairs.py
+    proves: every negative passes admission gates and only declared edits differ
+  - id: TEST-340
+    location: eval/tools/test_build_stage1_masking_pairs.py
+    proves: all seven masking recipes are covered by stage0 plus stage1 pairs
+  - id: TEST-341
+    location: eval/tools/test_validate_cases.py
+    proves: quotas and corpus checks pass at the 120-case target distribution
+  - id: TEST-342
+    location: eval/tools/test_split_cases.py
+    proves: split assignment keeps premise families together at 120 cases
