@@ -1,0 +1,15 @@
+{
+  "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-plot-convenience-stage1",
+  "artifact_type": "story-package",
+  "content_hash": "sha256:d3f706afc3870e8f66a3312f24447a5bef931f609102b33c2bd5e78c26b6eb21",
+  "content_ref": "negative.story-package.json",
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "schema": "story-artifact/v1",
+  "supersedes": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42"
+}

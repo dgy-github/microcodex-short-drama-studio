@@ -1,0 +1,15 @@
+{
+  "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-trope-stack-stage1",
+  "artifact_type": "story-package",
+  "content_hash": "sha256:b6e8055f77dfb21afbb0cd3513d8373c322927b01bc005e4bcfe1febfaece838",
+  "content_ref": "negative.story-package.json",
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "schema": "story-artifact/v1",
+  "supersedes": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42"
+}

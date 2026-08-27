@@ -1,0 +1,15 @@
+{
+  "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-hook-fake-stage1",
+  "artifact_type": "story-package",
+  "content_hash": "sha256:b0ee78c56f0304c214feddf2e1ca24d95fb0c5f9a3fe0e691bef77d8795e76e7",
+  "content_ref": "negative.story-package.json",
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "schema": "story-artifact/v1",
+  "supersedes": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42"
+}

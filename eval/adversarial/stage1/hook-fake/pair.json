@@ -1,0 +1,43 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.005096,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "两个集尾钩子被加码成爆点并引入全新信息（神秘小字、旧底片），但后续集数从不承接这些信息；钩子密度上升的同时钩子与后果脱钩。修复需要重排后续集的承接，属于 restructure。",
+  "masking_virtue": [
+    "hook_density"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-hook-fake-stage1",
+  "pair_id": "stage1-comedy-002-hook-fake-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "HOOK_FAKE",
+      "rationale": [
+        "悬念拉满并新增信息量，第二集完全不承接这行小字",
+        "旧底片是只为集尾爆点服务的全新道具，此后任何一集都未再出现"
+      ],
+      "repair_cost": "restructure",
+      "spans": [
+        "story-package/episode-1/hook-1",
+        "story-package/episode-3/hook-3"
+      ],
+      "target_dimension": "short_drama_pacing"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

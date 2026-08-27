@@ -82,7 +82,7 @@
         "properties": {
           "span_ref": {"type": "string"},
           "problem_code": {
-            "enum": ["HUMAN_GENERIC", "MOTIVE_EXPLICIT", "PLOT_CONVENIENCE", "VOICE_COLLAPSE", "EMOTION_UNEARNED", "HOOK_FAKE", "TROPE_STACK", "EXPOSITION", "CONTINUITY", "UNSHOOTABLE", "SOURCE_OVERLAP", "POLICY"]
+            "enum": ["HUMAN_GENERIC", "MOTIVE_EXPLICIT", "FALSE_PAYOFF", "PLOT_CONVENIENCE", "VOICE_COLLAPSE", "EMOTION_UNEARNED", "HOOK_FAKE", "TROPE_STACK", "EXPOSITION", "CONTINUITY", "UNSHOOTABLE", "SOURCE_OVERLAP", "POLICY"]
           },
           "severity": {"enum": ["minor", "major", "critical"]}
         }

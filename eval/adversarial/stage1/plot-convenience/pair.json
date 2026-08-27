@@ -1,0 +1,43 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.004884,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "家庭压力刚建立，建民就预告‘抽奖重拍总能解决’；随后一个从天而降的免费重拍活动把赵亮的赔偿责任与全家的恐惧瞬间清零。压力既无因果来源也无代价，解压完全靠巧合。",
+  "masking_virtue": [
+    "reversal_speed"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-plot-convenience-stage1",
+  "pair_id": "stage1-comedy-002-plot-convenience-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "PLOT_CONVENIENCE",
+      "rationale": [
+        "压力建构阶段就埋下‘巧合可解’的预期",
+        "核心压力被无因果来源的巧合直接消解"
+      ],
+      "repair_cost": "restructure",
+      "spans": [
+        "story-package/scene-1/dialogue-2",
+        "story-package/scene-2/dialogue-6"
+      ],
+      "target_dimension": "causal_coherence"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

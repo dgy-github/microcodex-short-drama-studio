@@ -1,0 +1,45 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.000637,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "务实的建民、结巴讨好的赵亮被改写成同一副格言腔：句句可截图，但两个角色的性格载体（直给与慌乱）消失，多角色声音塌缩为一个。",
+  "masking_virtue": [
+    "quotable_dialogue"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-voice-collapse-stage1",
+  "pair_id": "stage1-comedy-002-voice-collapse-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "VOICE_COLLAPSE",
+      "rationale": [
+        "建民的直给务实改成格言腔",
+        "赵亮的结巴讨好是他唯一的性格载体，改成同一副格言腔",
+        "补刀一句同一腔调，确认声音塌缩不是单点"
+      ],
+      "repair_cost": "scene_rewrite",
+      "spans": [
+        "story-package/scene-1/dialogue-2",
+        "story-package/scene-1/dialogue-4",
+        "story-package/scene-2/dialogue-4"
+      ],
+      "target_dimension": "character_distinction"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

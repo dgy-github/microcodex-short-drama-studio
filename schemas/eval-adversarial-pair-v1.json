@@ -5,111 +5,264 @@
   "description": "A discrimination pair or a minimal perturbation pair. Hardness is a measured property; a candidate is admitted only after measurement.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "pair_id", "pair_kind", "case_id", "positive_artifact_id", "negative_artifact_id", "seeded_defects", "confound_controls", "status", "rights"],
+  "required": [
+    "schema",
+    "pair_id",
+    "pair_kind",
+    "case_id",
+    "positive_artifact_id",
+    "negative_artifact_id",
+    "seeded_defects",
+    "confound_controls",
+    "status",
+    "rights"
+  ],
   "properties": {
-    "schema": {"const": "eval-adversarial-pair/v1"},
-    "pair_id": {"type": "string"},
+    "schema": {
+      "const": "eval-adversarial-pair/v1"
+    },
+    "pair_id": {
+      "type": "string"
+    },
     "pair_kind": {
-      "enum": ["seeded_degradation", "minimal_perturbation", "discrimination"],
+      "enum": [
+        "seeded_degradation",
+        "minimal_perturbation",
+        "discrimination"
+      ],
       "description": "v1 builds seeded_degradation and minimal_perturbation pairs. discrimination requires a professional-authored hard positive and is deferred."
     },
-    "case_id": {"type": "string"},
-    "split": {"enum": ["dev", "train", "validation", "holdout", "challenge"]},
-
-    "positive_artifact_id": {"type": "string"},
-    "negative_artifact_id": {"type": "string"},
-
+    "case_id": {
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "dev",
+        "train",
+        "validation",
+        "holdout",
+        "challenge"
+      ]
+    },
+    "positive_artifact_id": {
+      "type": "string"
+    },
+    "negative_artifact_id": {
+      "type": "string"
+    },
     "construction": {
-      "enum": ["authored", "degradation", "harvested"],
+      "enum": [
+        "authored",
+        "degradation",
+        "harvested"
+      ],
       "description": "harvested is unavailable until runs exist; selection rule is judge_human_delta above threshold"
     },
-    "author_id": {"type": "string"},
+    "author_id": {
+      "type": "string"
+    },
     "masking_virtue": {
       "type": "array",
       "items": {
-        "enum": ["hook_density", "symmetric_callback", "emotional_intensity", "quotable_dialogue", "stated_motive_clarity", "reversal_speed", "genre_marker_density"]
+        "enum": [
+          "hook_density",
+          "symmetric_callback",
+          "emotional_intensity",
+          "quotable_dialogue",
+          "stated_motive_clarity",
+          "reversal_speed",
+          "genre_marker_density"
+        ]
       }
     },
-
     "seeded_defects": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["problem_code", "spans", "load_bearing", "repair_cost"],
+        "required": [
+          "problem_code",
+          "spans",
+          "load_bearing",
+          "repair_cost"
+        ],
         "properties": {
           "problem_code": {
-            "enum": ["HUMAN_GENERIC", "MOTIVE_EXPLICIT", "PLOT_CONVENIENCE", "VOICE_COLLAPSE", "EMOTION_UNEARNED", "HOOK_FAKE", "TROPE_STACK", "EXPOSITION", "CONTINUITY", "UNSHOOTABLE"]
+            "enum": [
+              "HUMAN_GENERIC",
+              "MOTIVE_EXPLICIT",
+              "FALSE_PAYOFF",
+              "PLOT_CONVENIENCE",
+              "VOICE_COLLAPSE",
+              "EMOTION_UNEARNED",
+              "HOOK_FAKE",
+              "TROPE_STACK",
+              "EXPOSITION",
+              "CONTINUITY",
+              "UNSHOOTABLE"
+            ]
           },
-          "spans": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-          "target_dimension": {"type": ["string", "null"]},
-          "load_bearing": {"type": "boolean"},
+          "spans": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "target_dimension": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "load_bearing": {
+            "type": "boolean"
+          },
           "repair_cost": {
-            "enum": ["line_edit", "scene_rewrite", "restructure"],
+            "enum": [
+              "line_edit",
+              "scene_rewrite",
+              "restructure"
+            ],
             "description": "line_edit is cosmetic and disqualifies the sample from the hard set"
+          },
+          "rationale": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Per-edit construction rationale; reviewable evidence for the human who audits the pair."
           }
         }
       }
     },
-
     "confound_controls": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["episodes_match", "char_count_delta_ratio"],
+      "required": [
+        "episodes_match",
+        "char_count_delta_ratio"
+      ],
       "properties": {
-        "episodes_match": {"type": "boolean"},
+        "episodes_match": {
+          "type": "boolean"
+        },
         "char_count_delta_ratio": {
           "type": "number",
           "description": "abs(neg - pos) / pos. Negatives must not be longer than positives."
         },
-        "scene_count_match": {"type": "boolean"},
-        "negative_surface_metrics_at_or_above_median": {"type": "boolean"}
+        "scene_count_match": {
+          "type": "boolean"
+        },
+        "negative_surface_metrics_at_or_above_median": {
+          "type": "boolean"
+        },
+        "dialogue_nodes_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dialogue_nodes_seeded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dialogue_nodes_unseeded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seeded_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share of dialogue nodes seeded; a denominator for defect localisation."
+        }
       }
     },
-
     "admission_checks": {
-      "enum": ["pass", "fail"],
+      "enum": [
+        "pass",
+        "fail"
+      ],
       "description": "A negative that fails admission never reaches the judge and measures nothing."
     },
-
     "hardness": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "judge_score": {"type": "number"},
-        "human_score": {"type": "number"},
+        "judge_score": {
+          "type": "number"
+        },
+        "human_score": {
+          "type": "number"
+        },
         "judge_human_delta": {
           "type": "number",
           "description": "judge_score - human_score. Persisted per artifact from the first run; cannot be reconstructed later and is the sole input to harvesting."
         },
         "human_rater_type": {
-          "enum": ["internal_spot_check", "professional"],
+          "enum": [
+            "internal_spot_check",
+            "professional"
+          ],
           "description": "internal_spot_check in v1, so hardness is a lower bound"
         },
-        "raters_locating_seeded_span": {"type": "integer", "minimum": 0},
-        "judge_model_set": {"type": "array", "items": {"type": "string"}},
-        "rubric_version": {"type": "string"},
-        "measured_at": {"type": "string", "format": "date-time"}
+        "raters_locating_seeded_span": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "judge_model_set": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rubric_version": {
+          "type": "string"
+        },
+        "measured_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
-
     "status": {
-      "enum": ["candidate", "accepted_hard", "ordinary_negative", "defect_not_upheld", "construction_failed", "retired"],
+      "enum": [
+        "candidate",
+        "accepted_hard",
+        "ordinary_negative",
+        "defect_not_upheld",
+        "construction_failed",
+        "retired"
+      ],
       "description": "accepted_hard requires judge high, human low, and at least one rater locating the seeded span"
     },
-
     "rights": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["allowed_uses"],
+      "required": [
+        "allowed_uses"
+      ],
       "properties": {
         "allowed_uses": {
           "type": "array",
-          "items": {"enum": ["evaluation", "skill_derivation"]},
+          "items": {
+            "enum": [
+              "evaluation",
+              "skill_derivation"
+            ]
+          },
           "description": "holdout and challenge negatives carry evaluation only; granting skill_derivation teaches avoidance of these samples rather than this defect class"
         }
       }
+    },
+    "construction_note": {
+      "type": "string",
+      "description": "Why the seeded defect is load-bearing and how the masking virtue covers it."
+    },
+    "localisation_note": {
+      "type": "string",
+      "description": "Notes on how localisation remains informative for this pair."
     }
   }
 }

@@ -1,0 +1,43 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.003822,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "台词塞满网络热梗与类型标签（顶流、老钱风、赢麻了），题材标记密度上升；但情境喜剧真正的引擎——误会与潜台词——被标签淹没，题材兑现从‘写好喜剧情境’退化为‘喊出喜剧口号’。",
+  "masking_virtue": [
+    "genre_marker_density"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-trope-stack-stage1",
+  "pair_id": "stage1-comedy-002-trope-stack-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "TROPE_STACK",
+      "rationale": [
+        "建军的恐惧潜台词被热梗口号替换",
+        "堆砌题材标签替代实际的喜剧兑现"
+      ],
+      "repair_cost": "scene_rewrite",
+      "spans": [
+        "story-package/scene-1/dialogue-1",
+        "story-package/scene-2/dialogue-4"
+      ],
+      "target_dimension": "genre_fulfillment"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

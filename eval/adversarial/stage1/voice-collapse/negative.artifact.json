@@ -1,0 +1,15 @@
+{
+  "artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-voice-collapse-stage1",
+  "artifact_type": "story-package",
+  "content_hash": "sha256:2d19ee3775f1197fd5b07e62f9eff7d870a3e51014fafb509bf1f789a4d1e5f2",
+  "content_ref": "negative.story-package.json",
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "schema": "story-artifact/v1",
+  "supersedes": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42"
+}

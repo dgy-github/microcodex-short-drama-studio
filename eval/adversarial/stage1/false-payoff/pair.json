@@ -1,0 +1,43 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.004884,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "爷爷的决策台词两次引用小红的童年愧疚（scene-1 dialogue-3 的伏笔），形成对称回收的表面完整；但引用只充当‘黑白耐脏’的俏皮理由，小红的情感债务既未被回应，决策也不由该伏笔因果地推出——回收无压力。",
+  "masking_virtue": [
+    "symmetric_callback"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-false-payoff-stage1",
+  "pair_id": "stage1-comedy-002-false-payoff-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "FALSE_PAYOFF",
+      "rationale": [
+        "第一次引用伏笔：决策理由与伏笔之间没有因果力",
+        "第二次引用形成对称；‘不等回答’暴露引用是修辞装饰而非回应"
+      ],
+      "repair_cost": "scene_rewrite",
+      "spans": [
+        "story-package/scene-2/dialogue-5",
+        "story-package/scene-2/dialogue-7"
+      ],
+      "target_dimension": "causal_coherence"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}

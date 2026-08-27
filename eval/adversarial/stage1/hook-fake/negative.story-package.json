@@ -1,0 +1,467 @@
+{
+  "beats": [
+    {
+      "actor": "story-package/char-5",
+      "caused_by": [],
+      "choice": "熬夜赶工，但误用黑白遗照滤镜",
+      "consequence": "成片变成黑白色调，爷爷像遗像",
+      "node_id": "beats-1",
+      "pressure": "收到重要客户的寿宴照修图订单，若失误会影响口碑"
+    },
+    {
+      "actor": "story-package/char-5",
+      "caused_by": [
+        "story-package/beats-1"
+      ],
+      "choice": "主动带着重印的正确照片上门道歉",
+      "consequence": "带着两份照片前往王家",
+      "node_id": "beats-2",
+      "pressure": "快递已发出，无法拦截，顾客即将收到照片"
+    },
+    {
+      "actor": "story-package/char-5",
+      "caused_by": [
+        "story-package/beats-2"
+      ],
+      "choice": "偷听争吵内容，了解家庭内部矛盾",
+      "consequence": "得知家人正在争论是否告诉爷爷实情，老板不敢敲门",
+      "node_id": "beats-3",
+      "pressure": "到达王家门口，听见屋内激烈争吵，担心被骂"
+    },
+    {
+      "actor": "story-package/char-5",
+      "caused_by": [
+        "story-package/beats-3"
+      ],
+      "choice": "支支吾吾解释，却说漏嘴提到“遗照风格”",
+      "consequence": "全家怒火集中到老板身上，场面更混乱",
+      "node_id": "beats-4",
+      "pressure": "被家人发现，逼问缘由，家人意见分歧推向自己"
+    },
+    {
+      "actor": "story-package/char-1",
+      "caused_by": [
+        "story-package/beats-4"
+      ],
+      "choice": "爷爷误听“艺术照”，抢过黑白照片观看",
+      "consequence": "爷爷非但没生气，反而大赞照片有格调，家人愣住",
+      "node_id": "beats-5",
+      "pressure": "爷爷因被冷落在房间外，拄着拐杖出来查看"
+    },
+    {
+      "actor": "story-package/char-2",
+      "caused_by": [
+        "story-package/beats-5"
+      ],
+      "choice": "顺着爷爷的话，谎称是特意为他准备的风格",
+      "consequence": "爷爷突发奇想，宣布寿宴要按遗照风格办，大家傻眼",
+      "node_id": "beats-6",
+      "pressure": "家人不敢纠正，又怕爷爷细看发现端倪"
+    },
+    {
+      "actor": "story-package/char-5",
+      "caused_by": [
+        "story-package/beats-6"
+      ],
+      "choice": "老板急中生智，提议拍一组‘穿越时空’主题照片，既时尚又不冒犯",
+      "consequence": "全家勉强同意，爷爷却要求立刻开拍，新混乱开始",
+      "node_id": "beats-7",
+      "pressure": "爷爷的计划荒谬且时间紧迫，老板面临名声尽毁"
+    },
+    {
+      "caused_by": [
+        "story-package/beats-7"
+      ],
+      "choice": "所有人硬着头皮配合，用家中的道具即兴发挥",
+      "consequence": "拍出一系列滑稽又温馨的照片，爷爷满意，家人和解，老板获好评",
+      "node_id": "beats-8",
+      "pressure": "爷爷要当场拍出‘生前告别式’风格，众人手忙脚乱"
+    }
+  ],
+  "case_id": "comedy_002",
+  "characters": [
+    {
+      "change": "学会直白表达自己的感受，不再将就",
+      "contradiction": "表面随和，内心极其固执，爱面子",
+      "desire": "被家人平等对待，享受真正的快乐",
+      "fear": "被当成脆弱老人而剥夺决定权",
+      "name": "王德福",
+      "node_id": "char-1",
+      "secret": "早已察觉家人总瞒着他，只是假装不知"
+    },
+    {
+      "change": "学会相信家人，放下不必要的担忧",
+      "contradiction": "以孝顺为名过度控制，反而引发家庭危机",
+      "desire": "维持家庭稳定，保护父亲健康",
+      "fear": "父亲因受刺激而倒下",
+      "name": "王建军",
+      "node_id": "char-2",
+      "secret": "偷偷规划了一次全家旅行，不敢提出怕被拒绝"
+    },
+    {
+      "change": "勇敢担起责任，真诚沟通",
+      "contradiction": "想直言不讳却总回避冲突，显得吊儿郎当",
+      "desire": "过得轻松自在，直来直去",
+      "fear": "被家人视作不靠谱",
+      "name": "王建民",
+      "node_id": "char-3",
+      "secret": "其实非常在意父亲的认可，只是嘴硬"
+    },
+    {
+      "change": "放下内疚，理解诚实才是最好的关爱",
+      "contradiction": "过度保护反而让父亲更加猜疑",
+      "desire": "让父亲开心，维持表面和谐",
+      "fear": "父亲失望或伤心",
+      "name": "王小红",
+      "node_id": "char-4",
+      "secret": "小时候曾不小心将父亲的照片涂成黑白，挨过骂"
+    },
+    {
+      "change": "学会坦诚面对错误，用创意化解危机",
+      "contradiction": "技术精湛但人际笨拙，越解释越添乱",
+      "desire": "保住店铺声誉，弥补失误",
+      "fear": "被顾客投诉导致倒闭",
+      "name": "赵亮",
+      "node_id": "char-5",
+      "secret": "曾因类似工作失误被前女友嫌弃"
+    }
+  ],
+  "continuity_ledger": {
+    "facts": [
+      {
+        "established_in": "story-package/beats-1",
+        "node_id": "fact-1",
+        "statement": "寿宴照被误修成黑白遗照风格，但王家尚未直接给爷爷看照片。"
+      },
+      {
+        "established_in": "story-package/beats-5",
+        "node_id": "fact-2",
+        "statement": "爷爷王德福其实耳背但不糊涂，早已察觉家人瞒着他。"
+      }
+    ],
+    "relationships": [
+      {
+        "from": "story-package/char-2",
+        "node_id": "rel-1",
+        "relation": "长子，过度保护的父亲角色",
+        "to": "story-package/char-1"
+      },
+      {
+        "from": "story-package/char-3",
+        "node_id": "rel-2",
+        "relation": "弟弟，常与哥哥意见相左",
+        "to": "story-package/char-2"
+      },
+      {
+        "from": "story-package/char-4",
+        "node_id": "rel-3",
+        "relation": "女儿，因往事心怀愧疚",
+        "to": "story-package/char-1"
+      }
+    ],
+    "setups": [
+      {
+        "node_id": "setup-1",
+        "paid_off_in": "story-package/beats-5",
+        "pays_off_pressure": "story-package/beats-1",
+        "planted_in": "story-package/beats-1"
+      },
+      {
+        "node_id": "setup-2",
+        "paid_off_in": "story-package/beats-6",
+        "pays_off_pressure": "story-package/beats-4",
+        "planted_in": "story-package/beats-4"
+      }
+    ],
+    "timeline": [
+      {
+        "event": "王家为爷爷订购寿宴照，交给幸福照相馆。",
+        "node_id": "time-1",
+        "when": "故事开始前1天"
+      },
+      {
+        "event": "赵亮修错照片并发出。",
+        "node_id": "time-2",
+        "when": "当天上午"
+      },
+      {
+        "event": "赵亮发现错误后赶去王家，引发一系列事件。",
+        "node_id": "time-3",
+        "when": "当天下午"
+      }
+    ]
+  },
+  "episodes": [
+    {
+      "beats": [
+        "story-package/beats-1"
+      ],
+      "conflict": "他疲劳之下误用黑白滤镜，却已自动发送给顾客。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-2",
+        "kind": "cliffhanger",
+        "node_id": "hook-1",
+        "text": "赵亮盯着电脑上的黑白照片，瞳孔骤缩——相册角落竟印着一行谁都没见过的小字，他抓起照片疯了一样冲出门。"
+      },
+      "index": 1,
+      "node_id": "episode-1",
+      "opening_state": "赵亮在照相馆加班，接到王家的寿宴照精修订单。",
+      "turn": "发现错误时，快递已派送，无法撤回。"
+    },
+    {
+      "beats": [
+        "story-package/beats-2",
+        "story-package/beats-3"
+      ],
+      "conflict": "他怕被骂，更怕失去这单生意。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-3",
+        "kind": "dramatic_irony",
+        "node_id": "hook-2",
+        "text": "屋内王建军大喊：‘绝对不能告诉爸！’，赵亮脸色煞白。"
+      },
+      "index": 2,
+      "node_id": "episode-2",
+      "opening_state": "赵亮一路狂奔到王家所在小区，内心忐忑。",
+      "turn": "在门口听见屋里传来争吵声，止步偷听。"
+    },
+    {
+      "beats": [
+        "story-package/beats-4"
+      ],
+      "conflict": "四兄妹分为两派：建军和小红主张隐瞒，建民主张坦白，相互指责。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-4",
+        "kind": "escalation",
+        "node_id": "hook-3",
+        "text": "小红尖叫：‘你听听你说的什么！’建军猛地举起相册——相册里竟滑出一张泛黄的旧底片，全家倒吸一口凉气。"
+      },
+      "index": 3,
+      "node_id": "episode-3",
+      "opening_state": "赵亮被王家二儿子建民发现，拽进客厅，卷入争吵。",
+      "turn": "赵亮被迫发言，却脱口‘遗照’二字，火上浇油。"
+    },
+    {
+      "beats": [
+        "story-package/beats-5"
+      ],
+      "conflict": "大家立刻停手，装出笑脸，但气氛诡异。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-5",
+        "kind": "surprise",
+        "node_id": "hook-4",
+        "text": "爷爷眯着眼：‘这照片拍得像电影海报嘛，我喜欢！’"
+      },
+      "index": 4,
+      "node_id": "episode-4",
+      "opening_state": "就在建军要砸相册时，爷爷王德福拄着拐杖从房间走出来。",
+      "turn": "爷爷看到赵亮手里两张照片，夺过黑白的细看。"
+    },
+    {
+      "beats": [
+        "story-package/beats-6"
+      ],
+      "conflict": "家人面面相觑，不知如何接话。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-6",
+        "kind": "twist",
+        "node_id": "hook-5",
+        "text": "爷爷突然拍腿：‘那我的寿宴就用这个风格！搞得隆重点！’"
+      },
+      "index": 5,
+      "node_id": "episode-5",
+      "opening_state": "爷爷戴起老花镜仔细端详，开始夸赞后期处理有品位。",
+      "turn": "建军硬着头皮附和，说这是特意准备的‘艺术纪念’。"
+    },
+    {
+      "beats": [
+        "story-package/beats-7"
+      ],
+      "conflict": "如何阻止爷爷荒谬的计划又不伤感情？",
+      "end_hook": {
+        "consequence_in": "story-package/beats-7",
+        "kind": "action",
+        "node_id": "hook-6",
+        "text": "爷爷眼睛发亮：‘好！现在就给我拍，我要当一回电影明星！’"
+      },
+      "index": 6,
+      "node_id": "episode-6",
+      "opening_state": "众人愣住，建军急得冒汗，小红拼命使眼色。",
+      "turn": "赵亮灵机一动，提议主题摄影‘时光之旅’，既新潮又体面。"
+    },
+    {
+      "beats": [
+        "story-package/beats-8"
+      ],
+      "conflict": "家人们手忙脚乱找道具：建军被迫披床单扮侠客，建民举锅盖当盾牌。",
+      "end_hook": {
+        "consequence_in": "story-package/beats-8",
+        "kind": "emotional_beat",
+        "node_id": "hook-7",
+        "text": "小红看着父亲开怀大笑的样子，第一次觉得或许坦白也没那么可怕。"
+      },
+      "index": 7,
+      "node_id": "episode-7",
+      "opening_state": "赵亮被赶鸭子上架，用手机代替相机，指导爷爷摆造型。",
+      "turn": "爷爷兴致高涨，指挥众人编排滑稽情节。"
+    },
+    {
+      "beats": [],
+      "conflict": "爷爷忽然安静下来，说了一句‘其实我知道你们怕我难过’。",
+      "end_hook": {
+        "consequence_in": "none",
+        "kind": "resolution",
+        "node_id": "hook-8",
+        "text": "赵亮长舒一口气，王家决定将错就错，用这组‘时光’照做寿宴背景。"
+      },
+      "index": 8,
+      "node_id": "episode-8",
+      "opening_state": "拍摄完毕，大家挤在一起看手机里的搞笑照片，笑声不断。",
+      "turn": "众人震惊，爷爷却笑着感谢大家愿意陪他疯，并接受了正确颜色的照片。"
+    }
+  ],
+  "job_id": "baseline-deepseek-v4-pro-20260727-comedy_002",
+  "logline": {
+    "node_id": "logline-1",
+    "text": "When a photo shop accidentally turns Grandpa's birthday portraits into black-and-white memorial-style prints, the owner's apology visit stumbles into a family war over whether to tell the old man the truth."
+  },
+  "package_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "production": {
+    "locations": [
+      "幸福照相馆",
+      "王家客厅",
+      "王家门口走廊"
+    ],
+    "speaking_cast": [
+      "story-package/char-1",
+      "story-package/char-2",
+      "story-package/char-3",
+      "story-package/char-4",
+      "story-package/char-5"
+    ]
+  },
+  "promise": {
+    "audience": "20-45",
+    "genre": "comedy",
+    "node_id": "promise-1",
+    "tone": "lighthearted, warm, situational humor"
+  },
+  "provenance": [
+    {
+      "license_id": "internal-eval-0027",
+      "source_id": "comedy_002",
+      "usage": "evaluation baseline prompt"
+    }
+  ],
+  "scenes": [
+    {
+      "episode_ref": "story-package/episode-3",
+      "lines": [
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-1",
+          "speaker": "story-package/char-2",
+          "subtext": "我害怕失去父亲，只能用愤怒掩饰恐惧",
+          "text": "（举着相册）你看看这照片！黑白隆重的，爸看到非得吓出心脏病！"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-2",
+          "speaker": "story-package/char-3",
+          "subtext": "我想显得无所谓，但心里也怕担责任",
+          "text": "哥，爸没那么脆弱。实话实说不就完了？你这叫关心则乱。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-3",
+          "speaker": "story-package/char-4",
+          "subtext": "我背负着童年的愧疚，宁可瞒着也不想再让爸伤心",
+          "text": "（抢过照片）不行！小时候我弄脏他一张照片他都难过了好几天。这次绝不能让他看见。"
+        },
+        {
+          "kind": "action",
+          "node_id": "action-1",
+          "text": "赵亮被建民从门口推进来，差点绊倒，手里攥着新旧两份照片。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-4",
+          "speaker": "story-package/char-5",
+          "subtext": "我想说‘遗照风格’又觉得不好，拼命找安全的词",
+          "text": "对、对不起，我真不是故意的……那其实是修错的照片，黑白的遗……"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-5",
+          "speaker": "story-package/char-4",
+          "subtext": "我最怕的词被你说了出来，恐慌让我失控",
+          "text": "（尖叫）遗什么？你说遗照？！"
+        }
+      ],
+      "location": "王家客厅",
+      "node_id": "scene-1"
+    },
+    {
+      "episode_ref": "story-package/episode-4",
+      "lines": [
+        {
+          "kind": "action",
+          "node_id": "action-1",
+          "text": "爷爷王德福拄着拐杖慢慢踱出，戴一副老花镜，屋内瞬间安静。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-1",
+          "speaker": "story-package/char-1",
+          "subtext": "我早就听见了，但不想戳破，就想看看你们到底瞒我什么",
+          "text": "吵什么吵，我耳背又不是聋。手里拿的什么？给我看看。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-2",
+          "speaker": "story-package/char-2",
+          "subtext": "绝不能让他看到，我得编个理由",
+          "text": "爸，没啥好看的，就是……就是照相馆送来的样品。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-3",
+          "speaker": "story-package/char-1",
+          "subtext": "其实心里明白有问题，但故意给台阶下，顺便试探你们的态度",
+          "text": "（一把夺过黑白照）喔！这谁拍的？把我拍得跟《上海滩》主角似的，有派头！"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-4",
+          "speaker": "story-package/char-3",
+          "subtext": "顺着说反正不挨骂，我可不想再吵了",
+          "text": "（憋笑）爸，您喜欢就好……人家赵老板特意给您设计的艺术风格。"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-5",
+          "speaker": "story-package/char-1",
+          "subtext": "你们越瞒我越要顺着来，看谁先急",
+          "text": "艺术好啊，我这把年纪也该洋气一回。寿宴那天就这么搞，让老伙计们开开眼！"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-6",
+          "speaker": "story-package/char-5",
+          "subtext": "我急死了，得想办法挽回",
+          "text": "王爷爷，其实我们也能拍些彩色的，更喜庆……"
+        },
+        {
+          "kind": "dialogue",
+          "node_id": "dialogue-7",
+          "speaker": "story-package/char-1",
+          "subtext": "我已经决定了，看你们还怎么反对",
+          "text": "（挥手）不要，就这个！黑白才有味道。赵老板，你再给我多拍几张，我要挂墙上！"
+        }
+      ],
+      "location": "王家客厅",
+      "node_id": "scene-2"
+    }
+  ],
+  "schema": "story-package/v1"
+}

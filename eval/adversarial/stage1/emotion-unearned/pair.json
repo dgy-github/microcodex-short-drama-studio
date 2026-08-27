@@ -1,0 +1,43 @@
+{
+  "admission_checks": "pass",
+  "author_id": "codex-stage1-manual",
+  "case_id": "comedy_002",
+  "confound_controls": {
+    "char_count_delta_ratio": 0.001805,
+    "episodes_match": true,
+    "scene_count_match": true
+  },
+  "construction": "degradation",
+  "construction_note": "小红在第一场直接泪崩跪地、爷爷登场即眼眶通红——情绪在无铺垫处两次冲顶，随后第二场回到轻快的试探节奏，情绪曲线在同一集内断裂。",
+  "masking_virtue": [
+    "emotional_intensity"
+  ],
+  "negative_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42-emotion-unearned-stage1",
+  "pair_id": "stage1-comedy-002-emotion-unearned-001",
+  "pair_kind": "seeded_degradation",
+  "positive_artifact_id": "baseline-deepseek-v4-pro-20260727-comedy_002-seed-42",
+  "rights": {
+    "allowed_uses": [
+      "evaluation"
+    ]
+  },
+  "schema": "eval-adversarial-pair/v1",
+  "seeded_defects": [
+    {
+      "load_bearing": true,
+      "problem_code": "EMOTION_UNEARNED",
+      "rationale": [
+        "愧疚设定在情绪最高点全盘说出，外部化且无铺垫",
+        "爷爷登场即峰值情绪，与其后的玩笑试探不再连续"
+      ],
+      "repair_cost": "scene_rewrite",
+      "spans": [
+        "story-package/scene-1/dialogue-3",
+        "story-package/scene-2/dialogue-1"
+      ],
+      "target_dimension": "emotional_progression"
+    }
+  ],
+  "split": "dev",
+  "status": "candidate"
+}
