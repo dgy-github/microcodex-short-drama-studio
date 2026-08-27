@@ -7662,98 +7662,98 @@
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "package_to_plain_text",
-    "line": 170
+    "line": 173
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "package_to_html",
-    "line": 246
+    "line": 252
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "html_escape",
-    "line": 360
+    "line": 386
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_format_from_extension",
-    "line": 375
+    "line": 401
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_markdown_export_basic",
-    "line": 384
+    "line": 422
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_html_escape",
-    "line": 414
+    "line": 452
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_markdown_export_with_characters",
-    "line": 421
+    "line": 459
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_markdown_export_without_metadata",
-    "line": 450
+    "line": 488
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_html_export_basic_structure",
-    "line": 472
+    "line": 510
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_html_export_xss_protection",
-    "line": 492
+    "line": 530
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_plain_text_export",
-    "line": 508
+    "line": 546
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_export_format_extension_roundtrip",
-    "line": 543
+    "line": 581
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_empty_package_exports",
-    "line": 559
+    "line": 597
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/export_formats.rs",
     "kind": "fn",
     "name": "test_markdown_episode_structure",
-    "line": 575
+    "line": 613
   },
   {
     "language": "Rust",
@@ -8208,161 +8208,161 @@
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "build_record",
-    "line": 464
+    "line": 467
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "persist",
-    "line": 496
+    "line": 499
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "read_record",
-    "line": 504
+    "line": 507
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "revision_dir",
-    "line": 508
+    "line": 511
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "validate_package",
-    "line": 519
+    "line": 522
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "load_schema",
-    "line": 530
+    "line": 533
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "required_string",
-    "line": 537
+    "line": 540
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "canonical_bytes",
-    "line": 545
+    "line": 548
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "revision_package_id",
-    "line": 549
+    "line": 552
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "now_ms",
-    "line": 556
+    "line": 559
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "valid_revision_id",
-    "line": 564
+    "line": 567
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "write_new_json",
-    "line": 573
+    "line": 576
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "write_new",
-    "line": 578
+    "line": 581
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "read_json",
-    "line": 588
+    "line": 591
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "collect_nodes",
-    "line": 593
+    "line": 596
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "collect_nodes_inner",
-    "line": 599
+    "line": 602
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "correspondence",
-    "line": 622
+    "line": 625
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "find_node",
-    "line": 639
+    "line": 642
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "find_node_mut",
-    "line": 662
+    "line": 665
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "repository",
-    "line": 689
+    "line": 692
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "targeted_revision_populates_correspondence_and_preserves_origin",
-    "line": 709
+    "line": 712
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "third_targeted_round_requires_explicit_input",
-    "line": 744
+    "line": 747
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/src/revisions.rs",
     "kind": "fn",
     "name": "approval_rollback_and_export_are_append_only",
-    "line": 768
+    "line": 771
   },
   {
     "language": "Rust",
@@ -8376,49 +8376,49 @@
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "create_full_story_package",
-    "line": 9
+    "line": 11
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_full_export_workflow_markdown",
-    "line": 67
+    "line": 69
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_full_export_workflow_html",
-    "line": 111
+    "line": 113
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_full_export_workflow_plain_text",
-    "line": 143
+    "line": 145
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_export_all_formats_to_files",
-    "line": 177
+    "line": 179
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_export_with_minimal_content",
-    "line": 219
+    "line": 221
   },
   {
     "language": "Rust",
     "path": "crates/story-storage/tests/export_workflow_test.rs",
     "kind": "fn",
     "name": "test_export_without_optional_sections",
-    "line": 234
+    "line": 236
   },
   {
     "language": "Python",
