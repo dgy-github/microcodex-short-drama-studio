@@ -8590,6 +8590,55 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "module",
+    "name": "build_stage1_masking_pairs",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "load",
+    "line": 207
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "write_json",
+    "line": 211
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "apply_recipe",
+    "line": 219
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "assert_only_edits_changed",
+    "line": 254
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "build_recipe",
+    "line": 276
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 355
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "module",
     "name": "compute_evaluator_metrics",
@@ -8776,6 +8825,48 @@
     "kind": "FunctionDef",
     "name": "main",
     "line": 253
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "module",
+    "name": "expand_cases_to_120",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "FunctionDef",
+    "name": "load_existing_ids",
+    "line": 383
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "FunctionDef",
+    "name": "build_records",
+    "line": 396
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "FunctionDef",
+    "name": "validate_plan",
+    "line": 443
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "FunctionDef",
+    "name": "append_records",
+    "line": 463
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/expand_cases_to_120.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 480
   },
   {
     "language": "Python",
@@ -9482,35 +9573,35 @@
     "path": "eval/tools/split_cases.py",
     "kind": "FunctionDef",
     "name": "load_all",
-    "line": 85
+    "line": 175
   },
   {
     "language": "Python",
     "path": "eval/tools/split_cases.py",
     "kind": "FunctionDef",
     "name": "assign",
-    "line": 96
+    "line": 186
   },
   {
     "language": "Python",
     "path": "eval/tools/split_cases.py",
     "kind": "FunctionDef",
     "name": "check_families",
-    "line": 123
+    "line": 213
   },
   {
     "language": "Python",
     "path": "eval/tools/split_cases.py",
     "kind": "FunctionDef",
     "name": "write",
-    "line": 135
+    "line": 225
   },
   {
     "language": "Python",
     "path": "eval/tools/split_cases.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 149
+    "line": 239
   },
   {
     "language": "Python",
@@ -9616,6 +9707,83 @@
     "kind": "FunctionDef",
     "name": "test_identical_members_are_rejected",
     "line": 40
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "module",
+    "name": "test_build_stage1_masking_pairs",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "comedy_case",
+    "line": 37
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "ClassDef",
+    "name": "Stage1PairTests",
+    "line": 45
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "setUpClass",
+    "line": 47
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_every_negative_passes_admission_gates",
+    "line": 50
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_negative_differs_only_at_declared_edits",
+    "line": 60
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_every_pair_is_schema_valid_and_load_bearing",
+    "line": 73
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_shared_base_positive_is_identical_across_all_pairs",
+    "line": 86
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_char_delta_stays_bounded",
+    "line": 95
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_all_seven_masking_recipes_are_covered",
+    "line": 104
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_build_stage1_masking_pairs.py",
+    "kind": "FunctionDef",
+    "name": "test_target_dimensions_span_multiple_pillars",
+    "line": 118
   },
   {
     "language": "Python",
@@ -10732,6 +10900,76 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "module",
+    "name": "test_split_cases",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "ClassDef",
+    "name": "SplitAssignmentTests",
+    "line": 14
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "setUpClass",
+    "line": 16
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_every_case_is_assigned_exactly_once",
+    "line": 20
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_split_sizes_follow_the_parent_ratio",
+    "line": 25
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_holdout_stays_sealed",
+    "line": 31
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_premise_families_never_cross_splits",
+    "line": 34
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_train_alone_carries_skill_derivation_rights",
+    "line": 44
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_genre_quotas_hold_at_120",
+    "line": 51
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_split_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_files_match_the_assignment_table",
+    "line": 70
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/test_validate_cases.py",
     "kind": "module",
     "name": "test_validate_cases",
@@ -10750,6 +10988,13 @@
     "kind": "ClassDef",
     "name": "ValidateCorpusTests",
     "line": 54
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "ClassDef",
+    "name": "CorpusScaleTests",
+    "line": 85
   },
   {
     "language": "Python",
@@ -10813,6 +11058,20 @@
     "kind": "FunctionDef",
     "name": "test_genre_quota_shortfall_is_reported",
     "line": 78
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_corpus_is_at_the_120_case_target",
+    "line": 86
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_validate_cases.py",
+    "kind": "FunctionDef",
+    "name": "test_holdout_stays_empty",
+    "line": 91
   },
   {
     "language": "Python",

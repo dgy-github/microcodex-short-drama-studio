@@ -67,9 +67,11 @@
 | `eval/tools/build_discrimination_pair.py` | Python |
 | `eval/tools/build_stage0_motive_explicit.py` | Python |
 | `eval/tools/build_stage0_motive_explicit_narrow.py` | Python |
+| `eval/tools/build_stage1_masking_pairs.py` | Python |
 | `eval/tools/compute_evaluator_metrics.py` | Python |
 | `eval/tools/compute_pillar_review.py` | Python |
 | `eval/tools/compute_spot_check_agreement.py` | Python |
+| `eval/tools/expand_cases_to_120.py` | Python |
 | `eval/tools/generate_baselines.py` | Python |
 | `eval/tools/generate_governance_page.py` | Python |
 | `eval/tools/maintain_challenge_set.py` | Python |
@@ -81,6 +83,7 @@
 | `eval/tools/split_cases.py` | Python |
 | `eval/tools/test_archive_baselines.py` | Python |
 | `eval/tools/test_build_discrimination_pair.py` | Python |
+| `eval/tools/test_build_stage1_masking_pairs.py` | Python |
 | `eval/tools/test_compute_evaluator_metrics.py` | Python |
 | `eval/tools/test_compute_pillar_review.py` | Python |
 | `eval/tools/test_compute_spot_check_agreement.py` | Python |
@@ -91,6 +94,7 @@
 | `eval/tools/test_run_stage0_probe.py` | Python |
 | `eval/tools/test_score_artifacts.py` | Python |
 | `eval/tools/test_seal_holdout.py` | Python |
+| `eval/tools/test_split_cases.py` | Python |
 | `eval/tools/test_validate_cases.py` | Python |
 | `eval/tools/validate_cases.py` | Python |
 | `scripts/build_dependency_inventory.py` | Python |

@@ -79,7 +79,7 @@ and it is deliberately asymmetric.
 | --- | --- |
 | `eval-v0.1.0` | **not frozen** — thresholds are provisional, set from probe runs rather than principle |
 | `judge-v1` | not frozen — anchors untested against real artifacts |
-| dev case set | 30 cases, pending the fixes in `HANDOFF.md` |
+| dev case set | 120 cases at the parent contract's target distribution; holdout sealed at 0 |
 | `online-policy` instance | none exists; weights in `crates/story-policy` are placeholders |
 | `story-eval-offline/v1.0.0` | active but advisory; does not gate production promotion |
 

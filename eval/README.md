@@ -28,19 +28,19 @@ advisory and does not gate production promotion.
 
 ## Splits
 
-The pilot contains 30 internally authored prompts, allocated in the parent
-contract's `dev:train:validation:challenge` ratio of 30:30:24:12:
+The set contains 120 internally authored prompts at the parent contract's
+target distribution (`dev:train:validation:challenge` = 30:30:24:12):
 
 ```text
-dev 10   train 9   validation 7   challenge 4   holdout 0 (sealed in v1)
+dev 38   train 37   validation 30   challenge 15   holdout 0 (sealed in v1)
 ```
 
-Genre allocation is the 120-case target distribution scaled to 30, and it is a
-property of the **whole set**, not of any single split:
+Genre allocation is the 120-case target distribution, and it is a property of
+the **whole set**, not of any single split:
 
 ```text
-family 5; urban_romance 4; revenge 4; suspense 4;
-workplace 3; rural 3; comedy 3; historical 2; cross_genre 2
+family 20; urban_romance 16; revenge 16; suspense 16;
+workplace 12; rural 12; comedy 12; historical 8; cross_genre 8
 ```
 
 `train` carries `skill_derivation` rights; every other split is licensed for

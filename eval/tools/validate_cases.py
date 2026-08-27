@@ -37,18 +37,18 @@ GENRES = {
 DIFFICULTIES = {"ordinary", "ambiguous", "hard"}
 SPLITS = ("dev", "train", "validation", "holdout", "challenge")
 
-# The 120-case target distribution scaled to the 30-case pilot. Corpus-level:
-# individual splits are far too small to carry it.
+# The 120-case target distribution from the parent contract (STORY_EVAL_DESIGN
+# §3.1). Corpus-level: individual splits are far too small to carry it.
 PILOT_QUOTAS = {
-    "family": 5,
-    "urban_romance": 4,
-    "revenge": 4,
-    "suspense": 4,
-    "workplace": 3,
-    "rural": 3,
-    "comedy": 3,
-    "historical": 2,
-    "cross_genre": 2,
+    "family": 20,
+    "urban_romance": 16,
+    "revenge": 16,
+    "suspense": 16,
+    "workplace": 12,
+    "rural": 12,
+    "comedy": 12,
+    "historical": 8,
+    "cross_genre": 8,
 }
 
 # Splits licensed for more than evaluation. The parent contract makes train

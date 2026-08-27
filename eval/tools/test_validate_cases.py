@@ -78,7 +78,21 @@ class ValidateCorpusTests(unittest.TestCase):
     def test_genre_quota_shortfall_is_reported(self) -> None:
         records = [r for r in load_corpus(CASES) if r["genre"] != "comedy"]
         errors = "\n".join(validate_corpus(records))
-        self.assertIn("comedy expected 3 cases, got 0", errors)
+        self.assertIn("comedy expected 12 cases, got 0", errors)
+
+
+
+class CorpusScaleTests(unittest.TestCase):
+    def test_corpus_is_at_the_120_case_target(self) -> None:
+        records = load_corpus(CASES)
+        self.assertEqual(len(records), 120)
+        self.assertEqual(validate_corpus(records), [])
+
+    def test_holdout_stays_empty(self) -> None:
+        path = CASES / "holdout" / "cases.jsonl"
+        if path.exists():
+            content = path.read_text(encoding="utf-8").strip()
+            self.assertEqual(content, "")
 
 
 if __name__ == "__main__":
