@@ -54,7 +54,7 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
 
     // Title
     if let Some(title) = package.get("title").and_then(Value::as_str) {
-        output.push_str(&format!("# {}\n\n", title));
+        output.push_str(&format!("# {title}\n\n"));
     }
 
     // Metadata section
@@ -62,11 +62,11 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
         output.push_str("## 故事信息\n\n");
 
         if let Some(premise) = package.get("premise").and_then(Value::as_str) {
-            output.push_str(&format!("**创意前提**: {}\n\n", premise));
+            output.push_str(&format!("**创意前提**: {premise}\n\n"));
         }
 
         if let Some(genre) = package.get("genre").and_then(Value::as_str) {
-            output.push_str(&format!("**类型**: {}\n\n", genre));
+            output.push_str(&format!("**类型**: {genre}\n\n"));
         }
 
         if let Some(episodes) = package.get("episodes").and_then(Value::as_array) {
@@ -84,10 +84,12 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
 
                 for character in characters {
                     if let Some(name) = character.get("name").and_then(Value::as_str) {
-                        output.push_str(&format!("### {}\n\n", name));
+                        output.push_str(&format!("### {name}\n\n"));
 
-                        if let Some(description) = character.get("description").and_then(Value::as_str) {
-                            output.push_str(&format!("{}\n\n", description));
+                        if let Some(description) =
+                            character.get("description").and_then(Value::as_str)
+                        {
+                            output.push_str(&format!("{description}\n\n"));
                         }
 
                         if let Some(traits) = character.get("traits").and_then(Value::as_array) {
@@ -116,17 +118,17 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
             let episode_number = index + 1;
 
             // Episode title
-            let default_title = format!("第 {} 集", episode_number);
+            let default_title = format!("第 {episode_number} 集");
             let episode_title = episode
                 .get("title")
                 .and_then(Value::as_str)
                 .unwrap_or(&default_title);
 
-            output.push_str(&format!("### 第 {} 集：{}\n\n", episode_number, episode_title));
+            output.push_str(&format!("### 第 {episode_number} 集：{episode_title}\n\n"));
 
             // Episode summary
             if let Some(summary) = episode.get("summary").and_then(Value::as_str) {
-                output.push_str(&format!("**剧情概要**: {}\n\n", summary));
+                output.push_str(&format!("**剧情概要**: {summary}\n\n"));
             }
 
             // Scenes
@@ -136,7 +138,7 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
 
                     // Scene description
                     if let Some(description) = scene.get("description").and_then(Value::as_str) {
-                        output.push_str(&format!("*{}*\n\n", description));
+                        output.push_str(&format!("*{description}*\n\n"));
                     }
 
                     // Dialogue
@@ -144,15 +146,16 @@ pub fn package_to_markdown(package: &Value, options: &ExportOptions) -> Result<S
                         for line in lines {
                             if let Some(speaker) = line.get("speaker").and_then(Value::as_str) {
                                 if let Some(text) = line.get("text").and_then(Value::as_str) {
-                                    output.push_str(&format!("**{}**: {}\n\n", speaker, text));
+                                    output.push_str(&format!("**{speaker}**: {text}\n\n"));
                                 }
-                            } else if let Some(action) = line.get("action").and_then(Value::as_str) {
-                                output.push_str(&format!("*[{}]*\n\n", action));
+                            } else if let Some(action) = line.get("action").and_then(Value::as_str)
+                            {
+                                output.push_str(&format!("*[{action}]*\n\n"));
                             }
                         }
                     }
 
-                    output.push_str("\n");
+                    output.push('\n');
                 }
             }
 
@@ -172,7 +175,7 @@ pub fn package_to_plain_text(package: &Value, options: &ExportOptions) -> Result
 
     // Title
     if let Some(title) = package.get("title").and_then(Value::as_str) {
-        output.push_str(&format!("{}\n", title));
+        output.push_str(&format!("{title}\n"));
         output.push_str(&"=".repeat(title.chars().count()));
         output.push_str("\n\n");
     }
@@ -180,7 +183,7 @@ pub fn package_to_plain_text(package: &Value, options: &ExportOptions) -> Result
     // Metadata
     if options.include_metadata {
         if let Some(premise) = package.get("premise").and_then(Value::as_str) {
-            output.push_str(&format!("创意前提: {}\n\n", premise));
+            output.push_str(&format!("创意前提: {premise}\n\n"));
         }
     }
 
@@ -193,15 +196,17 @@ pub fn package_to_plain_text(package: &Value, options: &ExportOptions) -> Result
 
                 for character in characters {
                     if let Some(name) = character.get("name").and_then(Value::as_str) {
-                        output.push_str(&format!("{}\n", name));
+                        output.push_str(&format!("{name}\n"));
 
-                        if let Some(description) = character.get("description").and_then(Value::as_str) {
-                            output.push_str(&format!("  {}\n\n", description));
+                        if let Some(description) =
+                            character.get("description").and_then(Value::as_str)
+                        {
+                            output.push_str(&format!("  {description}\n\n"));
                         }
                     }
                 }
 
-                output.push_str("\n");
+                output.push('\n');
             }
         }
     }
@@ -216,22 +221,23 @@ pub fn package_to_plain_text(package: &Value, options: &ExportOptions) -> Result
             if let Some(scenes) = episode.get("scenes").and_then(Value::as_array) {
                 for scene in scenes {
                     if let Some(description) = scene.get("description").and_then(Value::as_str) {
-                        output.push_str(&format!("[{}]\n\n", description));
+                        output.push_str(&format!("[{description}]\n\n"));
                     }
 
                     if let Some(lines) = scene.get("lines").and_then(Value::as_array) {
                         for line in lines {
                             if let Some(speaker) = line.get("speaker").and_then(Value::as_str) {
                                 if let Some(text) = line.get("text").and_then(Value::as_str) {
-                                    output.push_str(&format!("{}: {}\n", speaker, text));
+                                    output.push_str(&format!("{speaker}: {text}\n"));
                                 }
-                            } else if let Some(action) = line.get("action").and_then(Value::as_str) {
-                                output.push_str(&format!("[{}]\n", action));
+                            } else if let Some(action) = line.get("action").and_then(Value::as_str)
+                            {
+                                output.push_str(&format!("[{action}]\n"));
                             }
                         }
                     }
 
-                    output.push_str("\n");
+                    output.push('\n');
                 }
             }
         }
@@ -251,7 +257,8 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
     output.push_str("<html lang=\"zh-CN\">\n");
     output.push_str("<head>\n");
     output.push_str("  <meta charset=\"UTF-8\">\n");
-    output.push_str("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+    output
+        .push_str("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
 
     if let Some(title) = package.get("title").and_then(Value::as_str) {
         output.push_str(&format!("  <title>{}</title>\n", html_escape(title)));
@@ -260,13 +267,17 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
     // CSS styles
     output.push_str("  <style>\n");
     output.push_str("    body { font-family: 'Microsoft YaHei', sans-serif; line-height: 1.8; max-width: 800px; margin: 0 auto; padding: 20px; }\n");
-    output.push_str("    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }\n");
+    output.push_str(
+        "    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }\n",
+    );
     output.push_str("    h2 { color: #34495e; margin-top: 40px; }\n");
     output.push_str("    h3 { color: #7f8c8d; }\n");
     output.push_str("    .metadata { background: #ecf0f1; padding: 15px; border-radius: 5px; margin: 20px 0; }\n");
     output.push_str("    .character { margin: 20px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa; }\n");
     output.push_str("    .episode { margin: 30px 0; }\n");
-    output.push_str("    .scene { margin: 20px 0; padding: 15px; background: #fafafa; border-radius: 5px; }\n");
+    output.push_str(
+        "    .scene { margin: 20px 0; padding: 15px; background: #fafafa; border-radius: 5px; }\n",
+    );
     output.push_str("    .dialogue { margin: 10px 0; }\n");
     output.push_str("    .speaker { font-weight: bold; color: #2980b9; }\n");
     output.push_str("    .action { font-style: italic; color: #7f8c8d; }\n");
@@ -285,7 +296,10 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
         output.push_str("    <h2>故事信息</h2>\n");
 
         if let Some(premise) = package.get("premise").and_then(Value::as_str) {
-            output.push_str(&format!("    <p><strong>创意前提</strong>: {}</p>\n", html_escape(premise)));
+            output.push_str(&format!(
+                "    <p><strong>创意前提</strong>: {}</p>\n",
+                html_escape(premise)
+            ));
         }
 
         output.push_str("  </div>\n");
@@ -302,7 +316,9 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
                         output.push_str("  <div class=\"character\">\n");
                         output.push_str(&format!("    <h3>{}</h3>\n", html_escape(name)));
 
-                        if let Some(description) = character.get("description").and_then(Value::as_str) {
+                        if let Some(description) =
+                            character.get("description").and_then(Value::as_str)
+                        {
                             output.push_str(&format!("    <p>{}</p>\n", html_escape(description)));
                         }
 
@@ -326,7 +342,10 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
                     output.push_str("    <div class=\"scene\">\n");
 
                     if let Some(description) = scene.get("description").and_then(Value::as_str) {
-                        output.push_str(&format!("      <p class=\"action\">[{}]</p>\n", html_escape(description)));
+                        output.push_str(&format!(
+                            "      <p class=\"action\">[{}]</p>\n",
+                            html_escape(description)
+                        ));
                     }
 
                     if let Some(lines) = scene.get("lines").and_then(Value::as_array) {
@@ -334,12 +353,19 @@ pub fn package_to_html(package: &Value, options: &ExportOptions) -> Result<Strin
                             if let Some(speaker) = line.get("speaker").and_then(Value::as_str) {
                                 if let Some(text) = line.get("text").and_then(Value::as_str) {
                                     output.push_str("      <div class=\"dialogue\">\n");
-                                    output.push_str(&format!("        <span class=\"speaker\">{}:</span> {}\n",
-                                        html_escape(speaker), html_escape(text)));
+                                    output.push_str(&format!(
+                                        "        <span class=\"speaker\">{}:</span> {}\n",
+                                        html_escape(speaker),
+                                        html_escape(text)
+                                    ));
                                     output.push_str("      </div>\n");
                                 }
-                            } else if let Some(action) = line.get("action").and_then(Value::as_str) {
-                                output.push_str(&format!("      <p class=\"action\">[{}]</p>\n", html_escape(action)));
+                            } else if let Some(action) = line.get("action").and_then(Value::as_str)
+                            {
+                                output.push_str(&format!(
+                                    "      <p class=\"action\">[{}]</p>\n",
+                                    html_escape(action)
+                                ));
                             }
                         }
                     }
@@ -373,10 +399,22 @@ mod tests {
 
     #[test]
     fn test_format_from_extension() {
-        assert_eq!(ExportFormat::from_extension("json"), Some(ExportFormat::Json));
-        assert_eq!(ExportFormat::from_extension("md"), Some(ExportFormat::Markdown));
-        assert_eq!(ExportFormat::from_extension("html"), Some(ExportFormat::Html));
-        assert_eq!(ExportFormat::from_extension("txt"), Some(ExportFormat::PlainText));
+        assert_eq!(
+            ExportFormat::from_extension("json"),
+            Some(ExportFormat::Json)
+        );
+        assert_eq!(
+            ExportFormat::from_extension("md"),
+            Some(ExportFormat::Markdown)
+        );
+        assert_eq!(
+            ExportFormat::from_extension("html"),
+            Some(ExportFormat::Html)
+        );
+        assert_eq!(
+            ExportFormat::from_extension("txt"),
+            Some(ExportFormat::PlainText)
+        );
         assert_eq!(ExportFormat::from_extension("xyz"), None);
     }
 
