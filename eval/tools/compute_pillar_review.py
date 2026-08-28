@@ -141,11 +141,17 @@ def merge_recommendations(
     seen: set[frozenset[str]] = set()
     recommendations = []
     for judge_model, matrix in matrices.items():
+        if judge_model == "pooled":
+            # pooled rows mix rater scales; recommendations must come from
+            # judges whose rows are one model's own ordering
+            continue
         for left in dimension_ids:
             for right in dimension_ids:
                 if left >= right:
                     continue
                 rho = matrix[left][right]
+                if rho != rho:  # NaN: a constant series cannot correlate
+                    continue
                 if abs(rho) < threshold or pillar_of[left] == pillar_of[right]:
                     continue
                 key = frozenset((left, right))
@@ -203,6 +209,22 @@ def build_review(run_dirs: list[Path]) -> dict[str, Any]:
         judge for judge, count in cases_per_judge.items()
         if count < MIN_CASES_PER_JUDGE
     )
+    # A judge whose per-dimension medians barely move across cases produces
+    # correlations built on tie-broken noise; any recommendation needs this
+    # context or rho gets over-read.
+    degenerate: dict[str, list[str]] = {}
+    for judge_model in cases_per_judge:
+        series = {
+            dimension: {
+                observations[key][dimension]
+                for key in observations
+                if key[0] == judge_model
+            }
+            for dimension in dimension_ids
+        }
+        flat = sorted(d for d, values in series.items() if len(values) < 3)
+        if flat:
+            degenerate[judge_model] = flat
     return {
         "schema": "pillar-review/v1",
         "source_runs": [run_identifier(path) for path in run_dirs],
@@ -212,6 +234,7 @@ def build_review(run_dirs: list[Path]) -> dict[str, Any]:
         "matrices": matrices,
         "merge_recommendations": recommendations,
         "conclusion": "merge_recommended" if recommendations else "no_change",
+        "low_variance_dimensions": degenerate,
         "caveats": (
             [
                 f"judges with fewer than {MIN_CASES_PER_JUDGE} cases: {underfed}; "
@@ -242,6 +265,12 @@ def markdown(review: dict[str, Any]) -> str:
                 f"{item['dimension_b']} ({item['pillar_b']}): "
                 f"rho={item['rho']} via {', '.join(item['judges_supporting'])}"
             )
+    for judge_model, flat in review.get("low_variance_dimensions", {}).items():
+        lines.append(
+            f"- low variance: {judge_model} has <3 distinct medians on "
+            f"{len(flat)} dimensions ({', '.join(flat)}); correlations resting "
+            "on those dimensions are tie-broken noise"
+        )
     for caveat in review["caveats"]:
         lines.append(f"- caveat: {caveat}")
     return "\n".join(lines) + "\n"

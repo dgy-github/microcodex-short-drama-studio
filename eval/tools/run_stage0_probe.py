@@ -39,6 +39,7 @@ from typing import Any
 
 import yaml
 
+from endpoint_guard import assert_public_https_endpoint, https_exchange
 from probe_metrics import (
     consistency_metrics,
     krippendorff_alpha_interval,
@@ -150,8 +151,13 @@ def urlopen_with_retry(
     """
     for attempt in range(1, attempts + 1):
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
-                return response.read()
+            return https_exchange(
+                request.full_url,
+                request.get_method(),
+                {name: value for name, value in request.header_items()},
+                request.data,
+                timeout,
+            )
         except urllib.error.HTTPError as error:
             retryable = error.code == 429 or 500 <= error.code < 600
             if not retryable or attempt == attempts:
@@ -684,8 +690,16 @@ def check_connectivity(judges: list[dict[str, Any]]) -> int:
                 method="POST",
             )
             try:
-                with urllib.request.urlopen(http, timeout=60) as response:
-                    raw = json.loads(response.read().decode("utf-8"))
+                raw = json.loads(
+                    https_exchange(
+                        route["endpoint"],
+                        "POST",
+                        {"Authorization": f"Bearer {api_key}",
+                         "Content-Type": "application/json"},
+                        body,
+                        60,
+                    ).decode("utf-8")
+                )
                 json.loads(raw["choices"][0]["message"]["content"])
                 print(f"OK   {name}: endpoint reachable, JSON mode honoured")
             except urllib.error.HTTPError as error:

@@ -10,6 +10,8 @@ import re
 import tempfile
 import urllib.error
 import urllib.request
+
+from endpoint_guard import https_exchange
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -120,8 +122,15 @@ def request_model(config: ProviderConfig, prompt: str) -> dict[str, Any]:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=config.timeout_seconds) as response:
-            result = json.loads(response.read().decode("utf-8"))
+        result = json.loads(
+            https_exchange(
+                request.full_url,
+                request.get_method(),
+                {name: value for name, value in request.header_items()},
+                request.data,
+                config.timeout_seconds,
+            ).decode("utf-8")
+        )
     except urllib.error.HTTPError as error:
         detail = error.read().decode("utf-8", errors="replace")[:1000]
         raise RuntimeError(f"provider HTTP {error.code}: {detail}") from error

@@ -454,40 +454,34 @@ class RouteTests(unittest.TestCase):
         )
 
     @patch("run_stage0_probe.time.sleep")
-    @patch("run_stage0_probe.urllib.request.urlopen")
+    @patch("run_stage0_probe.https_exchange")
     def test_transient_429_is_retried(
-        self, urlopen: MagicMock, sleep: MagicMock
+        self, exchange: MagicMock, sleep: MagicMock
     ) -> None:
         throttled = urllib.error.HTTPError(
-            "https://example.test",
+            "https://api.example.com/v1",
             429,
             "rate limited",
             {"Retry-After": "1"},
             BytesIO(b"{}"),
         )
-        response = MagicMock()
-        response.__enter__.return_value = response
-        response.read.return_value = b'{"ok": true}'
-        urlopen.side_effect = [throttled, response]
-        request = urllib.request.Request("https://example.test")
+        exchange.side_effect = [throttled, b'{"ok": true}']
+        request = urllib.request.Request("https://api.example.com/v1")
         self.assertEqual(
             urlopen_with_retry(request, timeout=1), b'{"ok": true}'
         )
         sleep.assert_called_once_with(1.0)
 
     @patch("run_stage0_probe.time.sleep")
-    @patch("run_stage0_probe.urllib.request.urlopen")
+    @patch("run_stage0_probe.https_exchange")
     def test_remote_disconnect_is_retried(
-        self, urlopen: MagicMock, sleep: MagicMock
+        self, exchange: MagicMock, sleep: MagicMock
     ) -> None:
-        response = MagicMock()
-        response.__enter__.return_value = response
-        response.read.return_value = b'{"ok": true}'
-        urlopen.side_effect = [
+        exchange.side_effect = [
             http.client.RemoteDisconnected("closed"),
-            response,
+            b'{"ok": true}',
         ]
-        request = urllib.request.Request("https://example.test")
+        request = urllib.request.Request("https://api.example.com/v1")
         self.assertEqual(
             urlopen_with_retry(request, timeout=1), b'{"ok": true}'
         )

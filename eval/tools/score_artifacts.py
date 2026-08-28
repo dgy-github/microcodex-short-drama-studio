@@ -139,10 +139,11 @@ def request_validated_pointwise(
     dimension_ids: list[str],
     retry_limit: int,
 ) -> dict[str, Any]:
-    # Three attempts matches the stage-0 probe's empirically tuned budget:
-    # GLM intermittently truncates its JSON or mistypes the span prefix, and
-    # two attempts (the manifest's literal retry limit) lose whole cases to it.
-    attempts = max(3, retry_limit + 1)
+    # Five attempts: the relay intermittently answers with empty content or a
+    # truncated body, and GLM alone burned the three-attempt budget on one
+    # case in a row. Failed attempts return no usable tokens, so the extra
+    # budget costs almost nothing and saves whole cases.
+    attempts = max(5, retry_limit + 1)
     validation_error: str | None = None
     for attempt in range(1, attempts + 1):
         try:

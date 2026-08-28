@@ -108,7 +108,8 @@ class ReviewTests(unittest.TestCase):
                 for item in review["merge_recommendations"]
                 if {item["dimension_a"], item["dimension_b"]} == set(pair)
             )
-            self.assertEqual(len(recommendation["judges_supporting"]), 3)
+            # pooled mixes rater scales and no longer feeds recommendations
+            self.assertEqual(len(recommendation["judges_supporting"]), 2)
             self.assertGreaterEqual(abs(recommendation["rho"]), 0.8)
 
     def test_uncorrelated_run_concludes_no_change(self) -> None:
