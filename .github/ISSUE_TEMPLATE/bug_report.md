@@ -53,7 +53,7 @@ Add any other context about the problem here.
 
 ## ✓ Checklist
 
-- [ ] I have checked [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)
+- [ ] I have checked [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
 - [ ] I have searched existing issues
 - [ ] I have tried to reproduce on clean installation
 - [ ] I have included all relevant information

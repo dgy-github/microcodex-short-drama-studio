@@ -346,7 +346,7 @@
         <p class="success">本轮已提交 {humanResults.length} 份盲测记录。</p>
       {/if}
     {:else if !busy}
-      <div class="empty-state">评测目录不可用。</div>
+      <div class="empty-state" class:error={!!error}>{error || "评测目录不可用。"}</div>
     {/if}
   </section>
 {/if}

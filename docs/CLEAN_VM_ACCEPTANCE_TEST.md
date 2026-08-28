@@ -81,10 +81,11 @@ Test-Path Cargo.toml    # Should return True
 python -m venv .venv
 
 # Activate
-.\.venv\Scripts\Activate.ps1
 
 # Install dependencies
-pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
 ```
 
 **Verification**:
@@ -98,14 +99,14 @@ pip install -e sidecar
 ### 2.3 Initialize Project
 
 ```powershell
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 # If uninitialized:
-python scripts/init_project.py --name "MicrocodeX Short Drama Studio"
+.\.venv\Scripts\python.exe scripts/init_project.py --name "MicrocodeX Short Drama Studio"
 ```
 
 **Verification**:
 ```powershell
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 # Should output: All checks passed
 ```
 
@@ -143,11 +144,11 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 # Expected: 19 tests passed (or current count)
 
 # Python sidecar tests
-python -m unittest discover -s sidecar -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
 # Expected: 19 tests passed
 
 # Python eval tests
-python -m unittest discover -s eval/tools -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
 # Expected: XX tests passed
 ```
 
@@ -167,7 +168,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 # Should output: No clippy warnings
 
 # Project integrity
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 # Should output: All checks passed
 ```
 
@@ -480,4 +481,4 @@ Record failures in: `docs/acceptance-test-results/YYYYMMDD-clean-vm-test.md`
 
 **Last Updated**: 2026-08-10  
 **Status**: Script created, awaiting execution  
-**Tracking**: IMPROVEMENT_PLAN.md Phase 3.1
+**Tracking**: HANDOFF.md

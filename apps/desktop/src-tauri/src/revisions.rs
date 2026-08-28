@@ -153,8 +153,7 @@ impl RevisionService {
             self.lock()?
                 .export_approved_with_format(revision_id, &target)
         } else {
-            self.lock()?
-                .export_approved(revision_id, &target)
+            self.lock()?.export_approved(revision_id, &target)
         };
 
         result.map_err(map_revision_error)?;

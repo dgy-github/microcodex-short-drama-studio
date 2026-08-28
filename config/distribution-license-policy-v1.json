@@ -12,6 +12,18 @@
       "approved_for_distribution": true,
       "reviewed_by": "Codex (owner-authorized MIT decision)",
       "reviewed_at": "2026-07-29T03:51:50Z"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "css-value",
+      "version": "0.0.1",
+      "integrity": "sha512-FUV3xaJ63buRLgHrLQVlVgQnQdR4yqdLGaDu7g8CQcWjInDfM9plBTPI9FRfpahju1UBSaMckeb2/46ApS/V1Q==",
+      "license": "MIT",
+      "evidence_path": "third_party/licenses/css-value-0.0.1/Readme.md",
+      "evidence_sha256": "8899717e6304c84d9d45ecc565ef462cb850c47076632f77e16761a3b39560b8",
+      "approved_for_distribution": true,
+      "reviewed_by": "repository-maintainers",
+      "reviewed_at": "2026-08-13T00:00:00Z"
     }
   ]
 }

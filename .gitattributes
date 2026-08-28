@@ -1,0 +1,12 @@
+# Keep source and evaluation artifacts byte-stable across platforms.
+* text=auto
+*.json text eol=lf
+*.jsonl text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.py text eol=lf
+*.rs text eol=lf
+*.ts text eol=lf
+*.svelte text eol=lf
+*.md text eol=lf
+third_party/licenses/** text eol=lf

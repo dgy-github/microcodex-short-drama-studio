@@ -366,32 +366,14 @@ impl RevisionRepository {
         })
     }
 
+    /// Export an approved revision as JSON. Kept as a dedicated entry point for
+    /// callers that require the historical `.json`-only contract; it delegates
+    /// the actual work to [`Self::export_approved_with_format`].
     pub fn export_approved(&self, revision_id: &str, target: &Path) -> Result<(), RevisionError> {
-        if !target.is_absolute()
-            || target.extension().and_then(|value| value.to_str()) != Some("json")
-            || target.exists()
-            || !target.parent().is_some_and(Path::is_dir)
-        {
+        if target.extension().and_then(|value| value.to_str()) != Some("json") {
             return Err(RevisionError::InvalidExport);
         }
-        let approval: ApprovalEvent =
-            read_json(&self.revision_dir(revision_id)?.join("approval.json"))
-                .map_err(|_| RevisionError::NotApproved)?;
-        if approval.decision != ApprovalDecision::Approved {
-            return Err(RevisionError::NotApproved);
-        }
-        let package = self.read_package(revision_id)?;
-        let bytes =
-            serde_json::to_vec_pretty(&package).map_err(|_| RevisionError::InvalidPackage)?;
-        let temporary = target.with_extension(format!("{}.partial", Uuid::new_v4().simple()));
-        write_new(&temporary, &bytes)?;
-        match std::fs::rename(&temporary, target) {
-            Ok(()) => Ok(()),
-            Err(_) => {
-                let _ = std::fs::remove_file(&temporary);
-                Err(RevisionError::InvalidExport)
-            }
-        }
+        self.export_approved_with_format(revision_id, target)
     }
 
     /// Export approved revision with format support (JSON, Markdown, HTML, TXT)

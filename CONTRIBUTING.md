@@ -70,16 +70,17 @@ cd microcodex-short-drama-studio
 
 # Set up Python environment
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
 
 # Initialize project
-python scripts/init_project.py --check
-python scripts/init_project.py --name "MicrocodeX Short Drama Studio"
+.\.venv\Scripts\python.exe scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --name "MicrocodeX Short Drama Studio"
 
 # Verify installation
 cargo test --workspace --all-features
-python -m unittest discover -s sidecar -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
 ```
 
 See [README.md](README.md#quick-start) for detailed setup instructions.
@@ -118,11 +119,11 @@ See [README.md](README.md#quick-start) for detailed setup instructions.
    # Run tests
    cargo test --workspace --all-features
    cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
-   python -m unittest discover -s sidecar -p "test_*.py"
-   python -m unittest discover -s eval/tools -p "test_*.py"
+   .\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
+   .\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
    
    # Project integrity
-   python scripts/init_project.py --check
+   .\.venv\Scripts\python.exe scripts/init_project.py --check
    ```
 
 4. **Commit your changes**

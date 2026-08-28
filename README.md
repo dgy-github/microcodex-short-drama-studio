@@ -76,15 +76,22 @@ release or model/prompt promotion while the blockers in `CHANGELOG.md` remain.
 2. **Set up Python environment**
    ```powershell
    python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   pip install -e sidecar
+   .\.venv\Scripts\python.exe -m pip install -e sidecar
+   .\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+   .\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
    ```
+
+   The three install steps cover, respectively, the campaign sidecar runtime
+   (`aiohttp` + `campaign-muti-agent`), the toolchain scripts under `scripts/`
+   (`PyYAML`), and the evaluation tools under `eval/tools/` (`PyYAML` +
+   `jsonschema`). Alternatively, run `python scripts/setup_dev_environment.py`
+   to provision the venv and install all three dependency groups in one step.
 
 3. **Initialize project**
    ```powershell
-   python scripts/init_project.py --check
+   .\.venv\Scripts\python.exe scripts/init_project.py --check
    # If uninitialized:
-   python scripts/init_project.py --name "MicrocodeX Short Drama Studio"
+   .\.venv\Scripts\python.exe scripts/init_project.py --name "MicrocodeX Short Drama Studio"
    ```
 
 4. **Verify installation**
@@ -96,8 +103,8 @@ release or model/prompt promotion while the blockers in `CHANGELOG.md` remain.
    cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
    
    # Test Python components
-   python -m unittest discover -s sidecar -p "test_*.py"
-   python -m unittest discover -s eval/tools -p "test_*.py"
+   .\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
+   .\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
    ```
 
 ### Development Workflow
@@ -126,11 +133,11 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 # Test
 cargo test --workspace --all-features
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
-python -m unittest discover -s sidecar -p "test_*.py"
-python -m unittest discover -s eval/tools -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
 
 # Project integrity
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 ```
 
 ### Building Desktop App
@@ -191,7 +198,7 @@ The installer will be in `apps/desktop/src-tauri/target/release/bundle/`.
 
 **All output must be marked `advisory/non-promotable` until these are resolved.**
 
-See [PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md) for detailed analysis.
+See [CHANGELOG.md](CHANGELOG.md) for the current blocker list.
 
 ---
 
@@ -226,7 +233,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for complete phase sequencing.
 
 - **[Quick Start](#quick-start)** - Get up and running
 - **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions
-- **[PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md)** - Comprehensive project status
+- **[HANDOFF.md](HANDOFF.md)** - Current state, open blockers, and code review
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design and boundaries
 - **[docs/ROADMAP.md](docs/ROADMAP.md)** - Phase sequencing and exit criteria
 - **[docs/SECURITY_REVIEW.md](docs/SECURITY_REVIEW.md)** - Security controls

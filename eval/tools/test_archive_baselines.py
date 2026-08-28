@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from archive_baselines import ARCHIVE, load, sha256
+from archive_baselines import ARCHIVE, canonical_bytes, load, sha256
 
 PAIR_DIR = Path(__file__).parents[1] / "adversarial" / "stage0" / "motive-explicit"
 
@@ -33,7 +33,8 @@ class ArchiveIntegrityTests(unittest.TestCase):
             for case in index["cases"]:
                 with self.subTest(case=case["case_id"]):
                     wrapper = load(archive / case["wrapper"])
-                    digest = sha256(archive / case["package"])
+                    body = canonical_bytes(archive / case["package"])
+                    digest = "sha256:" + hashlib.sha256(body).hexdigest()
                     self.assertEqual(wrapper["content_hash"], digest)
                     self.assertEqual(wrapper["artifact_id"], case["artifact_id"])
 

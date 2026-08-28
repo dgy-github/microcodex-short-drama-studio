@@ -16,10 +16,11 @@
 ```powershell
 # 创建并激活虚拟环境
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 
 # 安装 sidecar（包含 campaign 依赖）
-pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
 ```
 
 ### Rust 编译失败
@@ -70,7 +71,7 @@ git stash
 
 **验证**:
 ```powershell
-python -m unittest discover -s eval/tools -p "test_*.py" 2>&1 | Select-String "OK|FAILED"
+.\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py" 2>&1 | Select-String "OK|FAILED"
 ```
 
 ### 桌面端测试找不到
@@ -221,7 +222,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 **计划**: 阶段 2.2 - 提升测试覆盖
 
-**跟踪**: IMPROVEMENT_PLAN.md
+**跟踪**: HANDOFF.md
 
 ---
 
@@ -245,7 +246,7 @@ python -m sidecar.story_sidecar --verbose
 
 ```powershell
 # 项目完整性检查
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 
 # Provider 连通性检查
 python eval/tools/run_stage0_probe.py --check-connectivity
@@ -339,7 +340,7 @@ python -m pstats profile.stats
 1. ✅ 运行所有测试
 2. ✅ 运行格式化: `cargo fmt --all`
 3. ✅ 运行 linter: `cargo clippy`
-4. ✅ 检查项目完整性: `python scripts/init_project.py --check`
+4. ✅ 检查项目完整性: `.\.venv\Scripts\python.exe scripts/init_project.py --check`
 5. ✅ 更新相关文档
 
 ### 遇到问题时

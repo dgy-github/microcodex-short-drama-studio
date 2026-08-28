@@ -31,7 +31,7 @@ What other approaches have you considered?
 
 Have you checked if this is already planned?
 
-- [ ] I have checked [docs/ROADMAP.md](../docs/ROADMAP.md)
+- [ ] I have checked [docs/ROADMAP.md](../../docs/ROADMAP.md)
 - [ ] This feature is NOT in P11-P18 roadmap
 - [ ] Or: This feature IS in roadmap, but I want to contribute
 

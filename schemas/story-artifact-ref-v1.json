@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/story-artifact-ref-v1.json",
+  "title": "Story artifact reference v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "artifact_schema", "content_ref", "content_sha256"],
+  "properties": {
+    "schema": {"const": "story-artifact-ref/v1"},
+    "artifact_schema": {"type": "string", "minLength": 1},
+    "content_ref": {"type": "string", "pattern": "^artifact://sha256/[0-9a-f]{64}$"},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

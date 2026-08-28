@@ -58,11 +58,11 @@ capabilities:
     reuse_rule: Extend the desktop IPC facade; never duplicate runtime, provider or domain rules in Svelte.
   - id: CAP-009
     name: Immutable revision history
-    summary: Owns schema-valid story revisions, node correspondence, append-only approvals, comparisons, rollback-by-new-revision and approved export.
-    keywords: [revision, approval, rollback, export, correspondence, immutable-history]
+    summary: Owns schema-valid story revisions, node correspondence, append-only approvals, comparisons, rollback-by-new-revision and approved multi-format export.
+    keywords: [revision, approval, rollback, export, multi-format-export, markdown, html, plain-text, correspondence, immutable-history]
     owner: crates/story-storage/src/revisions.rs
     interfaces: [IFACE-014]
-    reuse_rule: Store every revision and approval through this owner; never overwrite an existing package or approval.
+    reuse_rule: Store every revision and approval through this owner; extend human-readable story-package rendering in story-storage export_formats and never overwrite an existing package or approval.
   - id: CAP-010
     name: Production data operations
     summary: Owns store migration, interrupted-write repair, integrity backup/restore, dependency inventory and operational recovery evidence.
@@ -199,20 +199,20 @@ interfaces:
     name: immutable story revision repository
     kind: Rust crate API and JSON artifact contracts
     location: crates/story-storage/src/revisions.rs
-    purpose: Create and retain bounded targeted revisions, correspondence, approvals, comparisons, rollback revisions and approved exports.
-    inputs: [story-package/v1, ArtifactSpanRef, replacement node, approval decision, export path]
-    outputs: [story-revision-record/v1, story-approval-event/v1, validated exported story-package/v1]
-    errors: [invalid package, missing span, input required, final approval, unapproved export, storage failure]
-    side_effects: [immutable revision writes, append-only approval write, approved export write]
+    purpose: Create and retain bounded targeted revisions, correspondence, approvals, comparisons and rollback revisions, then atomically export approved story-package/v1 content as JSON, Markdown, HTML or plain text.
+    inputs: [story-package/v1, ArtifactSpanRef, replacement node, approval decision, absolute non-existing export path with supported extension]
+    outputs: [story-revision-record/v1, story-approval-event/v1, validated JSON story-package/v1, rendered Markdown, escaped standalone HTML, plain text]
+    errors: [invalid package, missing span, input required, final approval, unapproved export, unsupported export format, invalid export target, storage failure]
+    side_effects: [immutable revision writes, append-only approval write, partial export write and atomic rename]
   - id: IFACE-015
     name: Desktop revision IPC
     kind: Tauri command API
     location: apps/desktop/src-tauri/src/revisions.rs
-    purpose: Project defect navigation, revision history, approval, comparison, rollback and export to Svelte.
-    inputs: [run ID, revision ID, ArtifactSpanRef, replacement node, approval, export path]
+    purpose: Project defect navigation, revision history, approval, comparison and rollback, and delegate format-aware approved export to the revision repository.
+    inputs: [run ID, revision ID, ArtifactSpanRef, replacement node, approval, new absolute .json/.md/.markdown/.html/.htm/.txt export path]
     outputs: [desktop-revision-summary/v1, cited node, revision comparison, export receipt]
-    errors: [invalid revision, missing span, round limit, final approval, unapproved export]
-    side_effects: [revision repository operations]
+    errors: [invalid revision, missing span, round limit, final approval, unapproved export, unsupported extension, invalid export target]
+    side_effects: [revision repository operations, approved multi-format export]
   - id: IFACE-016
     name: professional release evidence gate
     kind: Python tool and JSON artifact contracts

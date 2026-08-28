@@ -30,6 +30,13 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"
 uuid = { version = "1", features = ["v4"] }
 zeroize = "1"
 
+[features]
+# Without this feature a plain `cargo build` produces a development binary that
+# loads tauri.conf.json's devUrl instead of the bundled frontend, so the window
+# shows ERR_CONNECTION_REFUSED unless a Vite dev server happens to be running.
+# The e2e build enables it to exercise the real, self-contained application.
+custom-protocol = ["tauri/custom-protocol"]
+
 [dev-dependencies]
 axum = "0.8"
 tempfile = "3"

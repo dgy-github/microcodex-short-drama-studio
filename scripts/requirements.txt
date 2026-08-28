@@ -1,0 +1,7 @@
+# Dependencies for the project toolchain scripts under `scripts/`.
+#
+# These run inside the project virtualenv created by `setup_dev_environment.py`
+# (the same one that installs `sidecar`). PyYAML is required by
+# init_project.py, check_registry.py, check_openapi.py and
+# check_duplicate_owners.py.
+PyYAML==6.0.2

@@ -1,5 +1,3 @@
-# HANDOFF
-status: active
 date: 2026-08-27
 agent: ZCode (GLM-5.3)
 branch: feature/eval-p3a-unlock
@@ -89,7 +87,6 @@ caveat 已标注判官案数 <10——**需要补满 10 案才有可用结论**�
 ### 已完成
 - ✅ 删除孤儿 `templates/` 目录（已被 `config/genre-packs/` 取代）
 - ✅ 修复测试输出误导：重试日志改为 stderr
-- ✅ 创建 `IMPROVEMENT_PLAN.md` - 完整的项目完善计划
 - ✅ 创建 `TROUBLESHOOTING.md` - 常见问题和解决方案
 - ✅ 创建 `docs/CLEAN_VM_ACCEPTANCE_TEST.md` - P10 验收脚本
 - ✅ 创建 `scripts/setup_dev_environment.py` - 自动化环境设置
@@ -108,7 +105,8 @@ caveat 已标注判官案数 <10——**需要补满 10 案才有可用结论**�
 - 自我纪律异常严格（罕见于单人项目）
 
 **待改进**:
-- P1 退出条件失败：seeded_defect_detection = 0.0（目标 0.75）
+- P1 退出条件失败：seeded_defect_detection = 0.0（目标 0.75），但该值来自
+  `pairs_total = 1`，只有一个窄降级对，取值只可能是 0.0 或 1.0
 - P10 Clean VM 验收未执行
 - 可复现性问题（已通过新文档改善）
 - 测试覆盖不均（核心充分，桌面端较少）
@@ -126,9 +124,10 @@ caveat 已标注判官案数 <10——**需要补满 10 案才有可用结论**�
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e sidecar
-python scripts/init_project.py --check
+.\.venv\Scripts\python.exe -m pip install -e sidecar
+.\.venv\Scripts\python.exe -m pip install -r scripts/requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r eval/tools/requirements.txt
+.\.venv\Scripts\python.exe scripts/init_project.py --check
 ```
 
 全量验证四条缺一不可；桌面端自带独立 workspace：
@@ -136,8 +135,8 @@ python scripts/init_project.py --check
 ```powershell
 cargo test --workspace --all-features
 cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
-python -m unittest discover -s sidecar -p "test_*.py"
-python -m unittest discover -s eval/tools -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s sidecar -p "test_*.py"
+.\.venv\Scripts\python.exe -m unittest discover -s eval/tools -p "test_*.py"
 ```
 
 当前产品只写故事，不下载视频、不提取素材、不自动发布。
@@ -194,7 +193,10 @@ python -m unittest discover -s eval/tools -p "test_*.py"
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。
 - 推送并取得 `windows-release-smoke` clean runner 绿灯。
 - 付费 soak、Qwen 批次、专业编剧双人 review/adjudication、人工盲测。
-- P1 judge 稳定性仍失败；`seeded_defect_detection = 0.0`，目标 0.75。
+- P1 judge 稳定性仍失败；`seeded_defect_detection = 0.0`，目标 0.75。该值定义在
+  pair 上而 `pairs_total = 1`，`evaluator-metrics.json` 自带 resolution_warning：
+  单对时只能取 0.0/1.0，不是估计量。宽降级集 `motive-explicit` 为 1.0。
+  真正的堵点是对抗集规模，不是判官能力。
 - GLM 智谱/火山路由的外部账户状态仍未重新验证。
 - P11-P16 尚未实现；详见 `docs/ROADMAP.md`。
 
@@ -211,3 +213,82 @@ python -m unittest discover -s eval/tools -p "test_*.py"
 - 不把断线当任务失败；失败先读 `run-failure.json` 的精确错误码。
 - 不恢复 PyInstaller onefile；不创建视频 schema、FFmpeg 依赖或素材 UI。
 - 不把 unsigned、未 clean-VM 验收的包描述为公开稳定发行。
+
+## 历史记录 (2026-08-12 · 全仓代码评审)
+
+## 代码评审 (2026-08-12)
+
+由 Claude Opus 5 执行的全仓扫描。以下结论均经实际运行验证，非仅阅读文档。
+
+### 规模
+
+| 维度 | 数据 |
+| --- | --- |
+| 架构 | Rust workspace(6 crates) + Python sidecar + Tauri 2/Svelte 5 桌面端 |
+| 代码量 | Rust ~11k 行（含 src-tauri 4.3k）、Python ~2.7k、前端 ~5.2k、eval 4.8k |
+| 文档 | 89 个 md（清理 26 份过程报告后），设计文档与过程快照已分离 |
+
+### 总评
+
+架构与安全设计 8/10，可验证性 7/10（本轮从 3/10 提升），文档纪律 4/10。
+设计意识一直很强（评估/策略分离、事件溯源、provider 契约校验），本轮补上的是
+"这些设计有没有东西在验证它"——此前的问题不是没测试，而是测试存在却不执行。
+
+### 优势
+
+- 分层不是堆出来的。`crates/` 按 core/eval/policy/provider/runtime/storage 切分，
+  契约在 Rust、编排在 sidecar、UI 在 Tauri，边界清晰；README 的
+  "异步命令 → append-only 事件 → SSE → 可重放"在 `run_protocol.rs`、`sidecar.rs`
+  里确实落到了代码。
+- 安全细节有专业水准。`crates/story-provider/src/openai_compatible.rs` 的
+  `ProviderRoute::validate` 强制 https、拒绝 URL 内嵌凭据/query/fragment、校验路径
+  后缀与长度上限；`Debug` 手写为 secret 打 `[REDACTED]`；密钥走 Windows Credential
+  Manager。全仓扫描无硬编码密钥。
+- 评估体系是本项目最有价值的部分：离线评估（门禁）与在线策略（决策）分离、依赖
+  单向、版本号绑定文档。README 顶部老实标注 advisory，不吹稳定性。
+- `cargo test --workspace` 81 passed / 0 failed。
+
+### 当前实测状态
+
+| 层 | 结果 |
+| --- | --- |
+| `cargo test --workspace` | 81 passed |
+| 桌面端 `cargo test`（src-tauri） | 26 passed |
+| `npm test`（vitest） | 139 passed / 0 skipped |
+| `npm run test:e2e:tauri`（wdio 真实 IPC） | 4 passing |
+| Python：sidecar / eval/tools / scripts | 28 / 75 / 20 passed |
+| 治理脚本（init/registry/traceability/openapi/owners/release） | 全过 |
+
+### 本轮修掉的问题
+
+1. **桌面端 Rust 测试此前在 HEAD 上编译不过**（`CommandError` 无 `Display`）。
+   修完后另有三处：artifacts list 夹具用了 `released/promotable`，被
+   `parse_projection` 按设计拒绝（该函数强制 advisory/non-promotable，正是本项目
+   的 alpha 不变量）；missing 用例未建作品库根目录，撞的是 `artifact_unavailable`
+   而非 `artifact_missing`；run_controller 夹具指向被 gitignore 的 `eval/runs/`。
+2. **e2e 二进制跑在开发模式。** `src-tauri/Cargo.toml` 缺 Tauri 模板本该有的
+   `custom-protocol` feature，`cargo build` 产出的应用去连 `devUrl` 而非加载
+   `../dist`，窗口显示 `ERR_CONNECTION_REFUSED`。`build:e2e:tauri` 现已启用该
+   feature。
+3. **CI 在干净检出上三个 job 必挂**：`scripts/requirements.txt` 等被引用却未跟踪；
+   desktop-windows 从不创建 `.venv`，而桌面端测试要靠它拉起真实 Python sidecar。
+4. **Playwright 套件是死代码**：`hasTauriWebViewDriver` 硬编码为 `false`，25 个
+   用例永久 skip，从未执行过。场景已由 wdio 真实 IPC 覆盖，故整套删除。
+5. CI 新增 `structure` job，对本次改动的文件执行 `check_code_structure` 大小限制。
+
+### 记录可信度的教训
+
+提交 `5d488fd` 写"19/19 通过"，而那批用例从未真正执行；`TODO_REMAINING.md` 称
+pytest 收集 0 个用例，实测 25 个。**本仓库的历史文档和提交信息不能直接当证据用。**
+门禁补上后这类漂移会被自动拦截，但存量文档里还有多少失真没有核过。
+
+### 尚未处理
+
+- 19 处结构违规存量：`evaluations.rs` 1221 行、`run_controller.rs` 868 行、
+  `revisions.rs` 804 行、`ArtifactBrowser.svelte` 597 行等（新代码已被门禁拦住）。
+- `npm audit` 无法运行：registry 指向 npmmirror，不支持 audit 接口，前端依赖
+  漏洞面未核实。
+- `docs/ROADMAP.md` 自述 `docs/eval-governance.html` 应停止手工维护、改为从
+  manifest 生成或删除，尚未处理。
+
+## 最新改进 (2026-08-10)

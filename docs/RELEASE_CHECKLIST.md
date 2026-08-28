@@ -59,7 +59,10 @@
 ⚠️ **CRITICAL BLOCKERS** - Cannot claim stable release without these:
 
 - [ ] **P1: Judge calibration complete**
-  - [ ] `seeded_defect_detection` ≥ 0.75 (currently 0.0)
+  - [ ] `seeded_defect_detection` ≥ 0.75 (currently 0.0 over `pairs_total = 1`;
+        a single narrow pair, so only 0.0 or 1.0 is attainable and the number is
+        not an estimate — the adversarial set has to grow before this gate means
+        anything. The broad `motive-explicit` set scores 1.0.)
   - [ ] Krippendorff α ≥ 0.75 (currently 0.52)
   - [ ] Human blind test completed
   - [ ] Results documented in `eval/manifests/eval-v0.1.0.json`
@@ -335,7 +338,7 @@ Following Semantic Versioning (semver):
 **Status**: 🔴 NOT READY
 
 **Blockers**:
-1. ❌ P1 exit condition not met (seeded_defect_detection = 0.0)
+1. ❌ P1 exit condition not met (seeded_defect_detection = 0.0 over a single seeded pair)
 2. ❌ P7 professional review not complete
 3. ❌ P10 Clean VM test not executed
 4. ❌ GLM judge route needs recharge

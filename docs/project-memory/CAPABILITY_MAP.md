@@ -5,7 +5,7 @@
 | Story domain and typed artifacts | `crates/story-core` | Canonical domain types and validation |
 | Runtime orchestration | `crates/story-runtime` | Commands, append-only events, task lifecycle |
 | Provider access | `crates/story-provider` | Model credentials and provider protocol |
-| Durable storage | `crates/story-storage` | Artifacts, approvals, reviews and event durability |
+| Durable storage | `crates/story-storage` | Artifacts, revisions, approvals, multi-format approved export, reviews and event durability |
 | Policy and budget | `crates/story-policy` | Rights, budget and hard-rule decisions |
 | Evaluation | `crates/story-eval`, `eval/` | Offline metrics, cases and judge probes |
 | Campaign adapter | `sidecar/campaign_adapter` | Typed sidecar capability boundary |

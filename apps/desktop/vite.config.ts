@@ -1,7 +1,11 @@
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
+import { configDefaults } from "vitest/config";
 
 export default defineConfig({
+  cacheDir: join(tmpdir(), `microcodex-vite-${process.pid}`),
   plugins: [svelte()],
   clearScreen: false,
   server: {
@@ -14,6 +18,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    exclude: [...configDefaults.exclude, "e2e/**"],
     setupFiles: ["./src/test-setup.ts"],
     alias: {
       "svelte/internal/server": "svelte/internal/client",

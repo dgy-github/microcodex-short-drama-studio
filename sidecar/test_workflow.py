@@ -21,16 +21,21 @@ from campaign_adapter.workflow import (
     character_reference,
     normalize_artifact,
     package_schema,
+    validate_task_graph,
 )
 
 
 class FakeCapability:
     def __init__(self) -> None:
-        package_path = next(
-            (Path(__file__).parents[1] / "eval" / "runs").glob(
-                "baseline-*/artifacts/*.story-package.json"
-            )
+        package_path = (
+            Path(__file__).parents[1]
+            / "eval"
+            / "baselines"
+            / "baseline-deepseek-v4-pro-20260727"
+            / "family_001.story-package.json"
         )
+        if not package_path.is_file():
+            raise FileNotFoundError(f"tracked workflow fixture missing: {package_path}")
         self.package = json.loads(package_path.read_text(encoding="utf-8"))
         self.validations = 0
         self.prompts: dict[str, str] = {}
@@ -132,12 +137,19 @@ class TrackingCapability(FakeCapability):
         super().__init__()
         self.active = 0
         self.max_active = 0
+        self._overlap_observed = asyncio.Event()
 
     async def generate(self, route: str, system: str, prompt: str):
+        task_name = prompt.splitlines()[0].split("=", 1)[1]
+        if not task_name.startswith("write_episode_"):
+            return await super().generate(route, system, prompt)
+
         self.active += 1
         self.max_active = max(self.max_active, self.active)
+        if self.active >= 2:
+            self._overlap_observed.set()
         try:
-            await asyncio.sleep(0.01)
+            await asyncio.wait_for(self._overlap_observed.wait(), timeout=1.0)
             return await super().generate(route, system, prompt)
         finally:
             self.active -= 1
@@ -165,6 +177,61 @@ def story_job(capability: FakeCapability, max_tokens: int = 100000) -> dict[str,
     }
 
 
+class TaskGraphTests(unittest.TestCase):
+    """Python TASKS must stay in lock-step with the Rust fixed order.
+
+    `RUST_ORDER` below is a literal transcription of
+    `FIXED_STORY_EXECUTION_ORDER` in crates/story-runtime/src/execution.rs.
+    Changing either copy without the other fails `test_python_tasks_match_rust_fixed_order`.
+    """
+
+    RUST_ORDER = (
+        ("t01", ()),
+        ("t02", ("t01",)),
+        ("t03", ("t01", "t02")),
+        ("t04", ("t01", "t02")),
+        ("t05", ("t01", "t02")),
+        ("t06", ("t03", "t04", "t05")),
+        ("t07", ("t06",)),
+        ("t08", ("t07",)),
+        ("t09", ("t08",)),
+        ("t10", ("t09",)),
+        ("t11", ("t08", "t09", "t10")),
+        ("t12", ("t07", "t09", "t10")),
+        ("t13", ("t02", "t08", "t10")),
+        ("t14", ("t09", "t10")),
+        ("t15", ("t11", "t12", "t13", "t14")),
+        ("t16", ("t15",)),
+        ("t17", ("t16",)),
+    )
+
+    def test_python_tasks_match_rust_fixed_order(self) -> None:
+        self.assertEqual(
+            [(spec.task_id, spec.depends_on) for spec in TASKS],
+            list(self.RUST_ORDER),
+        )
+
+    def test_task_graph_is_complete_and_topological(self) -> None:
+        validate_task_graph()
+
+    def test_task_graph_rejects_duplicate_and_forward_dependency(self) -> None:
+        from campaign_adapter.workflow import TaskSpec
+
+        duplicate = (
+            TaskSpec("t01", "a", "a", "s", "schema", ()),
+            TaskSpec("t01", "b", "b", "s", "schema", ()),
+        )
+        with self.assertRaisesRegex(ValueError, "t01"):
+            validate_task_graph(duplicate)
+
+        forward = (
+            TaskSpec("t01", "a", "a", "s", "schema", ("t02",)),
+            TaskSpec("t02", "b", "b", "s", "schema", ()),
+        )
+        with self.assertRaisesRegex(ValueError, "t02"):
+            validate_task_graph(forward)
+
+
 class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
     def test_character_reference_preserves_distinct_named_speakers(self) -> None:
         characters = [{"name": "陈远"}, {"name": "陈建国"}, {"name": "李慧"}]
@@ -185,6 +252,15 @@ class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
 
             with patch.object(sys, "_MEIPASS", directory, create=True):
                 self.assertEqual(package_schema(), '{"schema":"frozen-test"}')
+
+    def test_package_schema_resolves_the_repository_copy_when_not_frozen(self) -> None:
+        """The unfrozen branch is `__file__`-relative, so moving this module
+        between directories silently breaks it. Only the frozen branch used to
+        be covered, and splitting workflow.py into a package did break it."""
+        schema = json.loads(package_schema())
+        self.assertEqual(
+            schema["$id"], "https://microcodex.local/schemas/story-package-v1.json"
+        )
 
     def test_review_severity_aliases_are_normalized_to_contract_values(self) -> None:
         spec = next(spec for spec in TASKS if spec.task_id == "t11")
@@ -447,3 +523,113 @@ class FailureClassificationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(context.failure_code, "final_review_rejected")
         self.assertEqual(context.failure_task_id, "t17")
         self.assertEqual(context.failure_detail, "first")
+
+
+class FailedRunStopsSpendingTests(unittest.IsolatedAsyncioTestCase):
+    """A failed run used to keep paying for work it had already thrown away.
+
+    `asyncio.gather` hands the first exception to the caller but does not
+    cancel its siblings, so one failing episode writer left the rest running:
+    real flagship calls, discarded output, and usage that never reaches
+    `retain()` to be counted against the budget.
+    """
+
+    async def asyncSetUp(self) -> None:
+        descriptor, self.path = tempfile.mkstemp(
+            suffix=".db", prefix="story_spend_stop_"
+        )
+        os.close(descriptor)
+        self.log = SqliteEventLog(self.path)
+
+    async def asyncTearDown(self) -> None:
+        self.log.close()
+        try:
+            os.unlink(self.path)
+        except OSError:
+            pass
+
+    async def test_one_failed_episode_cancels_its_siblings(self) -> None:
+        class OneEpisodeFails(FakeCapability):
+            def __init__(self) -> None:
+                super().__init__()
+                self.completed_after_failure: list[int] = []
+                self.failed = False
+
+            async def generate(self, route, system, prompt):
+                task_name = prompt.splitlines()[0].split("=", 1)[1]
+                if task_name.startswith("write_episode_"):
+                    index = int(task_name.rsplit("_", 1)[1])
+                    if index == 2:
+                        self.failed = True
+                        raise RuntimeError("episode 2 provider failure")
+                    await asyncio.sleep(0.2)
+                    if self.failed:
+                        self.completed_after_failure.append(index)
+                return await super().generate(route, system, prompt)
+
+        capability = OneEpisodeFails()
+        workflow = AdvisoryStoryWorkflow(self.log, capability)
+        with self.assertRaisesRegex(RuntimeError, "episode 2 provider failure"):
+            await workflow.run(
+                story_job(capability), "run_episode_fail", "req_episode_fail"
+            )
+        await asyncio.sleep(0.5)
+        self.assertEqual(
+            capability.completed_after_failure,
+            [],
+            "no episode writer may finish a paid call after the run has failed",
+        )
+
+
+class BudgetSurvivesRecoveryTests(unittest.IsolatedAsyncioTestCase):
+    """`max_tokens` has to cap the run, not each attempt.
+
+    A recovered run re-enters `run()` with a fresh context. While the counter
+    restarted at zero, a restart loop could spend an unbounded multiple of the
+    operator's budget, and the sidecar disagreed with the Rust projection,
+    which accumulates consumption across the whole run.
+    """
+
+    async def asyncSetUp(self) -> None:
+        descriptor, self.path = tempfile.mkstemp(
+            suffix=".db", prefix="story_budget_recovery_"
+        )
+        os.close(descriptor)
+        self.log = SqliteEventLog(self.path)
+
+    async def asyncTearDown(self) -> None:
+        self.log.close()
+        try:
+            os.unlink(self.path)
+        except OSError:
+            pass
+
+    async def test_consumed_tokens_are_restored_from_the_event_log(self) -> None:
+        capability = FakeCapability()
+        run_id = "run_budget_recovery"
+        first = AdvisoryStoryWorkflow(self.log, capability)
+        await first.run(story_job(capability), run_id, "req_budget_recovery")
+
+        spent = sum(
+            event.payload["data"].get("usage", {}).get("total_tokens", 0)
+            for event in await self.log.replay(0)
+            if event.type == "task.completed"
+            and event.payload.get("run_id") == run_id
+        )
+        self.assertGreater(spent, 0, "the first attempt must have spent tokens")
+
+        context = WorkflowContext(
+            self.log, story_job(capability), run_id, "req_budget_recovery"
+        )
+        self.assertEqual(await context.restore_consumed_tokens(), spent)
+        self.assertEqual(context.consumed_tokens, spent)
+
+    async def test_a_different_run_does_not_inherit_consumption(self) -> None:
+        capability = FakeCapability()
+        workflow = AdvisoryStoryWorkflow(self.log, capability)
+        await workflow.run(story_job(capability), "run_budget_other", "req_other")
+
+        context = WorkflowContext(
+            self.log, story_job(capability), "run_budget_fresh", "req_fresh"
+        )
+        self.assertEqual(await context.restore_consumed_tokens(), 0)

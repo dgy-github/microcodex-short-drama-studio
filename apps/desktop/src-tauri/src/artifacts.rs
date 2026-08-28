@@ -285,10 +285,12 @@ mod tests {
 
         let stored = dir.join(run_id).join("run-failure.json");
         assert!(stored.exists(), "run-failure.json must exist");
-        let value: Value =
-            serde_json::from_slice(&std::fs::read(&stored).unwrap()).unwrap();
+        let value: Value = serde_json::from_slice(&std::fs::read(&stored).unwrap()).unwrap();
         assert_eq!(value["tasks_completed"], 16);
-        assert!(value["error"].as_str().unwrap().contains("final_review_rejected"));
+        assert!(value["error"]
+            .as_str()
+            .unwrap()
+            .contains("final_review_rejected"));
 
         // The success path must not start seeing partial runs.
         assert!(repository.read(run_id).is_err());
@@ -311,7 +313,9 @@ mod tests {
         let other = failure_record("run_28f176fffad642f7ab70fee5f7e74f84");
         assert!(repository.write_failure(run_id, &other).is_err());
 
-        assert!(repository.write_failure("../escape", &failure_record("../escape")).is_err());
+        assert!(repository
+            .write_failure("../escape", &failure_record("../escape"))
+            .is_err());
 
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -353,8 +357,8 @@ mod tests {
                 "schema": "story-workflow-result/v1",
                 "run_id": run_id,
                 "job_id": "job_1",
-                "status": "released",
-                "promotion": "promotable",
+                "status": "advisory",
+                "promotion": "non-promotable",
                 "tasks": [],
                 "reviews": [],
                 "package": {"episodes": [], "logline": {"text": "测试"}},
@@ -383,14 +387,15 @@ mod tests {
     fn repository_read_handles_missing_files() {
         let dir = std::env::temp_dir().join(format!("mx-missing-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
+        // The library root must exist: an absent root is a separate condition
+        // that resolve() reports as artifact_unavailable.
+        std::fs::create_dir_all(&dir).unwrap();
         let repository = ArtifactRepository::new(dir.clone());
 
         let run_id = "run_0148aa190ce842c8b103d3885a68dfcb";
         let result = repository.read(run_id);
 
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert!(err.to_string().contains("not found") || err.to_string().contains("No such file"));
+        assert_eq!(result.unwrap_err(), CommandError::artifact_missing());
 
         let _ = std::fs::remove_dir_all(&dir);
     }

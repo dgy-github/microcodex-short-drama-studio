@@ -1,0 +1,76 @@
+feature: agent-communication-reliability
+requirements:
+  - id: REQ-315
+    interfaces: [API-151]
+    implementation: [BE-128, BE-129]
+    tests: [TEST-318]
+  - id: REQ-316
+    interfaces: [API-152]
+    implementation: [BE-128]
+    tests: [TEST-319, TEST-320]
+  - id: REQ-317
+    interfaces: [API-153]
+    implementation: [BE-129, BE-130, BE-131]
+    tests: [TEST-321, TEST-322]
+  - id: REQ-318
+    interfaces: [API-151]
+    implementation: [BE-128]
+    tests: [TEST-323, TEST-324]
+  - id: REQ-319
+    interfaces: [API-153]
+    implementation: [BE-129, BE-130, BE-131]
+    tests: [TEST-325, TEST-326]
+interfaces:
+  - id: API-151
+    location: contracts/openapi.yaml
+    status: REVIEWED
+    purpose: replay durable run events and then follow a gap-repairing subscription
+  - id: API-152
+    location: schemas/story-agent-event-v1.json
+    status: REVIEWED
+    purpose: retain exactly one terminal event under the accepted run identity
+  - id: API-153
+    location: schemas/story-capability-request-v1.json
+    status: REVIEWED
+    purpose: retain and load immutable artifacts through an authenticated Rust capability
+implementation:
+  - id: BE-128
+    location: sidecar/campaign_adapter/server.py
+    owner: CAP-004
+  - id: BE-129
+    location: sidecar/campaign_adapter/workflow
+    owner: CAP-004
+  - id: BE-130
+    location: crates/story-provider/src/capability_host.rs
+    owner: CAP-003
+  - id: BE-131
+    location: crates/story-storage/src/artifacts.rs
+    owner: CAP-012
+tests:
+  - id: TEST-318
+    location: sidecar/test_workflow.py
+    proves: Campaign and product events expose the accepted run ID only
+  - id: TEST-319
+    location: sidecar/test_server.py
+    proves: concurrent cancellation appends one terminal event
+  - id: TEST-320
+    location: sidecar/test_server.py
+    proves: completion and cancellation races retain one terminal winner
+  - id: TEST-321
+    location: sidecar/test_workflow.py
+    proves: recovered artifacts skip completed provider tasks
+  - id: TEST-322
+    location: sidecar/test_workflow.py
+    proves: missing or corrupt checkpoints recompute the dependency closure
+  - id: TEST-323
+    location: sidecar/test_server.py
+    proves: SSE follows EventLog subscription without periodic replay
+  - id: TEST-324
+    location: sidecar/test_server.py
+    proves: a subscription sequence gap is repaired from durable replay
+  - id: TEST-325
+    location: crates/story-storage/src/artifacts.rs
+    proves: content-addressed writes are immutable and reads verify hashes
+  - id: TEST-326
+    location: crates/story-provider/src/capability_host.rs
+    proves: artifact retain and load require the authenticated typed capability

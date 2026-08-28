@@ -16,8 +16,6 @@
         "required": [
           "ecosystem",
           "name",
-          "source",
-          "revision",
           "license",
           "evidence_path",
           "evidence_sha256",
@@ -26,10 +24,12 @@
           "reviewed_at"
         ],
         "properties": {
-          "ecosystem": { "enum": ["cargo", "npm", "python"] },
+          "ecosystem": { "enum": ["npm", "python"] },
           "name": { "type": "string", "minLength": 1 },
           "source": { "type": "string", "format": "uri" },
           "revision": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+          "version": { "type": "string", "minLength": 1 },
+          "integrity": { "type": "string", "pattern": "^sha512-[A-Za-z0-9+/]+={0,2}$" },
           "license": { "type": "string", "minLength": 1 },
           "evidence_path": {
             "type": ["string", "null"],
@@ -43,6 +43,24 @@
           "reviewed_by": { "type": ["string", "null"], "minLength": 1 },
           "reviewed_at": { "type": ["string", "null"], "format": "date-time" }
         },
+        "oneOf": [
+          {
+            "properties": {
+              "ecosystem": { "const": "python" },
+              "version": false,
+              "integrity": false
+            },
+            "required": ["source", "revision"]
+          },
+          {
+            "properties": {
+              "ecosystem": { "const": "npm" },
+              "source": false,
+              "revision": false
+            },
+            "required": ["version", "integrity"]
+          }
+        ],
         "allOf": [
           {
             "if": {

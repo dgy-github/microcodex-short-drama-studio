@@ -136,8 +136,7 @@ impl DesktopRunController {
         if is_active(&session.projection.snapshot) {
             refresh_session(session, artifacts).await?;
         }
-        Ok(is_active(&session.projection.snapshot)
-            .then(|| session.projection.snapshot.clone()))
+        Ok(is_active(&session.projection.snapshot).then(|| session.projection.snapshot.clone()))
     }
 
     async fn start_with_capability(
@@ -464,15 +463,16 @@ mod tests {
 
     impl FakeCapabilityHost {
         async fn start(repository: &Path) -> Self {
-            let package: Value = serde_json::from_slice(
-                &std::fs::read(
-                    repository.join(
-                        "eval/runs/baseline-deepseek-v4-pro-20260727/artifacts/family_001.story-package.json",
-                    ),
-                )
-                .unwrap(),
-            )
-            .unwrap();
+            // eval/runs/ is generated output and gitignored; the tracked
+            // baseline under eval/baselines/ is the fixture that survives a
+            // clean checkout.
+            let fixture = repository.join(
+                "eval/baselines/baseline-deepseek-v4-pro-20260727/family_001.story-package.json",
+            );
+            let bytes = std::fs::read(&fixture).unwrap_or_else(|error| {
+                panic!("tracked workflow fixture missing at {fixture:?}: {error}")
+            });
+            let package: Value = serde_json::from_slice(&bytes).unwrap();
             let generated = Arc::new(AtomicUsize::new(0));
             let validations = Arc::new(AtomicUsize::new(0));
             let state = FakeCapabilityState {

@@ -23,6 +23,7 @@
           "task_id": {"pattern": "^t(0[1-9]|1[0-7])$", "type": "string"},
           "agent_id": {"type": "string", "minLength": 1},
           "artifact_schema": {"type": "string", "minLength": 1},
+          "content_ref": {"type": "string", "pattern": "^artifact://sha256/[0-9a-f]{64}$"},
           "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
         }
       }
