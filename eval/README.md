@@ -16,11 +16,17 @@ context. `holdout` is not consumed in v1 and stays sealed.
 
 ```text
 manifests/eval-v0.1.0.json   thresholds; owns every number, versioned with the set
+manifests/FREEZE.json        freeze record once written; drift fails CI
 rubrics/judge-v1.yaml        shared by LLM judges, internal spot checks, and the
                              future professional panel
-cases/<split>/cases.jsonl    eval-case/v1 records
-adversarial/pairs.jsonl      eval-adversarial-pair/v1 records
-runs/<run_id>/               scores, evaluator metrics, summary
+cases/<split>/cases.jsonl    eval-case/v1 records (120 cases)
+cases/premise-family-check.json  machine-checked near-duplicate report
+adversarial/stage0|stage1/   one directory per pair: pair.json + both artifacts
+adversarial/evaluator-metrics.json  set-level metrics over all measured pairs
+scores/<run_id>/             pointwise judge results + scores.jsonl (tracked)
+scores/pillar-review-*.json  dimension correlation matrix reports
+scores/spot-check-plan.json  deterministic internal-review sampling plan
+runs/<run_id>/               raw provider responses (gitignored, machine-local)
 ```
 
 Aggregation and floors are implemented in `crates/story-eval`. v1 output is

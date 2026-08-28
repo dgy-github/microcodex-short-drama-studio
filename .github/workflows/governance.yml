@@ -26,6 +26,9 @@ jobs:
       - run: python scripts/init_project.py --check
       - run: python eval/tools/generate_governance_page.py --check
       - run: python scripts/check_eval_freeze.py
+      - run: python eval/tools/validate_cases.py
+      - run: python eval/tools/split_cases.py --check
+      - run: python eval/tools/check_premise_families.py
 
   rust:
     runs-on: ubuntu-latest
