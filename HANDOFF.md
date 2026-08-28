@@ -57,11 +57,17 @@ caveat 已标注判官案数 <10——**需要补满 10 案才有可用结论**�
 **解读**：新证据再次确认 P1"判官稳定性差"。§9 分支决策（40 对量产）暂缓——判官读不出差异时，
 量产对抗对测的是噪声。先补打分到 10 案 + 人工盲测（你本人）交叉验证判官是否系统性偏高。
 
-### 下一步优先级
-1. 🔴 **恢复任一判官路**（见上三条，任选其一即可开测）：
-   - 设 `JUDGE_API_KEY` 后：
-     `python eval/tools/run_stage0_probe.py --pair-dir eval/adversarial/stage1/<name>`（六对）
-     `python eval/tools/score_artifacts.py --run-id <id>`（10 baseline × 3 采样）
+### 盲测开箱清单（2026-08-27 就绪）
+`python eval/tools/plan_spot_check.py` 已生成确定性抽样计划
+（`eval/scores/spot-check-plan.json`）：29 案（9 题材全覆盖）+ 8 个对抗对。
+桌面 EvaluationCenter → offline-v0.1.0 → 人工盲测 → 按计划勾选 → 逐份十维评分 →
+`python eval/tools/compute_spot_check_agreement.py --runs eval/scores/baseline-20260827`。
+### P11 MinHash 查重（2026-08-27 完成）
+120 案机器查重通过：跨家族近重复 0（阈值 0.5，3-gram + MinHash128 + 精确 Jaccard 复核）；
+25 个家族成员间零表文重叠（机制级家族的预期形态，记录为信息级）。
+
+### 下一步优先级（判官路已恢复，此段为历史）
+1. ~~**恢复任一判官路**~~ 已完成（glm-5.3-flash + gpt-5.4 经 teamorouter）：
 2. 🔴 **P1 人工盲测（你本人）**：桌面端 EvaluationCenter → 人工盲测 → 选 offline
    数据集抽样（manifest 20% + 全部对抗对）创建分派并逐份评分；随后
    `python eval/tools/compute_spot_check_agreement.py --runs eval/scores/<id>`

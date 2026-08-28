@@ -581,8 +581,10 @@ Prerequisite for P12: the parent contract forbids automatic skill promotion on a
   freeze covers the target scale instead of a MAJOR bump right after;
 - add a **non-Chinese-native judge family**, so `inter_model_agreement` stops
   measuring shared priors between two Chinese-native models;
-- MinHash / embedding premise-family checking, deferred at 30 cases where
-  reading them sufficed — at 120 it becomes due before freezing;
+- MinHash / embedding premise-family checking — **done 2026-08-27**
+  (`eval/tools/check_premise_families.py`): 120 cases machine-checked,
+  0 cross-family near-duplicates at threshold 0.5; 25 families whose members
+  share mechanism but zero surface text, recorded as naming-level info;
 - similarity search of every premise against existing screen works;
 - re-freeze the manifest and rubric at the larger scale.
 

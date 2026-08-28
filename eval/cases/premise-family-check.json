@@ -1,0 +1,114 @@
+{
+  "cases": 120,
+  "cross_family_near_duplicates": [],
+  "method": {
+    "minhash_permutations": 128,
+    "pre_filter": "estimated >= 0.8 * threshold, then exact jaccard",
+    "shingle": "character-3-gram",
+    "threshold": 0.5
+  },
+  "passes": true,
+  "schema": "premise-family-check/v1",
+  "zero_overlap_within_family": [
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "artisan_signature_debt"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "boundary_stone_missing"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "contracted_role_reversal"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "dividend_ledger_gap"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "donor_sibling_truth"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "exposure_via_own_rules"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "guardian_secret_ledger"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "impossible_trace_in_monitored_space"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "mistaken_professional"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "naming_rights_war"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "recipe_inheritance_refusal"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "reunion_through_obligation"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "second_copy_of_recording"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "sibling_swap_debt"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "slow_replacement"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "stranger_pays_columbarium"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "successor_judges_predecessor"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "system_vs_master"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "thin_wall_neighbors"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "too_tidy_alibi"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "unsign_the_past"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "victim_placed_in_institutional_role"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "white_lie_sticky"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "witness_close_kin"
+    },
+    {
+      "min_within_family_jaccard": 0.0,
+      "premise_family": "wrong_window_message"
+    }
+  ]
+}

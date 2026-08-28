@@ -8639,6 +8639,76 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "module",
+    "name": "check_premise_families",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "normalize",
+    "line": 44
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "shingles",
+    "line": 49
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "minhash_signature",
+    "line": 56
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "estimated_jaccard",
+    "line": 69
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "exact_jaccard",
+    "line": 74
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "load_cases",
+    "line": 82
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "build_report",
+    "line": 96
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "parse_args",
+    "line": 159
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 168
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/compute_evaluator_metrics.py",
     "kind": "module",
     "name": "compute_evaluator_metrics",
@@ -8761,35 +8831,35 @@
     "path": "eval/tools/compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "run_identifier",
-    "line": 171
+    "line": 177
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "build_review",
-    "line": 178
+    "line": 184
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "markdown",
-    "line": 228
+    "line": 251
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 250
+    "line": 279
   },
   {
     "language": "Python",
     "path": "eval/tools/compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 260
+    "line": 289
   },
   {
     "language": "Python",
@@ -8856,6 +8926,34 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/endpoint_guard.py",
+    "kind": "module",
+    "name": "endpoint_guard",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "_resolved_addresses",
+    "line": 27
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "assert_public_https_endpoint",
+    "line": 33
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "https_exchange",
+    "line": 61
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/expand_cases_to_120.py",
     "kind": "module",
     "name": "expand_cases_to_120",
@@ -8908,154 +9006,154 @@
     "path": "eval/tools/generate_baselines.py",
     "kind": "ClassDef",
     "name": "ProviderConfig",
-    "line": 43
+    "line": 45
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "load_json",
-    "line": 52
+    "line": 54
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "load_cases",
-    "line": 59
+    "line": 61
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "build_prompt",
-    "line": 71
+    "line": 73
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "extract_content",
-    "line": 87
+    "line": 89
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "request_model",
-    "line": 99
+    "line": 101
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "canonical_bytes",
-    "line": 135
+    "line": 144
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "atomic_write",
-    "line": 142
+    "line": 151
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "prepare_package",
-    "line": 156
+    "line": 165
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "normalize_span_refs",
-    "line": 189
+    "line": 198
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "normalize_node_ids",
-    "line": 219
+    "line": 228
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "reconcile_scene_locations",
-    "line": 234
+    "line": 243
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "canonicalize_scene_line_ids",
-    "line": 268
+    "line": 277
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "validate_package",
-    "line": 301
+    "line": 310
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "make_wrapper",
-    "line": 424
+    "line": 433
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "generate_one",
-    "line": 440
+    "line": 449
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "select_cases",
-    "line": 473
+    "line": 482
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 485
+    "line": 494
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 501
+    "line": 510
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "replace",
-    "line": 287
+    "line": 296
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "collect_refs",
-    "line": 334
+    "line": 343
   },
   {
     "language": "Python",
     "path": "eval/tools/generate_baselines.py",
     "kind": "FunctionDef",
     "name": "collect_natural_text",
-    "line": 374
+    "line": 383
   },
   {
     "language": "Python",
@@ -9133,6 +9231,55 @@
     "kind": "FunctionDef",
     "name": "main",
     "line": 76
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "module",
+    "name": "plan_spot_check",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "load_cases",
+    "line": 37
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "sample_cases",
+    "line": 50
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "adversarial_baselines",
+    "line": 64
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "build_plan",
+    "line": 80
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "parse_args",
+    "line": 106
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "main",
+    "line": 113
   },
   {
     "language": "Python",
@@ -9258,217 +9405,217 @@
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "load",
-    "line": 74
+    "line": 75
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "atomic_write",
-    "line": 81
+    "line": 82
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "input_fingerprint",
-    "line": 95
+    "line": 96
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "judge_config_fingerprint",
-    "line": 115
+    "line": 116
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "load_probe_config",
-    "line": 122
+    "line": 123
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "urlopen_with_retry",
-    "line": 141
+    "line": 142
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "load_rubric",
-    "line": 179
+    "line": 185
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_system",
-    "line": 184
+    "line": 190
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "valid_line_spans",
-    "line": 196
+    "line": 202
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_route",
-    "line": 224
+    "line": 230
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_user_prompt",
-    "line": 253
+    "line": 259
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "write_compatible_model_catalog",
-    "line": 277
+    "line": 283
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request_codex",
-    "line": 323
+    "line": 329
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "parse_content",
-    "line": 395
+    "line": 401
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request",
-    "line": 417
+    "line": 423
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "validate_judgment",
-    "line": 477
+    "line": 483
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "normalize_span_list",
-    "line": 507
+    "line": 513
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "normalize_owned_field_spans",
-    "line": 555
+    "line": 561
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "request_validated",
-    "line": 572
+    "line": 578
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "check_connectivity",
-    "line": 622
+    "line": 628
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 704
+    "line": 718
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "select_judges",
-    "line": 720
+    "line": 734
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "resolve_pair_dir",
-    "line": 743
+    "line": 757
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "runnable_judges",
-    "line": 750
+    "line": 764
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "saved_result_is_reusable",
-    "line": 775
+    "line": 789
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "refresh_saved_summary",
-    "line": 799
+    "line": 813
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "collect_samples",
-    "line": 815
+    "line": 829
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "summarize_judge",
-    "line": 841
+    "line": 855
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "run_judge",
-    "line": 886
+    "line": 900
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "build_probe_summary",
-    "line": 1018
+    "line": 1032
   },
   {
     "language": "Python",
     "path": "eval/tools/run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 1077
+    "line": 1091
   },
   {
     "language": "Python",
@@ -9517,56 +9664,56 @@
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "input_fingerprint_pointwise",
-    "line": 189
+    "line": 190
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "load_baseline_targets",
-    "line": 208
+    "line": 209
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "saved_pointwise_is_reusable",
-    "line": 233
+    "line": 234
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "pointwise_score_record",
-    "line": 256
+    "line": 257
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "score_case",
-    "line": 304
+    "line": 305
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "rewrite_scores_jsonl",
-    "line": 420
+    "line": 421
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "parse_args",
-    "line": 462
+    "line": 463
   },
   {
     "language": "Python",
     "path": "eval/tools/score_artifacts.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 474
+    "line": 475
   },
   {
     "language": "Python",
@@ -9829,6 +9976,118 @@
   },
   {
     "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "module",
+    "name": "test_check_premise_families",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "write_corpus",
+    "line": 13
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "case",
+    "line": 26
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "ClassDef",
+    "name": "ShingleTests",
+    "line": 57
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "ClassDef",
+    "name": "CorpusCheckTests",
+    "line": 70
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "ClassDef",
+    "name": "LiveCorpusTests",
+    "line": 147
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_punctuation_and_whitespace_are_stripped",
+    "line": 58
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_short_text_keeps_one_token",
+    "line": 61
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_identical_texts_have_jaccard_one",
+    "line": 64
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "_run",
+    "line": 71
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_identical_premise_in_two_families_is_flagged",
+    "line": 84
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_premise_variants_in_two_families_are_flagged",
+    "line": 99
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_distinct_premises_pass",
+    "line": 117
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_near_duplicates_inside_one_family_are_not_violations",
+    "line": 127
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_unrelated_members_inside_one_family_are_reported_as_smell",
+    "line": 136
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_check_premise_families.py",
+    "kind": "FunctionDef",
+    "name": "test_repository_corpus_reports_clean_or_lists_duplicates",
+    "line": 148
+  },
+  {
+    "language": "Python",
     "path": "eval/tools/test_compute_evaluator_metrics.py",
     "kind": "module",
     "name": "test_compute_evaluator_metrics",
@@ -10021,28 +10280,28 @@
     "path": "eval/tools/test_compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "test_uncorrelated_run_concludes_no_change",
-    "line": 114
+    "line": 115
   },
   {
     "language": "Python",
     "path": "eval/tools/test_compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "test_missing_dimension_is_rejected",
-    "line": 122
+    "line": 123
   },
   {
     "language": "Python",
     "path": "eval/tools/test_compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "test_incomplete_sample_set_is_rejected",
-    "line": 132
+    "line": 133
   },
   {
     "language": "Python",
     "path": "eval/tools/test_compute_pillar_review.py",
     "kind": "FunctionDef",
     "name": "test_later_run_supersedes_same_judge_case",
-    "line": 150
+    "line": 151
   },
   {
     "language": "Python",
@@ -10134,6 +10393,55 @@
     "kind": "FunctionDef",
     "name": "test_multiple_human_reviewers_join_the_same_artifact",
     "line": 172
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "module",
+    "name": "test_endpoint_guard",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "ClassDef",
+    "name": "EndpointGuardTests",
+    "line": 8
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "test_public_https_passes",
+    "line": 9
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "test_plain_http_is_refused",
+    "line": 14
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "test_loopback_names_and_addresses_are_refused",
+    "line": 18
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "test_private_and_link_local_ranges_are_refused",
+    "line": 24
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_endpoint_guard.py",
+    "kind": "FunctionDef",
+    "name": "test_url_without_host_is_refused",
+    "line": 35
   },
   {
     "language": "Python",
@@ -10302,6 +10610,55 @@
     "kind": "FunctionDef",
     "name": "test_quarterly_refresh_and_replacement_guard",
     "line": 9
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "module",
+    "name": "test_plan_spot_check",
+    "line": 1
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "ClassDef",
+    "name": "SamplingTests",
+    "line": 10
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "setUp",
+    "line": 11
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "test_rate_takes_at_least_one_per_genre",
+    "line": 20
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "test_sampling_is_deterministic",
+    "line": 28
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "test_live_plan_covers_every_genre",
+    "line": 33
+  },
+  {
+    "language": "Python",
+    "path": "eval/tools/test_plan_spot_check.py",
+    "kind": "FunctionDef",
+    "name": "test_live_plan_includes_every_adversarial_pair",
+    "line": 44
   },
   {
     "language": "Python",
@@ -10686,7 +11043,7 @@
     "path": "eval/tools/test_run_stage0_probe.py",
     "kind": "FunctionDef",
     "name": "test_remote_disconnect_is_retried",
-    "line": 480
+    "line": 477
   },
   {
     "language": "Python",

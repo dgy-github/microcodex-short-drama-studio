@@ -1,0 +1,84 @@
+{
+  "adversarial_pairs": [
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage0-comedy-002-motive-explicit-001",
+      "problem_code": "MOTIVE_EXPLICIT"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage0-comedy-002-motive-explicit-narrow-001",
+      "problem_code": "MOTIVE_EXPLICIT"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-emotion-unearned-001",
+      "problem_code": "EMOTION_UNEARNED"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-false-payoff-001",
+      "problem_code": "FALSE_PAYOFF"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-hook-fake-001",
+      "problem_code": "HOOK_FAKE"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-plot-convenience-001",
+      "problem_code": "PLOT_CONVENIENCE"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-trope-stack-001",
+      "problem_code": "TROPE_STACK"
+    },
+    {
+      "case_id": "comedy_002",
+      "pair_id": "stage1-comedy-002-voice-collapse-001",
+      "problem_code": "VOICE_COLLAPSE"
+    }
+  ],
+  "case_count": 29,
+  "cases": [
+    "comedy_001",
+    "comedy_002",
+    "comedy_003",
+    "cross_genre_001",
+    "cross_genre_002",
+    "family_001",
+    "family_002",
+    "family_003",
+    "family_004",
+    "historical_001",
+    "historical_002",
+    "revenge_001",
+    "revenge_002",
+    "revenge_003",
+    "revenge_004",
+    "rural_001",
+    "rural_002",
+    "rural_003",
+    "suspense_001",
+    "suspense_002",
+    "suspense_003",
+    "suspense_004",
+    "urban_romance_001",
+    "urban_romance_002",
+    "urban_romance_003",
+    "urban_romance_004",
+    "workplace_001",
+    "workplace_002",
+    "workplace_003"
+  ],
+  "instructions": "Desktop EvaluationCenter -> offline-v0.1.0 dataset -> manual blind review -> select exactly these case ids, then score every artifact on all ten dimensions. Afterwards run compute_spot_check_agreement.py --runs eval/scores/<latest>.",
+  "manifest_rates": {
+    "adversarial_sample_rate": 1.0,
+    "case_sample_rate": 0.2
+  },
+  "planned_on": "2026-08-28",
+  "rater_id": "reviewer_01",
+  "schema": "spot-check-plan/v1"
+}
