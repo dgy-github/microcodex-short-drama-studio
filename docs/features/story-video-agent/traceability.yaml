@@ -52,7 +52,7 @@ tests:
     location: ../story-video-agent/tests/test_workflow.py
     proves: request retains immutable image, story spans and shot prompt
   - id: TEST-412
-    location: projects/story-video-agent/tests/test_workflow.py
+    location: ../story-video-agent/tests/test_workflow.py
     proves: local paths and missing story provenance fail closed
   - id: TEST-413
     location: crates/story-media/src/lib.rs

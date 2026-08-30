@@ -62,7 +62,7 @@ tests:
     location: ../story-image-agent/tests/test_workflow.py
     proves: prompt edits and repeated generation append revisions and requests
   - id: TEST-402
-    location: projects/story-image-agent/tests/test_workflow.py
+    location: ../story-image-agent/tests/test_workflow.py
     proves: missing provenance and unknown revisions fail closed
   - id: TEST-403
     location: crates/story-media/src/run.rs
