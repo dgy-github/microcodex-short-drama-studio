@@ -445,6 +445,6 @@ interfaces:
     location: crates/story-media/src/editor.rs
     purpose: Resolve a hash-verified FFmpeg, compile a validated timeline, supervise execution and accept only a new non-empty MP4 output.
     inputs: [verified tool manifest, absolute tool root, timeline clips, new absolute MP4 path, timeout]
-    outputs: [timeline execution receipt with output path and byte length]
+    outputs: [timeline execution receipt, immutable video artifact reference]
     errors: [manifest failure, invalid timeline, process failure, timeout, missing or empty output]
-    side_effects: [supervised FFmpeg process, failed partial output cleanup]
+    side_effects: [supervised FFmpeg process, failed partial output cleanup, content-addressed video retention, successful temporary output removal]

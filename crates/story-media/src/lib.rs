@@ -11,7 +11,9 @@ mod run;
 mod timeline;
 mod tool;
 mod tool_manifest;
-pub use editor::{execute_timeline, TimelineExecutionError, TimelineExecutionReceipt};
+pub use editor::{
+    execute_timeline, retain_timeline_output, TimelineExecutionError, TimelineExecutionReceipt,
+};
 pub use gateway::GatewayMediaProvider;
 pub use run::{MediaRunOutcome, MediaRunService};
 pub use timeline::{compile_concat_plan, FfmpegPlan, TimelineClip};

@@ -5,6 +5,7 @@ use crate::{
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use story_storage::media::{MediaArtifactRef, MediaArtifactStore, MediaKind, MediaStoreError};
 
 #[derive(Debug, thiserror::Error)]
 pub enum TimelineExecutionError {
@@ -14,6 +15,29 @@ pub enum TimelineExecutionError {
     Tool(#[from] MediaToolError),
     #[error("media timeline output is invalid")]
     InvalidOutput,
+    #[error("media timeline output could not be retained")]
+    Storage(#[from] MediaStoreError),
+}
+
+pub fn retain_timeline_output(
+    store: &MediaArtifactStore,
+    project_id: &str,
+    request_id: &str,
+    receipt: TimelineExecutionReceipt,
+) -> Result<MediaArtifactRef, TimelineExecutionError> {
+    let bytes = fs::read(&receipt.output).map_err(|_| TimelineExecutionError::InvalidOutput)?;
+    if bytes.len() as u64 != receipt.byte_len || bytes.is_empty() {
+        return Err(TimelineExecutionError::InvalidOutput);
+    }
+    let retained = store.put(
+        project_id,
+        request_id,
+        MediaKind::Video,
+        "video/mp4",
+        &bytes,
+    )?;
+    fs::remove_file(&receipt.output).map_err(|_| TimelineExecutionError::InvalidOutput)?;
+    Ok(retained)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -131,5 +155,45 @@ mod tests {
         .await
         .is_err());
         assert_eq!(fs::read(existing).unwrap(), b"keep");
+    }
+
+    #[test]
+    fn successful_output_is_retained_immutably_and_temporary_is_removed() {
+        let directory = tempfile::tempdir().unwrap();
+        let output = directory.path().join("rendered.mp4");
+        fs::write(&output, b"fixture-rendered-video").unwrap();
+        let store = MediaArtifactStore::open(directory.path().join("store")).unwrap();
+        let retained = retain_timeline_output(
+            &store,
+            "project_1",
+            "vid_edit_1",
+            TimelineExecutionReceipt {
+                output: output.clone(),
+                byte_len: 22,
+            },
+        )
+        .unwrap();
+        assert!(!output.exists());
+        assert!(retained.content_ref.starts_with("artifact://sha256/"));
+        assert_eq!(store.load(&retained).unwrap(), b"fixture-rendered-video");
+    }
+
+    #[test]
+    fn receipt_length_mismatch_does_not_delete_source_evidence() {
+        let directory = tempfile::tempdir().unwrap();
+        let output = directory.path().join("rendered.mp4");
+        fs::write(&output, b"fixture").unwrap();
+        let store = MediaArtifactStore::open(directory.path().join("store")).unwrap();
+        assert!(retain_timeline_output(
+            &store,
+            "project_1",
+            "vid_edit_1",
+            TimelineExecutionReceipt {
+                output: output.clone(),
+                byte_len: 999
+            }
+        )
+        .is_err());
+        assert!(output.exists());
     }
 }

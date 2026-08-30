@@ -5948,7 +5948,15 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "enum",
     "name": "TimelineExecutionError",
-    "line": 10,
+    "line": 11,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/editor.rs",
+    "kind": "fn",
+    "name": "retain_timeline_output",
+    "line": 22,
     "public": true
   },
   {
@@ -5956,7 +5964,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "struct",
     "name": "TimelineExecutionReceipt",
-    "line": 20,
+    "line": 44,
     "public": true
   },
   {
@@ -5964,7 +5972,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "execute_timeline",
-    "line": 25,
+    "line": 49,
     "public": true
   },
   {
@@ -5972,7 +5980,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "validate_output_target",
-    "line": 60,
+    "line": 84,
     "public": false
   },
   {
@@ -5980,7 +5988,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "remove_partial",
-    "line": 76,
+    "line": 100,
     "public": false
   },
   {
@@ -5988,7 +5996,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 83,
+    "line": 107,
     "public": false
   },
   {
@@ -5996,7 +6004,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "manifest_for",
-    "line": 87,
+    "line": 111,
     "public": false
   },
   {
@@ -6004,7 +6012,7 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "failed_tool_leaves_no_partial_output",
-    "line": 95,
+    "line": 119,
     "public": false
   },
   {
@@ -6012,7 +6020,23 @@
     "path": "crates/story-media/src/editor.rs",
     "kind": "fn",
     "name": "existing_or_non_mp4_output_is_rejected_before_execution",
-    "line": 119,
+    "line": 143,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/editor.rs",
+    "kind": "fn",
+    "name": "successful_output_is_retained_immutably_and_temporary_is_removed",
+    "line": 161,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/editor.rs",
+    "kind": "fn",
+    "name": "receipt_length_mismatch_does_not_delete_source_evidence",
+    "line": 182,
     "public": false
   },
   {
@@ -6108,7 +6132,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "type",
     "name": "ProviderFuture",
-    "line": 21,
+    "line": 23,
     "public": true
   },
   {
@@ -6116,7 +6140,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "ImageGenerationRequest",
-    "line": 26,
+    "line": 28,
     "public": true
   },
   {
@@ -6124,7 +6148,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "VideoGenerationRequest",
-    "line": 37,
+    "line": 39,
     "public": true
   },
   {
@@ -6132,7 +6156,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaRequest",
-    "line": 49,
+    "line": 51,
     "public": true
   },
   {
@@ -6140,7 +6164,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "GeneratedMedia",
-    "line": 55,
+    "line": 57,
     "public": true
   },
   {
@@ -6148,7 +6172,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "trait",
     "name": "MediaProvider",
-    "line": 64,
+    "line": 66,
     "public": true
   },
   {
@@ -6156,7 +6180,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 65,
+    "line": 67,
     "public": false
   },
   {
@@ -6164,7 +6188,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaGenerationResult",
-    "line": 69,
+    "line": 71,
     "public": true
   },
   {
@@ -6172,7 +6196,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaProviderError",
-    "line": 85,
+    "line": 87,
     "public": true
   },
   {
@@ -6180,7 +6204,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaExecutionError",
-    "line": 91,
+    "line": 93,
     "public": true
   },
   {
@@ -6188,7 +6212,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaExecutor",
-    "line": 104,
+    "line": 106,
     "public": true
   },
   {
@@ -6196,7 +6220,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "new",
-    "line": 110,
+    "line": 112,
     "public": true
   },
   {
@@ -6204,7 +6228,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "execute",
-    "line": 114,
+    "line": 116,
     "public": true
   },
   {
@@ -6212,7 +6236,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_request",
-    "line": 150,
+    "line": 152,
     "public": true
   },
   {
@@ -6220,7 +6244,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_output",
-    "line": 202,
+    "line": 204,
     "public": false
   },
   {
@@ -6228,7 +6252,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "identity",
-    "line": 213,
+    "line": 215,
     "public": true
   },
   {
@@ -6236,7 +6260,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_id",
-    "line": 220,
+    "line": 222,
     "public": false
   },
   {
@@ -6244,7 +6268,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_prefixed_id",
-    "line": 228,
+    "line": 230,
     "public": false
   },
   {
@@ -6252,7 +6276,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_artifact_ref",
-    "line": 237,
+    "line": 239,
     "public": false
   },
   {
@@ -6260,7 +6284,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 248,
+    "line": 250,
     "public": false
   },
   {
@@ -6268,7 +6292,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "FixtureProvider",
-    "line": 252,
+    "line": 254,
     "public": false
   },
   {
@@ -6276,7 +6300,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 255,
+    "line": 257,
     "public": false
   },
   {
@@ -6284,7 +6308,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "executor",
-    "line": 273,
+    "line": 275,
     "public": false
   },
   {
@@ -6292,7 +6316,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "image_and_video_execute_through_provider_and_immutable_store",
-    "line": 280,
+    "line": 282,
     "public": false
   },
   {
@@ -6300,7 +6324,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "unsafe_or_unproven_inputs_fail_before_provider_execution",
-    "line": 315,
+    "line": 317,
     "public": false
   },
   {
@@ -6308,7 +6332,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "video_rejects_a_well_formed_but_unretained_image_reference",
-    "line": 333,
+    "line": 335,
     "public": false
   },
   {
