@@ -128,9 +128,9 @@
 
   onMount(async () => {
     const saved = await desktopApi.mediaGatewaySettings().catch(() => null);
-    endpoint = saved?.endpoint ?? "";
-    coarseEndpoint = saved?.coarse_endpoint ?? saved?.endpoint ?? "";
-    fineEndpoint = saved?.fine_endpoint ?? saved?.endpoint ?? "";
+    if (!endpoint) endpoint = saved?.endpoint ?? "";
+    if (!coarseEndpoint) coarseEndpoint = saved?.coarse_endpoint ?? saved?.endpoint ?? "";
+    if (!fineEndpoint) fineEndpoint = saved?.fine_endpoint ?? saved?.endpoint ?? "";
   });
 </script>
 
@@ -148,7 +148,7 @@
     <label>Bearer secret<input bind:value={secret} type="password" autocomplete="off" /></label>
     <label>Wan secret<input bind:value={coarseSecret} type="password" autocomplete="off" /></label>
     <label>Kling secret<input bind:value={fineSecret} type="password" autocomplete="off" /></label>
-    <button onclick={saveGateway} disabled={busy || !endpoint}>保存可信配置</button>
+    <button onclick={saveGateway} disabled={busy || !(coarseEndpoint || endpoint) || !fineEndpoint}>保存可信配置</button>
   </article>
 
   <article class="image-flow">

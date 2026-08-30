@@ -15,6 +15,7 @@ vi.mock("./api", async () => {
       cancelMediaRun: vi.fn(),
       mediaGatewaySettings: vi.fn(),
       saveMediaGatewaySettings: vi.fn(),
+      saveMediaGenerationRoutes: vi.fn(),
       storeMediaGatewayCredential: vi.fn(),
     },
   };
@@ -61,5 +62,36 @@ describe("MediaStudio", () => {
     await waitFor(() => expect(desktopApi.startMediaRun).toHaveBeenCalled());
     expect(vi.mocked(desktopApi.appendMediaGenerationRequest).mock.invocationCallOrder[0])
       .toBeLessThan(vi.mocked(desktopApi.startMediaRun).mock.invocationCallOrder[0]);
+  });
+
+  it("saves separate Wan and Kling routes", async () => {
+    render(MediaStudio);
+    await waitFor(() => expect(desktopApi.mediaGatewaySettings).toHaveBeenCalled());
+    await fireEvent.input(screen.getByLabelText("Wan 粗生成 Endpoint"), {
+      target: { value: "https://media.example/wan/generate" },
+    });
+    await fireEvent.input(screen.getByLabelText("Kling 精生成 Endpoint"), {
+      target: { value: "https://media.example/kling/generate" },
+    });
+    await fireEvent.click(screen.getByRole("button", { name: "保存可信配置" }));
+    await waitFor(() => expect(desktopApi.saveMediaGenerationRoutes).toHaveBeenCalledWith(
+      "https://media.example/wan/generate", "https://media.example/kling/generate",
+    ));
+  });
+
+  it("sends fine generation tier for Kling video", async () => {
+    vi.mocked(desktopApi.startMediaRun).mockResolvedValue({
+      schema: "desktop-media-run-result/v1", run_id: "media_run", status: "cancelled", result: null,
+    });
+    render(MediaStudio);
+    await fireEvent.input(screen.getByLabelText("图片提示词"), { target: { value: "镜头缓慢推近" } });
+    await fireEvent.input(screen.getByLabelText("图片 artifact reference"), {
+      target: { value: `artifact://sha256/${"a".repeat(64)}` },
+    });
+    await fireEvent.change(screen.getByLabelText("生成阶段"), { target: { value: "fine" } });
+    await fireEvent.click(screen.getByRole("button", { name: "生成视频" }));
+    await waitFor(() => expect(desktopApi.appendMediaGenerationRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ schema: "video-generation-request/v1", generation_tier: "fine" }),
+    ));
   });
 });
