@@ -5994,9 +5994,17 @@
   {
     "language": "Rust",
     "path": "crates/story-media/src/lib.rs",
+    "kind": "mod",
+    "name": "tool",
+    "line": 10,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/lib.rs",
     "kind": "type",
     "name": "ProviderFuture",
-    "line": 13,
+    "line": 15,
     "public": true
   },
   {
@@ -6004,7 +6012,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "ImageGenerationRequest",
-    "line": 18,
+    "line": 20,
     "public": true
   },
   {
@@ -6012,7 +6020,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "VideoGenerationRequest",
-    "line": 29,
+    "line": 31,
     "public": true
   },
   {
@@ -6020,7 +6028,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaRequest",
-    "line": 41,
+    "line": 43,
     "public": true
   },
   {
@@ -6028,7 +6036,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "GeneratedMedia",
-    "line": 47,
+    "line": 49,
     "public": true
   },
   {
@@ -6036,7 +6044,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "trait",
     "name": "MediaProvider",
-    "line": 56,
+    "line": 58,
     "public": true
   },
   {
@@ -6044,7 +6052,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 57,
+    "line": 59,
     "public": false
   },
   {
@@ -6052,7 +6060,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaGenerationResult",
-    "line": 61,
+    "line": 63,
     "public": true
   },
   {
@@ -6060,7 +6068,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaProviderError",
-    "line": 77,
+    "line": 79,
     "public": true
   },
   {
@@ -6068,7 +6076,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaExecutionError",
-    "line": 83,
+    "line": 85,
     "public": true
   },
   {
@@ -6076,7 +6084,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaExecutor",
-    "line": 96,
+    "line": 98,
     "public": true
   },
   {
@@ -6084,7 +6092,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "new",
-    "line": 102,
+    "line": 104,
     "public": true
   },
   {
@@ -6092,7 +6100,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "execute",
-    "line": 106,
+    "line": 108,
     "public": true
   },
   {
@@ -6100,7 +6108,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_request",
-    "line": 142,
+    "line": 144,
     "public": true
   },
   {
@@ -6108,7 +6116,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_output",
-    "line": 194,
+    "line": 196,
     "public": false
   },
   {
@@ -6116,7 +6124,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "identity",
-    "line": 205,
+    "line": 207,
     "public": true
   },
   {
@@ -6124,7 +6132,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_id",
-    "line": 212,
+    "line": 214,
     "public": false
   },
   {
@@ -6132,7 +6140,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_prefixed_id",
-    "line": 220,
+    "line": 222,
     "public": false
   },
   {
@@ -6140,7 +6148,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_artifact_ref",
-    "line": 229,
+    "line": 231,
     "public": false
   },
   {
@@ -6148,7 +6156,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 240,
+    "line": 242,
     "public": false
   },
   {
@@ -6156,7 +6164,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "FixtureProvider",
-    "line": 244,
+    "line": 246,
     "public": false
   },
   {
@@ -6164,7 +6172,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 247,
+    "line": 249,
     "public": false
   },
   {
@@ -6172,7 +6180,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "executor",
-    "line": 265,
+    "line": 267,
     "public": false
   },
   {
@@ -6180,7 +6188,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "image_and_video_execute_through_provider_and_immutable_store",
-    "line": 272,
+    "line": 274,
     "public": false
   },
   {
@@ -6188,7 +6196,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "unsafe_or_unproven_inputs_fail_before_provider_execution",
-    "line": 307,
+    "line": 309,
     "public": false
   },
   {
@@ -6196,7 +6204,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "video_rejects_a_well_formed_but_unretained_image_reference",
-    "line": 325,
+    "line": 327,
     "public": false
   },
   {
@@ -6365,6 +6373,110 @@
     "kind": "fn",
     "name": "duplicate_start_is_rejected_before_provider_execution",
     "line": 324,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "module",
+    "name": "tool",
+    "line": 1,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "const",
+    "name": "MAX_OUTPUT_BYTES",
+    "line": 6,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "enum",
+    "name": "MediaToolError",
+    "line": 9,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "struct",
+    "name": "MediaToolSpec",
+    "line": 27,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "validate",
+    "line": 34,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "struct",
+    "name": "MediaToolOutput",
+    "line": 49,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "run_tool",
+    "line": 55,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "validate_tool_path",
+    "line": 82,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "mod",
+    "name": "tests",
+    "line": 93,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "rejects_relative_and_embedded_nul_arguments",
+    "line": 97,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "executes_a_real_child_without_a_shell",
+    "line": 113,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "slow_fixture_child",
+    "line": 124,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool.rs",
+    "kind": "fn",
+    "name": "timeout_kills_and_reaps_the_child",
+    "line": 129,
     "public": false
   },
   {

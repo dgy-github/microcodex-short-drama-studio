@@ -412,3 +412,12 @@ interfaces:
     outputs: [media-gateway-task/v1, media-gateway-task-status/v1, validated media bytes]
     errors: [invalid route, unauthorized request, provider failure, invalid response, timeout]
     side_effects: [provider network request, bounded polling]
+  - id: IFACE-035
+    name: trusted media tool execution
+    kind: Rust crate API
+    location: crates/story-media/src/tool.rs
+    purpose: Execute pinned media binaries without a shell under bounded timeout and output limits.
+    inputs: [absolute executable path, argv list, timeout]
+    outputs: [bounded stdout and stderr]
+    errors: [relative path, invalid argument, start failure, timeout, non-zero exit, oversized output]
+    side_effects: [supervised child process, kill and reap on timeout or cancellation]

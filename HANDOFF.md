@@ -357,6 +357,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 - `story-video-agent` `0fd28ed`、`f1da043`、`b1fbba3`：补段计划类型化、文档同步、流水线 Schema 收紧；最近 7 项测试通过。
 - 两个独立 Agent 的 GitHub Actions 均已成功；主项目 `33295696978` 在查询时仍为 `in_progress`，且更新时间停滞，不能作为最新绿色证据。
 - 当前仍未完成：Wan/Kling 官方 API 的真实部署侧适配、Rust 实际裁剪/拼接/补段执行器、真实视频质量模型和 clean VM 验收。
+- 主项目后续新增 `story-media/src/tool.rs`：固定绝对路径、无 shell argv、输出上限、超时和 `kill_on_drop`；真实子进程成功/超时测试已通过。它是后续裁剪/拼接执行器的安全底座，不等于 FFmpeg 已打包或剪辑功能已完成。
 
 - 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。

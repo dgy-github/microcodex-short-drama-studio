@@ -7,8 +7,10 @@ use story_storage::media::{MediaArtifactStore, MediaKind, MediaStoreError};
 
 mod gateway;
 mod run;
+mod tool;
 pub use gateway::GatewayMediaProvider;
 pub use run::{MediaRunOutcome, MediaRunService};
+pub use tool::{run_tool, validate_tool_path, MediaToolError, MediaToolOutput, MediaToolSpec};
 
 pub type ProviderFuture<'a> =
     Pin<Box<dyn Future<Output = Result<GeneratedMedia, MediaProviderError>> + Send + 'a>>;
