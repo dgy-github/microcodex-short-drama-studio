@@ -11,6 +11,7 @@ from compute_evaluator_metrics import (
     measure_pair,
     observations,
     pooled_agreement,
+    report_is_current,
     result_files,
 )
 from run_stage0_probe import load_rubric
@@ -23,6 +24,18 @@ class ResultDiscoveryTests(unittest.TestCase):
         self.assertFalse(
             [p for p in result_files(DEFAULT_PAIR) if ".invalid-span." in p.name]
         )
+
+    def test_report_check_rejects_missing_malformed_and_stale_json(self) -> None:
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "evaluator-metrics.json"
+            expected = {"schema": "evaluator-metrics/v1", "value": 1}
+            self.assertFalse(report_is_current(expected, path))
+            path.write_text("not json", encoding="utf-8")
+            self.assertFalse(report_is_current(expected, path))
+            path.write_text(json.dumps({"schema": "evaluator-metrics/v1", "value": 0}), encoding="utf-8")
+            self.assertFalse(report_is_current(expected, path))
+            path.write_text(json.dumps(expected, indent=4), encoding="utf-8")
+            self.assertTrue(report_is_current(expected, path))
 
 
 class ObservationTests(unittest.TestCase):

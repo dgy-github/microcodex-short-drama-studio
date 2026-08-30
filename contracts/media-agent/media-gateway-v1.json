@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/media-gateway-v1.json",
+  "title": "Media gateway response v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "mime_type", "content_base64", "provider", "model", "cost_cny_fen", "pricing_catalog_id"],
+  "properties": {
+    "schema": {"const": "media-gateway-response/v1"},
+    "mime_type": {"enum": ["image/png", "image/jpeg", "image/webp", "video/mp4", "video/webm"]},
+    "content_base64": {"type": "string", "minLength": 1},
+    "provider": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "cost_cny_fen": {"type": "integer", "minimum": 0},
+    "pricing_catalog_id": {"type": "string", "minLength": 1}
+  }
+}

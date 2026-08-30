@@ -1,0 +1,19 @@
+{
+  "schema": "provider-pricing-catalog/v1",
+  "catalog_id": "replace-with-reviewed-provider-pricing-version",
+  "effective_at": "2026-01-01T00:00:00Z",
+  "entries": [
+    {
+      "provider": "deepseek",
+      "model": "replace-with-configured-generation-model",
+      "prompt_cny_fen_per_million_tokens": 0,
+      "completion_cny_fen_per_million_tokens": 0
+    },
+    {
+      "provider": "aliyun_bailian",
+      "model": "replace-with-configured-review-model",
+      "prompt_cny_fen_per_million_tokens": 0,
+      "completion_cny_fen_per_million_tokens": 0
+    }
+  ]
+}

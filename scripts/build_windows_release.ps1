@@ -202,6 +202,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
     npm run check
     if ($LASTEXITCODE -ne 0) { throw "Svelte check failed" }
+    cargo build --release --manifest-path src-tauri/Cargo.toml
+    if ($LASTEXITCODE -ne 0) { throw "Release Cargo build failed" }
+    $loaderCandidates = @(Get-ChildItem -LiteralPath "src-tauri\target\release\build" `
+        -Filter "WebView2Loader.dll" -File -Recurse |
+        Where-Object { $_.FullName -match "\\out\\x64\\WebView2Loader\.dll$" })
+    if ($loaderCandidates.Count -ne 1) {
+        throw "Expected exactly one x64 WebView2Loader.dll before bundling"
+    }
+    Copy-Item -LiteralPath $loaderCandidates[0].FullName `
+        -Destination "src-tauri\target\release\WebView2Loader.dll" -Force
     npm run tauri build
     if ($LASTEXITCODE -ne 0) { throw "Tauri build failed" }
 } finally {

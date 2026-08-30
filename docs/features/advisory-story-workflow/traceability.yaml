@@ -46,7 +46,7 @@ implementation:
     location: crates/story-provider/src/capability_host.rs
     owner: CAP-003
   - id: BE-108
-    location: sidecar/campaign_adapter/workflow.py
+    location: sidecar/campaign_adapter/workflow/runner.py
     owner: CAP-004
   - id: BE-109
     location: crates/story-runtime/examples/advisory_e2e.rs

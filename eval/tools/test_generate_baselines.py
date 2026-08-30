@@ -21,7 +21,7 @@ from generate_baselines import (
 CASES = Path(__file__).parents[1] / "cases" / "dev" / "cases.jsonl"
 
 
-def valid_package(case: dict) -> dict:
+def valid_episodes(case: dict) -> list[dict]:
     episodes = []
     count = case["constraints"]["episodes"]
     for index in range(1, count + 1):
@@ -45,6 +45,23 @@ def valid_package(case: dict) -> dict:
                 "beats": ["story-package/beat-1"],
             }
         )
+    return episodes
+
+
+def valid_scenes() -> list[dict]:
+    return [
+        {
+            "node_id": "scene-1", "episode_ref": "story-package/episode-1", "location": "室内",
+            "lines": [{"node_id": "dialogue-1", "kind": "dialogue", "speaker": "story-package/character-1", "text": "这件事先别急。", "subtext": "害怕真相曝光"}],
+        },
+        {
+            "node_id": "scene-2", "episode_ref": "story-package/episode-2", "location": "门外",
+            "lines": [{"node_id": "action-1", "kind": "action", "text": "甲把文件放在门口。"}],
+        },
+    ]
+
+
+def valid_package(case: dict) -> dict:
     return {
         "schema": "story-package/v1",
         "package_id": "model-value",
@@ -81,35 +98,8 @@ def valid_package(case: dict) -> dict:
                 "caused_by": [],
             }
         ],
-        "episodes": episodes,
-        "scenes": [
-            {
-                "node_id": "scene-1",
-                "episode_ref": "story-package/episode-1",
-                "location": "室内",
-                "lines": [
-                    {
-                        "node_id": "dialogue-1",
-                        "kind": "dialogue",
-                        "speaker": "story-package/character-1",
-                        "text": "这件事先别急。",
-                        "subtext": "害怕真相曝光",
-                    }
-                ],
-            },
-            {
-                "node_id": "scene-2",
-                "episode_ref": "story-package/episode-2",
-                "location": "门外",
-                "lines": [
-                    {
-                        "node_id": "action-1",
-                        "kind": "action",
-                        "text": "甲把文件放在门口。",
-                    }
-                ],
-            },
-        ],
+        "episodes": valid_episodes(case),
+        "scenes": valid_scenes(),
         "continuity_ledger": {
             "facts": [],
             "relationships": [],

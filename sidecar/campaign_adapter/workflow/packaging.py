@@ -9,6 +9,7 @@ from uuid import uuid4
 
 from .graph import REVIEW_TASKS, REVIEW_TYPES, TaskSpec
 
+
 def merge_usage(usages: Any) -> dict[str, Any]:
     merged: dict[str, int] = {}
     for usage in usages:
@@ -55,10 +56,26 @@ def canonical_package(
     episode_scenes: Any = None,
 ) -> dict[str, Any]:
     premise = text_value(job.get("input"), "一个具体的人必须在压力下作出选择。")
-    raw_characters = raw.get("characters")
+    characters = _canonical_characters(raw.get("characters"))
+    beats = _canonical_beats(raw.get("beats"), premise)
+    episode_count = int(job["format"]["episodes"])
+    episodes = _canonical_episodes(raw.get("episodes"), episode_count, beats, premise)
+    scenes = _canonical_scenes(
+        raw.get("scenes"), episode_scenes, episode_count, characters
+    )
+    promise = raw.get("promise")
+    promise = promise if isinstance(promise, dict) else {}
+    logline = raw.get("logline")
+    logline = logline if isinstance(logline, dict) else {}
+    return _assembled_package(
+        raw, job, premise, promise, logline, characters, beats, episodes, scenes
+    )
+
+
+def _canonical_characters(raw_characters: Any) -> list[dict[str, Any]]:
     if not isinstance(raw_characters, list) or not raw_characters:
         raw_characters = [{"name": "主角"}]
-    characters = []
+    characters: list[dict[str, Any]] = []
     for index, value in enumerate(raw_characters, 1):
         value = value if isinstance(value, dict) else {}
         characters.append(
@@ -74,10 +91,13 @@ def canonical_package(
             }
         )
 
-    raw_beats = raw.get("beats")
+    return characters
+
+
+def _canonical_beats(raw_beats: Any, premise: str) -> list[dict[str, Any]]:
     if not isinstance(raw_beats, list) or not raw_beats:
         raw_beats = [{"pressure": premise, "choice": "主角决定面对", "consequence": "关系发生变化"}]
-    beats = []
+    beats: list[dict[str, Any]] = []
     for index, value in enumerate(raw_beats, 1):
         value = value if isinstance(value, dict) else {}
         beats.append(
@@ -91,10 +111,17 @@ def canonical_package(
             }
         )
 
-    episode_count = int(job["format"]["episodes"])
-    raw_episodes = raw.get("episodes")
+    return beats
+
+
+def _canonical_episodes(
+    raw_episodes: Any,
+    episode_count: int,
+    beats: list[dict[str, Any]],
+    premise: str,
+) -> list[dict[str, Any]]:
     raw_episodes = raw_episodes if isinstance(raw_episodes, list) else []
-    episodes = []
+    episodes: list[dict[str, Any]] = []
     for index in range(1, episode_count + 1):
         value = raw_episodes[index - 1] if index <= len(raw_episodes) else {}
         value = value if isinstance(value, dict) else {}
@@ -121,12 +148,20 @@ def canonical_package(
             }
         )
 
-    raw_scenes = raw.get("scenes")
+    return episodes
+
+
+def _canonical_scenes(
+    raw_scenes: Any,
+    episode_scenes: Any,
+    episode_count: int,
+    characters: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
     raw_scenes = raw_scenes if isinstance(raw_scenes, list) else []
     fallback_scenes = episode_scenes if isinstance(episode_scenes, list) else []
     if len(raw_scenes) < episode_count and len(fallback_scenes) >= episode_count:
         raw_scenes = fallback_scenes
-    scenes = []
+    scenes: list[dict[str, Any]] = []
     for index in range(1, max(2, len(raw_scenes)) + 1):
         value = raw_scenes[index - 1] if index <= len(raw_scenes) else {}
         value = value if isinstance(value, dict) else {}
@@ -167,11 +202,21 @@ def canonical_package(
             }
         )
 
+    return scenes
+
+
+def _assembled_package(
+    raw: dict[str, Any],
+    job: dict[str, Any],
+    premise: str,
+    promise: dict[str, Any],
+    logline: dict[str, Any],
+    characters: list[dict[str, Any]],
+    beats: list[dict[str, Any]],
+    episodes: list[dict[str, Any]],
+    scenes: list[dict[str, Any]],
+) -> dict[str, Any]:
     locations = list(dict.fromkeys(scene["location"] for scene in scenes))
-    promise = raw.get("promise")
-    promise = promise if isinstance(promise, dict) else {}
-    logline = raw.get("logline")
-    logline = logline if isinstance(logline, dict) else {}
     return {
         "schema": "story-package/v1",
         "package_id": text_value(raw.get("package_id"), f"advisory_{job['job_id']}"),

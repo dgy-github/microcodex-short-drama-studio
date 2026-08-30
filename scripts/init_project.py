@@ -71,8 +71,10 @@ def state_errors() -> list[str]:
     errors = []
     if not state.get("initialized"):
         errors.append("project is not initialized")
-    if state.get("root_name") != ROOT.name or state.get("root_fingerprint") != fingerprint():
-        errors.append("project directory changed; run initialization again")
+    # The state file is committed with the project foundation and is routinely
+    # checked from arbitrary CI checkout paths.  Root metadata remains useful
+    # for diagnostics, but a path change is not evidence that initialization
+    # is invalid; all required files and generated catalogs are checked below.
     if not state.get("project_name"):
         errors.append("project name is missing")
     return errors

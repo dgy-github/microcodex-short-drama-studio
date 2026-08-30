@@ -18,8 +18,11 @@ SUFFIXES = {".py", ".rs", ".ts", ".tsx", ".js", ".svelte"}
 SKIP = {
     ".git",
     ".venv",
+    ".release-venv",
+    ".mimosa",
     ".workbuddy",
     ".zcode",
+    "story-sidecar",
     "node_modules",
     "target",
     "dist",
@@ -113,7 +116,11 @@ def _is_source(path: Path) -> bool:
 
 def discover() -> list[dict]:
     found = []
-    for path in sorted(ROOT.rglob("*")):
+    paths = sorted(
+        ROOT.rglob("*"),
+        key=lambda path: path.relative_to(ROOT).as_posix(),
+    )
+    for path in paths:
         if _is_source(path):
             found.extend(symbols(path))
     return found

@@ -26,7 +26,7 @@ implementation:
     location: crates/story-runtime/src/genre_packs.rs
     owner: CAP-002
   - id: BE-127
-    location: sidecar/campaign_adapter/workflow.py
+    location: sidecar/campaign_adapter/workflow/prompts.py
     owner: CAP-004
 tests:
   - id: TEST-315

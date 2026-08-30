@@ -186,7 +186,8 @@ fn default_audit_path() -> PathBuf {
 }
 
 fn credential_id(provider: &str, profile: &str) -> Result<ProviderCredentialId, CommandError> {
-    if !matches!(provider, "deepseek" | "aliyun_bailian") || profile != "default" {
+    if !matches!(provider, "deepseek" | "aliyun_bailian" | "media_gateway") || profile != "default"
+    {
         return Err(CommandError::invalid_provider());
     }
     ProviderCredentialId::new(provider, profile).map_err(|_| CommandError::invalid_provider())

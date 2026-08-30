@@ -37,6 +37,8 @@ class GenerateProjectMemoryTests(unittest.TestCase):
         excluded = [
             ".git/hidden.py",
             ".venv/hidden.py",
+            ".release-venv/hidden.py",
+            ".mimosa/hidden.py",
             "node_modules/hidden.ts",
             "target/hidden.rs",
             "dist/hidden.js",
@@ -46,6 +48,7 @@ class GenerateProjectMemoryTests(unittest.TestCase):
             "test-results/hidden.ts",
             ".workbuddy/hidden.py",
             ".zcode/hidden.py",
+            "apps/desktop/src-tauri/resources/story-sidecar/hidden.py",
             "docs/project-memory/generated.py",
             "tests/unit.py",
             "e2e/browser.ts",
@@ -88,6 +91,18 @@ class GenerateProjectMemoryTests(unittest.TestCase):
         self.assertTrue(by_name["public_function"]["public"])
         self.assertFalse(by_name["_private_function"]["public"])
         self.assertFalse(by_name["module"]["public"])
+
+    def test_discover_orders_paths_by_portable_posix_name(self) -> None:
+        self.write_source("src/api.ts")
+        self.write_source("src/Artifact.svelte")
+
+        paths = [
+            item["path"]
+            for item in generator.discover()
+            if item["kind"] == "module"
+        ]
+
+        self.assertEqual(["src/Artifact.svelte", "src/api.ts"], paths)
 
     def test_rust_symbols_keep_private_items_and_mark_pub_items_public(self) -> None:
         path = self.write_source(

@@ -1,14 +1,22 @@
 //! Trusted provider boundary. Concrete network clients arrive after protocol M0.
 
 mod capability_host;
+mod media_capability;
+mod media_gateway;
 mod openai_compatible;
+mod package_validation;
+mod pricing;
 
 pub use capability_host::{
     CapabilityHost, CapabilityHostConfig, CapabilityHostError, CapabilityToken,
 };
+pub use media_gateway::{
+    MediaGatewayClient, MediaGatewayError, MediaGatewayOutput, MediaGatewayRoute,
+};
 pub use openai_compatible::{
     OpenAiCompatibleProvider, ProviderOutput, ProviderRoute, ProviderRouteError,
 };
+pub use pricing::{PricingCatalog, PricingError, PricingQuote};
 
 use std::fmt;
 use zeroize::Zeroize;

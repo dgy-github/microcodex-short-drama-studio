@@ -2,6 +2,9 @@ mod artifacts;
 mod commands;
 mod credentials;
 mod evaluations;
+mod media_gateway_settings;
+mod media_projects;
+mod media_runtime;
 mod provider_settings;
 mod provider_soak;
 mod revisions;
@@ -10,6 +13,9 @@ mod run_controller;
 use artifacts::{default_artifact_root, ArtifactRepository};
 use credentials::CredentialService;
 use evaluations::{default_evaluation_root, EvaluationService};
+use media_gateway_settings::MediaGatewaySettingsService;
+use media_projects::DesktopMediaProjects;
+use media_runtime::DesktopMediaRuntime;
 use provider_settings::{default_provider_settings_root, ProviderSettingsService};
 use provider_soak::{default_provider_soak_root, ProviderSoakService};
 use revisions::RevisionService;
@@ -26,6 +32,9 @@ pub struct DesktopState {
     controller: DesktopRunController,
     evaluations: EvaluationService,
     revisions: RevisionService,
+    media_projects: DesktopMediaProjects,
+    media_gateway_settings: MediaGatewaySettingsService,
+    media_runtime: DesktopMediaRuntime,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -220,6 +229,36 @@ impl CommandError {
         )
     }
 
+    fn invalid_media_project() -> Self {
+        Self::new(
+            "invalid_media_project",
+            "媒体项目记录、版本关系或生成请求无效。",
+        )
+    }
+
+    fn media_project_unavailable() -> Self {
+        Self::new("media_project_unavailable", "本地媒体项目历史当前不可用。")
+    }
+
+    fn media_runtime_unavailable() -> Self {
+        Self::new(
+            "media_runtime_unavailable",
+            "媒体生成运行环境尚未配置或不可用。",
+        )
+    }
+    fn media_run_active() -> Self {
+        Self::new("media_run_active", "已有媒体生成任务正在运行。")
+    }
+    fn media_run_missing() -> Self {
+        Self::new("media_run_missing", "未找到可取消的媒体生成任务。")
+    }
+    fn media_run_failed() -> Self {
+        Self::new(
+            "media_run_failed",
+            "媒体生成任务失败；请检查网关、余额和返回格式。",
+        )
+    }
+
     const fn new(code: &'static str, message: &'static str) -> Self {
         Self { code, message }
     }
@@ -244,6 +283,13 @@ pub fn run() {
             .expect("provider settings configuration failed"),
         provider_soak: ProviderSoakService::new(default_provider_soak_root())
             .expect("provider soak storage configuration failed"),
+        media_projects: DesktopMediaProjects::open(artifact_root.join("media-projects"))
+            .expect("media project storage configuration failed"),
+        media_gateway_settings: MediaGatewaySettingsService::new(
+            default_provider_settings_root().join("media-gateway"),
+        )
+        .expect("media gateway settings configuration failed"),
+        media_runtime: DesktopMediaRuntime::new(artifact_root.join("media-runtime")),
         artifacts: ArtifactRepository::new(artifact_root),
         genre_packs,
         controller: DesktopRunController::new(repository_root),
@@ -268,6 +314,14 @@ pub fn run() {
             commands::start_story_run,
             commands::sync_story_run,
             commands::cancel_story_run,
+            commands::append_media_prompt_revision,
+            commands::append_media_generation_request,
+            commands::read_media_project_history,
+            commands::media_gateway_settings,
+            commands::save_media_gateway_settings,
+            commands::start_media_run,
+            commands::resume_media_run,
+            commands::cancel_media_run,
             commands::open_revision_workspace,
             commands::read_revision_span,
             commands::create_story_revision,

@@ -8,7 +8,7 @@
     ProviderSoakResult,
   } from "./types";
 
-  type Provider = CredentialStatus["provider"];
+  type Provider = Exclude<CredentialStatus["provider"], "media_gateway">;
   const labels: Record<Provider, { name: string; role: string }> = {
     deepseek: { name: "DeepSeek", role: "故事生成" },
     aliyun_bailian: { name: "阿里云百炼", role: "独立审查" },
@@ -59,6 +59,7 @@
       })),
     );
     for (const value of values) {
+      if (value.status.provider === "media_gateway") continue;
       statuses[value.status.provider] = value.status.configured;
       routes[value.route.provider] = value.route;
     }

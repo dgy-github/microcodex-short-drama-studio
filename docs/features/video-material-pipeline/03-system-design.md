@@ -33,7 +33,7 @@ flowchart LR
     UI["Svelte/Tauri UI"] --> CMD["Typed Rust command"]
     CMD --> RT["story-runtime"]
     RT --> RIGHTS["rights/provenance gate"]
-    RIGHTS --> MEDIA["planned story-media crate"]
+    RIGHTS --> MEDIA["story-media import/extraction extension (planned)"]
     MEDIA --> FF["FFmpeg / ffprobe sidecars"]
     MEDIA --> STORE["Rust storage owner"]
     RT --> PROVIDER["story-provider"]
@@ -43,7 +43,9 @@ flowchart LR
     PY["Campaign Python sidecar"] -. "typed capabilities only" .-> RT
 ```
 
-`story-media` owns media validation, process supervision, extraction algorithms
+The existing `story-media` crate owns trusted image/video generation validation,
+durable runs and immutable media retention. This deferred feature would extend
+that same owner with process supervision, extraction algorithms
 and derivation metadata. It does not own job orchestration, credentials or an
 independent database. The existing owners remain:
 

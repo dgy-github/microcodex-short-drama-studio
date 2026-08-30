@@ -20,6 +20,10 @@ import type {
   StoryJob,
   StoryJobPreview,
   WorkflowResult,
+  MediaGatewaySettings,
+  MediaProjectRecord,
+  ImagePromptRevision,
+  DesktopMediaRunResult,
 } from "./types";
 
 export const desktopApi = {
@@ -147,6 +151,26 @@ export const desktopApi = {
       raterId,
       dimensions,
     }),
+  mediaGatewaySettings: () =>
+    invoke<MediaGatewaySettings | null>("media_gateway_settings"),
+  saveMediaGatewaySettings: (endpoint: string) =>
+    invoke<MediaGatewaySettings>("save_media_gateway_settings", { endpoint }),
+  storeMediaGatewayCredential: (secret: string) =>
+    invoke<CredentialStatus>("store_provider_credential", {
+      provider: "media_gateway", profile: "default", secret,
+    }),
+  appendMediaPromptRevision: (revision: ImagePromptRevision) =>
+    invoke<MediaProjectRecord>("append_media_prompt_revision", { revision }),
+  appendMediaGenerationRequest: (request: Record<string, unknown>) =>
+    invoke<MediaProjectRecord>("append_media_generation_request", { request }),
+  readMediaProjectHistory: (projectId: string) =>
+    invoke<MediaProjectRecord[]>("read_media_project_history", { projectId }),
+  startMediaRun: (runId: string, request: Record<string, unknown>) =>
+    invoke<DesktopMediaRunResult>("start_media_run", { runId, request }),
+  resumeMediaRun: (runId: string, request: Record<string, unknown>) =>
+    invoke<DesktopMediaRunResult>("resume_media_run", { runId, request }),
+  cancelMediaRun: (runId: string) =>
+    invoke<void>("cancel_media_run", { runId }),
 };
 
 export function errorMessage(error: unknown): string {

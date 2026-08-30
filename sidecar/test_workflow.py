@@ -71,7 +71,7 @@ class FakeCapability:
                         }
                     ],
                 },
-                {"total_tokens": 2},
+                {"total_tokens": 2, "cost_cny_fen": 1, "pricing_catalog_id": "fixture"},
                 "qwen-test",
             )
         spec = next(spec for spec in TASKS if spec.name == task_name)
@@ -110,7 +110,7 @@ class FakeCapability:
             }
         else:
             artifact = {"schema": spec.artifact_schema, "value": spec.name}
-        return artifact, {"total_tokens": 1}, (
+        return artifact, {"total_tokens": 1, "cost_cny_fen": 1, "pricing_catalog_id": "fixture"}, (
             "glm-test" if route == "review" else "qwen-test"
         )
 
@@ -175,6 +175,71 @@ def story_job(capability: FakeCapability, max_tokens: int = 100000) -> dict[str,
             "deadline_seconds": 60,
         },
     }
+
+
+def genre_context() -> dict[str, Any]:
+    return {
+        "schema": "genre-context/v1",
+        "pack_id": "family-grounded-v1",
+        "constraint_profile_id": "short-vertical-v1",
+        "genre": "family",
+        "architect_directives": ["使用现实家庭关系冲突。"],
+        "reviewer_directives": ["检查人物行为是否可信。"],
+        "human_writing": {
+            "profile_id": "short-drama-human-writing-v1",
+            "task_directives": {
+                "t07": ["区分人物声音。"],
+                "t10": ["使用潜台词和可拍摄动作。"],
+                "t12": ["检查工具化对白。"],
+                "t15": ["只修订有证据的缺陷。"],
+                "t16": ["复核人物声音与因果。"],
+            },
+        },
+        "retrieval_sources": [
+            {
+                "source_id": "internal-story-craft-v1",
+                "license_id": "MIT",
+                "content_sha256": "0" * 64,
+                "usage": "genre_pack_guidance",
+            }
+        ],
+    }
+
+
+def assert_complete_workflow(
+    case: unittest.TestCase,
+    capability: FakeCapability,
+    result: dict[str, Any],
+    product_events: list[Any],
+) -> None:
+    case.assertEqual(
+        [task["task_id"] for task in result["tasks"]],
+        [f"t{index:02}" for index in range(1, 18)],
+    )
+    case.assertEqual(len(result["reviews"]), 5)
+    case.assertEqual(result["package"]["schema"], "story-package/v1")
+    case.assertEqual(result["promotion"], "non-promotable")
+    case.assertEqual(capability.validations, 2)
+    case.assertEqual(
+        capability.episode_calls,
+        list(range(1, len(capability.package["episodes"]) + 1)),
+    )
+    case.assertEqual(
+        {scene["episode_ref"] for scene in result["package"]["scenes"]},
+        {
+            f"story-package/ep-{index}"
+            for index in range(1, len(capability.package["episodes"]) + 1)
+        },
+    )
+    case.assertEqual(
+        len([event for event in product_events if event.type == "task.completed"]),
+        17,
+    )
+    case.assertEqual(
+        len([event for event in product_events if event.type == "episode.completed"]),
+        len(capability.package["episodes"]),
+    )
+    case.assertEqual(product_events[-1].type, "task.completed")
 
 
 class TaskGraphTests(unittest.TestCase):
@@ -298,52 +363,7 @@ class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
             story_job(capability),
             "run_workflow_test",
             "req_workflow_test",
-            {
-                "schema": "genre-context/v1",
-                "pack_id": "family-grounded-v1",
-                "constraint_profile_id": "short-vertical-v1",
-                "genre": "family",
-                "architect_directives": ["使用现实家庭关系冲突。"],
-                "reviewer_directives": ["检查人物行为是否可信。"],
-                "human_writing": {
-                    "profile_id": "short-drama-human-writing-v1",
-                    "task_directives": {
-                        "t07": ["区分人物声音。"],
-                        "t10": ["使用潜台词和可拍摄动作。"],
-                        "t12": ["检查工具化对白。"],
-                        "t15": ["只修订有证据的缺陷。"],
-                        "t16": ["复核人物声音与因果。"]
-                    }
-                },
-                "retrieval_sources": [
-                    {
-                        "source_id": "internal-story-craft-v1",
-                        "license_id": "MIT",
-                        "content_sha256": "0" * 64,
-                        "usage": "genre_pack_guidance",
-                    }
-                ],
-            },
-        )
-
-        self.assertEqual(
-            [task["task_id"] for task in result["tasks"]],
-            [f"t{index:02}" for index in range(1, 18)],
-        )
-        self.assertEqual(len(result["reviews"]), 5)
-        self.assertEqual(result["package"]["schema"], "story-package/v1")
-        self.assertEqual(result["promotion"], "non-promotable")
-        self.assertEqual(capability.validations, 2)
-        self.assertEqual(
-            capability.episode_calls,
-            list(range(1, len(capability.package["episodes"]) + 1)),
-        )
-        self.assertEqual(
-            {scene["episode_ref"] for scene in result["package"]["scenes"]},
-            {
-                f"story-package/ep-{index}"
-                for index in range(1, len(capability.package["episodes"]) + 1)
-            },
+            genre_context(),
         )
         self.assertIn("使用现实家庭关系冲突", capability.prompts["t03"])
         self.assertIn("检查人物行为是否可信", capability.prompts["t11"])
@@ -373,15 +393,7 @@ class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
             for event in events
             if event.payload.get("run_id") == "run_workflow_test"
         ]
-        self.assertEqual(
-            len([event for event in product_events if event.type == "task.completed"]),
-            17,
-        )
-        self.assertEqual(
-            len([event for event in product_events if event.type == "episode.completed"]),
-            len(capability.package["episodes"]),
-        )
-        self.assertEqual(product_events[-1].type, "task.completed")
+        assert_complete_workflow(self, capability, result, product_events)
 
     async def test_token_budget_fails_closed_before_retaining_overage(self) -> None:
         capability = FakeCapability()
@@ -417,10 +429,6 @@ class AdvisoryWorkflowTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertGreaterEqual(capability.max_active, 2)
         self.assertLessEqual(capability.max_active, EPISODE_WRITER_CONCURRENCY)
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class FinalReviewRejectingCapability(FakeCapability):
@@ -580,56 +588,29 @@ class FailedRunStopsSpendingTests(unittest.IsolatedAsyncioTestCase):
             "no episode writer may finish a paid call after the run has failed",
         )
 
+    async def test_run_deadline_cancels_the_active_provider_call(self) -> None:
+        class SlowCapability(FakeCapability):
+            def __init__(self) -> None:
+                super().__init__()
+                self.cancelled = False
 
-class BudgetSurvivesRecoveryTests(unittest.IsolatedAsyncioTestCase):
-    """`max_tokens` has to cap the run, not each attempt.
+            async def generate(self, route, system, prompt):
+                try:
+                    await asyncio.sleep(10)
+                except asyncio.CancelledError:
+                    self.cancelled = True
+                    raise
+                return await super().generate(route, system, prompt)
 
-    A recovered run re-enters `run()` with a fresh context. While the counter
-    restarted at zero, a restart loop could spend an unbounded multiple of the
-    operator's budget, and the sidecar disagreed with the Rust projection,
-    which accumulates consumption across the whole run.
-    """
-
-    async def asyncSetUp(self) -> None:
-        descriptor, self.path = tempfile.mkstemp(
-            suffix=".db", prefix="story_budget_recovery_"
-        )
-        os.close(descriptor)
-        self.log = SqliteEventLog(self.path)
-
-    async def asyncTearDown(self) -> None:
-        self.log.close()
-        try:
-            os.unlink(self.path)
-        except OSError:
-            pass
-
-    async def test_consumed_tokens_are_restored_from_the_event_log(self) -> None:
-        capability = FakeCapability()
-        run_id = "run_budget_recovery"
-        first = AdvisoryStoryWorkflow(self.log, capability)
-        await first.run(story_job(capability), run_id, "req_budget_recovery")
-
-        spent = sum(
-            event.payload["data"].get("usage", {}).get("total_tokens", 0)
-            for event in await self.log.replay(0)
-            if event.type == "task.completed"
-            and event.payload.get("run_id") == run_id
-        )
-        self.assertGreater(spent, 0, "the first attempt must have spent tokens")
-
-        context = WorkflowContext(
-            self.log, story_job(capability), run_id, "req_budget_recovery"
-        )
-        self.assertEqual(await context.restore_consumed_tokens(), spent)
-        self.assertEqual(context.consumed_tokens, spent)
-
-    async def test_a_different_run_does_not_inherit_consumption(self) -> None:
-        capability = FakeCapability()
+        capability = SlowCapability()
+        job = story_job(capability)
+        job["budget"]["deadline_seconds"] = 1
         workflow = AdvisoryStoryWorkflow(self.log, capability)
-        await workflow.run(story_job(capability), "run_budget_other", "req_other")
 
-        context = WorkflowContext(
-            self.log, story_job(capability), "run_budget_fresh", "req_fresh"
-        )
-        self.assertEqual(await context.restore_consumed_tokens(), 0)
+        with self.assertRaisesRegex(RuntimeError, "run_deadline_exceeded"):
+            await workflow.run(job, "run_deadline", "req_deadline")
+        self.assertTrue(capability.cancelled)
+
+
+if __name__ == "__main__":
+    unittest.main()

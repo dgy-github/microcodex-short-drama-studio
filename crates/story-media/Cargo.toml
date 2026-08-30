@@ -1,0 +1,19 @@
+[package]
+name = "story-media"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+story-storage = { path = "../story-storage" }
+story-provider = { path = "../story-provider" }
+thiserror.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+jsonschema.workspace = true
+tempfile = "3"
+tokio.workspace = true

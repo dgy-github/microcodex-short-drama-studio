@@ -51,7 +51,7 @@ implementation:
     location: crates/story-storage/src/operations.rs
     owner: CAP-010
   - id: SIDECAR-118
-    location: sidecar/campaign_adapter/workflow.py
+    location: sidecar/campaign_adapter/workflow/context.py
     owner: CAP-004
   - id: RUNTIME-119
     location: crates/story-runtime/src/diagnostics.rs

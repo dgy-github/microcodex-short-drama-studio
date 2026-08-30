@@ -3510,6 +3510,7 @@ dependencies = [
  "sha2",
  "story-core",
  "story-eval",
+ "story-media",
  "story-provider",
  "story-runtime",
  "story-storage",
@@ -3530,15 +3531,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "story-media"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "story-provider",
+ "story-storage",
+ "thiserror 2.0.19",
+ "tokio",
+]
+
+[[package]]
 name = "story-provider"
 version = "0.1.0-alpha.1"
 dependencies = [
  "axum",
+ "base64 0.22.1",
  "jsonschema",
  "keyring",
  "reqwest",
  "serde",
  "serde_json",
+ "story-storage",
  "thiserror 2.0.19",
  "tokio",
  "zeroize",

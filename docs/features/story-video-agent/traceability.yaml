@@ -1,0 +1,77 @@
+feature: story-video-agent
+requirements:
+  - id: REQ-411
+    interfaces: [API-202]
+    implementation: [BE-202, BE-204, FE-211]
+    tests: [TEST-411, TEST-413, TEST-419]
+  - id: REQ-412
+    interfaces: [API-202, API-203]
+    implementation: [BE-202]
+    tests: [TEST-411]
+  - id: REQ-413
+    interfaces: [API-202]
+    implementation: [BE-202]
+    tests: [TEST-412]
+interfaces:
+  - id: API-202
+    location: contracts/media-agent/video-generation-request-v1.json
+    status: REVIEWED
+    purpose: bind an immutable image and story spans to one video request
+  - id: API-203
+    location: contracts/media-agent/task-event-v1.json
+    status: REVIEWED
+    purpose: reuse one media task event envelope across image and video projects
+  - id: API-205
+    location: contracts/media-agent/media-gateway-v1.json
+    status: BACKEND_IMPLEMENTED
+    purpose: provider-neutral authenticated media gateway response contract
+implementation:
+  - id: BE-202
+    location: projects/story-video-agent/story_video_agent/workflow.py
+    owner: CAP-014
+  - id: BE-204
+    location: crates/story-media/src/run.rs
+    owner: CAP-015
+  - id: BE-207
+    location: apps/desktop/src-tauri/src/media_projects.rs
+    owner: CAP-016
+  - id: BE-208
+    location: crates/story-media/src/gateway.rs
+    owner: CAP-015
+  - id: BE-209
+    location: apps/desktop/src-tauri/src/media_gateway_settings.rs
+    owner: CAP-015
+  - id: BE-210
+    location: apps/desktop/src-tauri/src/media_runtime.rs
+    owner: CAP-015
+  - id: FE-211
+    location: apps/desktop/src/lib/MediaStudio.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-411
+    location: projects/story-video-agent/tests/test_workflow.py
+    proves: request retains immutable image, story spans and shot prompt
+  - id: TEST-412
+    location: projects/story-video-agent/tests/test_workflow.py
+    proves: local paths and missing story provenance fail closed
+  - id: TEST-413
+    location: crates/story-media/src/lib.rs
+    proves: video requires a retained image from the same project before provider execution
+  - id: TEST-414
+    location: apps/desktop/src-tauri/src/media_projects.rs
+    proves: desktop rejects untyped requests and persists typed video requests through trusted Rust storage
+  - id: TEST-415
+    location: crates/story-provider/src/media_gateway.rs
+    proves: gateway response metadata and binary payload are validated before media retention
+  - id: TEST-416
+    location: apps/desktop/src-tauri/src/media_gateway_settings.rs
+    proves: gateway endpoint configuration remains separate from Windows-managed credentials
+  - id: TEST-417
+    location: apps/desktop/src-tauri/src/media_runtime.rs
+    proves: desktop media execution uses durable MediaRunService and rejects requests absent from trusted history
+  - id: TEST-418
+    location: crates/story-media/src/gateway.rs
+    proves: image and video requests are sent as contract objects rather than enum wrappers
+  - id: TEST-419
+    location: apps/desktop/src/lib/MediaStudio.test.ts
+    proves: desktop media workspace keeps generation requests in trusted append-only history before execution

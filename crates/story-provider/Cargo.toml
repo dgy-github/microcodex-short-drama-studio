@@ -6,6 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 
 [dependencies]
+story-storage = { path = "../story-storage" }
 thiserror.workspace = true
 zeroize.workspace = true
 serde.workspace = true
@@ -14,6 +15,10 @@ tokio.workspace = true
 reqwest.workspace = true
 axum.workspace = true
 jsonschema.workspace = true
+base64.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 keyring = { version = "3.6.3", default-features = false, features = ["windows-native"] }
+
+[dev-dependencies]
+tempfile = "3"

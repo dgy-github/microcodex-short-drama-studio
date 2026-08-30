@@ -18,7 +18,7 @@ export const config = {
   }],
   services: [["tauri", {
     appBinaryPath,
-    driverProvider: "official",
+    driverProvider: "external",
     autoInstallTauriDriver: true,
   }]],
   logLevel: "info",

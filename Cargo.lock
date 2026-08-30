@@ -1393,6 +1393,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "story-media"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "jsonschema",
+ "serde",
+ "serde_json",
+ "story-provider",
+ "story-storage",
+ "tempfile",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "story-policy"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -1404,11 +1418,14 @@ name = "story-provider"
 version = "0.1.0-alpha.1"
 dependencies = [
  "axum",
+ "base64",
  "jsonschema",
  "keyring",
  "reqwest",
  "serde",
  "serde_json",
+ "story-storage",
+ "tempfile",
  "thiserror",
  "tokio",
  "zeroize",

@@ -31,7 +31,7 @@ interfaces:
     purpose: existing immutable workflow-result read
 implementation:
   - id: BE-122
-    location: sidecar/campaign_adapter/workflow.py
+    location: sidecar/campaign_adapter/workflow/agents.py
     owner: CAP-004
   - id: FE-109
     location: apps/desktop/src/lib/ArtifactBrowser.svelte

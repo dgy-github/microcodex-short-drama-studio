@@ -6,14 +6,46 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUFFIXES = {".py", ".rs", ".ts", ".tsx", ".js", ".svelte"}
+IGNORED_PARTS = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    ".release-venv",
+    ".mimosa",
+    ".workbuddy",
+    ".zcode",
+    "story-sidecar",
+}
+
+
+def source_files() -> list[str]:
+    """Return repository source files, excluding generated and dependency trees."""
+    files = []
+    for path in ROOT.rglob("*"):
+        parts = path.relative_to(ROOT).parts
+        if path.is_file() and path.suffix in SUFFIXES and not any(
+            part in IGNORED_PARTS or part.startswith("target") for part in parts
+        ):
+            files.append(path.relative_to(ROOT).as_posix())
+    return sorted(files)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--files", nargs="*", default=[])
+    parser.add_argument(
+        "--files",
+        nargs="*",
+        default=[],
+        help="specific repository-relative files",
+    )
+    parser.add_argument("--all", action="store_true", help="scan all repository source files")
     args = parser.parse_args()
+    if args.all and args.files:
+        parser.error("--all and --files cannot be used together")
+    names = source_files() if args.all else args.files
     errors = []
-    for name in args.files:
+    for name in names:
         path = ROOT / name
         if not path.exists() or path.suffix not in SUFFIXES:
             continue
@@ -31,7 +63,7 @@ def main() -> int:
     if errors:
         print("\n".join(errors))
         return 1
-    print(f"Structure check passed for {len(args.files)} requested files")
+    print(f"Structure check passed for {len(names)} requested files")
     return 0
 
 

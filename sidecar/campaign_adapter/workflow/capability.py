@@ -15,6 +15,18 @@ class Capability(Protocol):
         self, route: str, system: str, prompt: str
     ) -> tuple[dict[str, Any], dict[str, Any], str]: ...
 
+    async def retain_artifact(
+        self,
+        run_id: str,
+        task_id: str,
+        artifact_schema: str,
+        artifact: dict[str, Any],
+    ) -> dict[str, Any]: ...
+
+    async def load_artifact(
+        self, content_ref: str, content_sha256: str
+    ) -> dict[str, Any]: ...
+
     async def validate_package(
         self, package: dict[str, Any], expected_episodes: int
     ) -> dict[str, Any]: ...
@@ -75,6 +87,52 @@ class RustCapabilityClient:
         if not isinstance(artifact, dict):
             raise RuntimeError("structured generation did not return an object")
         return artifact, result.get("usage", {}), str(result.get("model", "unknown"))
+
+    async def retain_artifact(
+        self,
+        run_id: str,
+        task_id: str,
+        artifact_schema: str,
+        artifact: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Persist an artifact through the trusted Rust store (CAP-006).
+
+        Returns {content_ref, content_sha256}; durable state must never be
+        dropped, so a failed retention is a run failure, not a warning.
+        """
+        result = await self._call(
+            {
+                "schema": CAPABILITY_PROTOCOL,
+                "capability": "retain_artifact",
+                "request_id": f"cap_{uuid4().hex}",
+                "run_id": run_id,
+                "task_id": task_id,
+                "artifact_schema": artifact_schema,
+                "artifact": artifact,
+            }
+        )
+        content_ref = result.get("content_ref")
+        content_sha256 = result.get("content_sha256")
+        if not isinstance(content_ref, str) or not isinstance(content_sha256, str):
+            raise RuntimeError("artifact retention returned an invalid reference")
+        return {"content_ref": content_ref, "content_sha256": content_sha256}
+
+    async def load_artifact(
+        self, content_ref: str, content_sha256: str
+    ) -> dict[str, Any]:
+        result = await self._call(
+            {
+                "schema": CAPABILITY_PROTOCOL,
+                "capability": "load_artifact",
+                "request_id": f"cap_{uuid4().hex}",
+                "content_ref": content_ref,
+                "content_sha256": content_sha256,
+            }
+        )
+        artifact = result.get("artifact")
+        if not isinstance(artifact, dict):
+            raise RuntimeError("artifact loading returned an invalid object")
+        return artifact
 
     async def validate_package(
         self, package: dict[str, Any], expected_episodes: int

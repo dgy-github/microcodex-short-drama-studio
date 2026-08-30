@@ -712,7 +712,11 @@ Part of planning is refusing work that is not worth its cost now.
 
 ---
 
-## Measured status of P10-P18 — verified 2026-07-29
+## Historical measured status of P10-P18 — verified 2026-07-29
+
+> Historical snapshot only. It predates the 2026-08 media-agent work; current
+> ownership and interfaces live in `docs/project-memory/PROJECT_REGISTRY.yaml`
+> and feature traceability files.
 
 Moved here from `HANDOFF.md`. Phase status belongs to the roadmap; the
 handoff should carry only what the next session must act on. Every figure
@@ -731,7 +735,7 @@ sidecar 内嵌、first-run 配置页、许可证清单 fail-closed、evidence �
 | P13 交付格式 | 可拍的剧本格式 | 无 |
 | P14 科普形态 | 第二种 content form | `genre-template-v1.json` 的 `content_form` 枚举**只有 `scripted_short_drama` 一个值** |
 | P15 真人形态 | 第三种 | 同上 |
-| P16 视频范围决策 | 一份决策记录 | 无；`story-media` crate 不存在（**符合设计，不是缺口**） |
+| P16 视频范围决策 | 一份决策记录 | 当时无；`story-media` crate 当时尚未创建。当前已有 provider-neutral image/video execution seam，但素材导入/FFmpeg 管线仍 deferred。 |
 
 P12 那行需要单独注意：**8 个 genre pack 全部 `skills: []`**，意味着 pack 目前只
 绑硬约束与检索集合，**技能层是空的**——而技能正是系统自我改进的载体。

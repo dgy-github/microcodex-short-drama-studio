@@ -32,6 +32,10 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .venv/
+/.release-venv/
+/.mimosa/
+**/.release-venv/
+**/.mimosa/
 
 # Test coverage and generated test output
 coverage/

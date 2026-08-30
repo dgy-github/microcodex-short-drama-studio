@@ -220,6 +220,37 @@ class ServerContractTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("run.recovered", [event["event_type"] for event in events])
         self.assertEqual(events[-1]["event_type"], "run.completed")
 
+    async def test_terminal_run_is_not_recovered_after_service_restart(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            event_log = SqliteEventLog(f"{directory}/events.db")
+            first = RunService(event_log)
+            started = await first.start_run(start_command(), IDEMPOTENCY_KEY)
+            run_id = started.acceptance["run_id"]
+            await event_log.append(
+                "run.failed",
+                "story-runtime",
+                {
+                    "job_id": start_command()["job"]["job_id"],
+                    "run_id": run_id,
+                    "causation_id": "request-terminal",
+                    "correlation_id": "request-terminal",
+                    "task_id": None,
+                    "agent_id": None,
+                    "data": {"error": "fixture terminal state"},
+                },
+            )
+            workflow = CapturingWorkflow()
+            recovered_service = RunService(event_log, workflow)
+            try:
+                recovered = await recovered_service.recover_incomplete()
+                await asyncio.sleep(0.05)
+            finally:
+                await recovered_service.close()
+                event_log.close()
+
+        self.assertEqual(recovered, 0)
+        self.assertFalse(workflow.completed.is_set())
+
     async def test_idempotency_key_cannot_change_input(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             event_log = SqliteEventLog(f"{directory}/events.db")

@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { desktopApi, errorMessage } from "./api";
+  import BlindReviewPanel from "./BlindReviewPanel.svelte";
+  import EvaluationCaseDetail from "./EvaluationCaseDetail.svelte";
   import type {
     BlindAssignment,
     EvaluationBatchResult,
@@ -174,68 +176,9 @@
 <svelte:window onkeydown={handleGlobalKeydown} />
 
 {#if activeAssignment}
-  <section class="panel evaluation-panel">
-    <div class="panel-heading">
-      <div>
-        <span class="eyebrow">BLIND HUMAN REVIEW · {assignmentIndex + 1}/{assignments.length}</span>
-        <h2>{activeAssignment.alias}</h2>
-      </div>
-      <button class="ghost" onclick={leaveBlind} disabled={busy}>退出盲测</button>
-    </div>
-
-    <div class="blind-context">
-      <div><small>故事前提</small><p>{activeAssignment.prompt}</p></div>
-      <details>
-        <summary>查看盲化故事包</summary>
-        <pre>{JSON.stringify(activeAssignment.artifact, null, 2)}</pre>
-      </details>
-    </div>
-
-    <div class="score-grid">
-      {#each activeAssignment.dimensions as dimension, index}
-        <article class="score-card">
-          <div class="score-title">
-            <div><strong>{dimension.name}</strong><small>{dimension.dimension_id}</small></div>
-            <select
-              aria-label={`${dimension.name}分数`}
-              value={scores[index]?.score ?? 3}
-              onchange={(event) => updateScore(index, "score", event.currentTarget.value)}
-            >
-              {#each [1, 2, 3, 4, 5] as value}<option {value}>{value} 分</option>{/each}
-            </select>
-          </div>
-          <p>{dimension.ask}</p>
-          <div class="score-anchors">
-            <span><b>1</b>{dimension.anchors["1"]}</span>
-            <span><b>3</b>{dimension.anchors["3"]}</span>
-            <span><b>5</b>{dimension.anchors["5"]}</span>
-          </div>
-          <textarea
-            rows="2"
-            placeholder="评分理由（必填）"
-            value={scores[index]?.reason ?? ""}
-            oninput={(event) => updateScore(index, "reason", event.currentTarget.value)}
-          ></textarea>
-          <select
-            aria-label={`${dimension.name}证据位置`}
-            value={scores[index]?.span_refs[0] ?? ""}
-            onchange={(event) => updateScore(index, "span", event.currentTarget.value)}
-          >
-            {#each activeAssignment.allowed_spans as span}<option value={span}>{span}</option>{/each}
-          </select>
-        </article>
-      {/each}
-    </div>
-    <div class="action-row">
-      <button
-        class="primary"
-        onclick={submitBlind}
-        disabled={busy || scores.some((item) => !item.reason.trim() || !item.span_refs[0])}
-      >提交本份盲测</button>
-      <span class="shield">不展示 split、生成模型、历史分数和缺陷键</span>
-      {#if error}<span class="error">{error}</span>{/if}
-    </div>
-  </section>
+  <BlindReviewPanel assignment={activeAssignment} {assignmentIndex}
+    assignmentCount={assignments.length} {scores} {busy} {error}
+    onleave={leaveBlind} onupdate={updateScore} onsubmit={submitBlind} />
 {:else}
   <section class="panel evaluation-panel">
     <div class="panel-heading">
@@ -352,42 +295,6 @@
 {/if}
 
 {#if detailCase}
-  <div
-    class="case-detail-backdrop"
-    role="presentation"
-    onclick={(event) => {
-      if (event.target === event.currentTarget) closeCaseDetail();
-    }}
-  >
-    <div
-      class="case-detail-dialog"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="case-detail-title"
-    >
-      <div class="case-detail-heading">
-        <div>
-          <span class="eyebrow">EVALUATION CASE DETAIL</span>
-          <h3 id="case-detail-title">{detailCase.case_id}</h3>
-        </div>
-        <button class="ghost" type="button" onclick={closeCaseDetail} aria-label="关闭用例详情">
-          关闭
-        </button>
-      </div>
-      <p class="case-detail-copy">{detailCase.label}</p>
-      <dl class="case-detail-grid">
-        <div><dt>数据集</dt><dd>{activeDataset?.label ?? datasetId}</dd></div>
-        <div><dt>题材</dt><dd>{detailCase.genre}</dd></div>
-        <div><dt>难度</dt><dd>{detailCase.difficulty ?? "真实运行"}</dd></div>
-        <div><dt>数据分区</dt><dd>{detailCase.split ?? "online"}</dd></div>
-        <div>
-          <dt>运行状态</dt>
-          <dd class:ready={detailCase.eligible}>
-            {detailCase.eligible ? "READY · 可运行" : "NO ARTIFACT · 暂不可运行"}
-          </dd>
-        </div>
-      </dl>
-      <p class="case-detail-footnote">按 Esc 或点击遮罩区域关闭。</p>
-    </div>
-  </div>
+  <EvaluationCaseDetail item={detailCase} datasetLabel={activeDataset?.label ?? datasetId}
+    onclose={closeCaseDetail} />
 {/if}

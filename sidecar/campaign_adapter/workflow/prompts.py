@@ -36,7 +36,7 @@ def build_prompt(spec: TaskSpec, context: WorkflowContext) -> str:
         "t03": "提出独立方案A，强调最强情感关系。字段：schema, title, logline, causal_engine, characters, episode_arc, lived_details, risks。",
         "t04": "提出独立方案B，强调情节发动机和每集钩子。字段同 story-architecture/v1。",
         "t05": "提出独立方案C，强调具体生活质感和反套路选择。字段同 story-architecture/v1。",
-        "t06": "比较三个方案，记录 selected, combined_components, rejected 与 reasons；输出 architecture-decision/v1。",
+        "t06": "比较三个方案，记录 selected, combined_components, rejected 与 reasons，并给出 candidate_order 数组（三个候选的完整排序，从最优到最差，元素用方案标识）；输出 architecture-decision/v1。",
         "t07": "形成具体人物圣经；输出 character-bible/v1，characters 每项含 name/desire/fear/contradiction/secret/change/voice_markers。",
         "t08": "形成因果节拍链；输出 story-beats/v1，beats 每项含 pressure/choice/consequence/caused_by。",
         "t09": f"规划恰好 {job['format']['episodes']} 集；输出 episode-plan/v1，每集含 opening_state/conflict/turn/end_hook。",

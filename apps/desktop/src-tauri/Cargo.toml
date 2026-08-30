@@ -22,6 +22,7 @@ serde_yaml = "0.9"
 sha2 = "0.10"
 story-core = { path = "../../../crates/story-core" }
 story-eval = { path = "../../../crates/story-eval" }
+story-media = { path = "../../../crates/story-media" }
 story-provider = { path = "../../../crates/story-provider" }
 story-runtime = { path = "../../../crates/story-runtime" }
 story-storage = { path = "../../../crates/story-storage" }

@@ -49,6 +49,22 @@ from probe_metrics import (
     spans_for,
     specificity_metrics,
 )
+from probe_parsing import parse_content
+from probe_judging import (
+    normalize_owned_field_spans,
+    normalize_span_list,
+    request_validated,
+    validate_judgment,
+)
+from probe_transport import (
+    build_user_prompt,
+    load,
+    request,
+    request_codex,
+    urlopen_with_retry,
+    valid_line_spans,
+    write_compatible_model_catalog,
+)
 
 ROOT = Path(__file__).parents[2]
 STAGE0 = ROOT / "eval" / "adversarial" / "stage0"
@@ -72,11 +88,6 @@ SYSTEM_FOOTER = """只输出 JSON，结构为：
 两个产物都必须包含全部维度。"""
 
 
-def load(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict):
-        raise ValueError(f"{path}: expected object")
-    return value
 
 
 def atomic_write(path: Path, value: dict[str, Any]) -> None:
@@ -139,47 +150,6 @@ def load_probe_config() -> dict[str, Any]:
     return config
 
 
-def urlopen_with_retry(
-    request: urllib.request.Request,
-    timeout: int,
-    attempts: int = 4,
-) -> bytes:
-    """Retry transient transport and throttling failures on one fixed route.
-
-    Reads the body inside the loop too: a slow judge that sends headers and
-    then stalls times out during read(), which is just as transient.
-    """
-    for attempt in range(1, attempts + 1):
-        try:
-            return https_exchange(
-                request.full_url,
-                request.get_method(),
-                {name: value for name, value in request.header_items()},
-                request.data,
-                timeout,
-            )
-        except urllib.error.HTTPError as error:
-            retryable = error.code == 429 or 500 <= error.code < 600
-            if not retryable or attempt == attempts:
-                raise
-            retry_after = error.headers.get("Retry-After")
-            delay = min(float(retry_after), 60.0) if retry_after else 2 ** attempt
-            error.read()
-            print(f"RETRY HTTP {error.code}: waiting {delay:g}s", file=sys.stderr)
-            time.sleep(delay)
-        except (
-            urllib.error.URLError,
-            TimeoutError,
-            http.client.RemoteDisconnected,
-            ConnectionResetError,
-            ConnectionAbortedError,
-        ) as error:
-            if attempt == attempts:
-                raise
-            delay = 2 ** attempt
-            print(f"RETRY {type(error).__name__}: waiting {delay}s", file=sys.stderr)
-            time.sleep(delay)
-    raise AssertionError("unreachable")
 
 
 def load_rubric() -> list[dict[str, Any]]:
@@ -199,32 +169,6 @@ def build_system(dimensions: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def valid_line_spans(artifact: dict[str, Any]) -> set[str]:
-    """Return every addressable story-package node.
-
-    The historical name is retained for callers, but STORY_EVAL_V1 permits
-    evidence on any real node_path, not only scene lines.
-    """
-    spans = {
-        f"story-package/{artifact['logline']['node_id']}",
-        f"story-package/{artifact['promise']['node_id']}",
-    }
-    for collection in ("characters", "beats", "episodes", "scenes"):
-        for node in artifact[collection]:
-            parent = f"story-package/{node['node_id']}"
-            spans.add(parent)
-            if collection == "episodes":
-                spans.add(f"{parent}/{node['end_hook']['node_id']}")
-            if collection == "scenes":
-                spans.update(
-                    f"{parent}/{line['node_id']}" for line in node["lines"]
-                )
-    for collection in ("facts", "relationships", "timeline", "setups"):
-        spans.update(
-            f"story-package/{node['node_id']}"
-            for node in artifact["continuity_ledger"][collection]
-        )
-    return spans
 
 
 def resolve_route(judge: dict[str, Any]) -> dict[str, Any]:
@@ -256,373 +200,61 @@ def resolve_route(judge: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def build_user_prompt(
-    first: dict[str, Any],
-    second: dict[str, Any],
-    validation_error: str | None,
-) -> str:
-    return json.dumps(
-        {
-            "case_id": CASE_ID,
-            "artifact_A": first,
-            "artifact_B": second,
-            "valid_span_refs_A": sorted(valid_line_spans(first)),
-            "valid_span_refs_B": sorted(valid_line_spans(second)),
-            "instruction": "spans 只能从对应 artifact 的 valid_span_refs 中逐字选择",
-            "retry_instruction": (
-                f"上次输出未通过校验：{validation_error}。请修正后完整重答。"
-                if validation_error
-                else None
-            ),
-        },
-        ensure_ascii=False,
-        separators=(",", ":"),
+
+
+
+
+
+
+
+
+
+
+def check_local_connectivity(judge: dict[str, Any], route: dict[str, Any]) -> bool:
+    name = f"{judge['model']} via {route['provider']}"
+    command_path = shutil.which(route.get("command", "codex"))
+    if not command_path:
+        print(f"FAIL {name}: command not found")
+        return False
+    completed = subprocess.run(
+        [command_path, "login", "status"], capture_output=True, text=True,
+        encoding="utf-8", errors="replace", timeout=30, shell=False, check=False,
     )
+    if completed.returncode:
+        detail = (completed.stderr or completed.stdout).strip()[:400]
+        print(f"FAIL {name}: {detail}")
+        return False
+    print(f"OK   {name}: command found and login is active")
+    return True
 
 
-def write_compatible_model_catalog(workdir: Path) -> Path | None:
-    """Adapt a newer desktop cache for an older standalone CLI, without
-    modifying the operator's shared cache.
-
-    Codex CLI 0.120 requires `supports_reasoning_summaries`, while the current
-    desktop cache omits it. The judge does not request reasoning summaries, so
-    the conservative capability value is false.
-    """
-    source = Path.home() / ".codex" / "models_cache.json"
-    if not source.exists():
-        return None
-    catalog = load(source)
-    models = catalog.get("models")
-    if not isinstance(models, list):
-        return None
-    changed = False
-    for model in models:
-        if (
-            isinstance(model, dict)
-            and "supports_reasoning_summaries" not in model
-        ):
-            model["supports_reasoning_summaries"] = False
-            changed = True
-        if isinstance(model, dict) and isinstance(
-            model.get("supported_reasoning_levels"), list
-        ):
-            compatible_levels = [
-                level
-                for level in model["supported_reasoning_levels"]
-                if isinstance(level, dict)
-                and level.get("effort")
-                in {"none", "minimal", "low", "medium", "high", "xhigh"}
-            ]
-            if compatible_levels != model["supported_reasoning_levels"]:
-                model["supported_reasoning_levels"] = compatible_levels
-                changed = True
-    if not changed:
-        return None
-    destination = workdir / "models-catalog.compat.json"
-    destination.write_text(
-        json.dumps(catalog, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
-    return destination
-
-
-def request_codex(
-    route: dict[str, Any],
-    model: str,
-    system: str,
-    first: dict[str, Any],
-    second: dict[str, Any],
-    validation_error: str | None,
-    user_prompt: str | None = None,
-) -> dict[str, Any]:
-    schema_path = ROOT / route["output_schema"]
-    prompt = (
-        user_prompt
-        if user_prompt is not None
-        else f"{system}\n\n{build_user_prompt(first, second, validation_error)}"
-    )
-    with tempfile.TemporaryDirectory(prefix="story-judge-") as directory:
-        workdir = Path(directory)
-        output_path = workdir / "final.json"
-        model_catalog = write_compatible_model_catalog(workdir)
-        command = [
-            route["command_path"],
-            "exec",
-            "--skip-git-repo-check",
-            "--ephemeral",
-            "--sandbox",
-            "read-only",
-            "--model",
-            model,
-            "--output-schema",
-            str(schema_path),
-            "--output-last-message",
-            str(output_path),
-            "--json",
-            "--color",
-            "never",
-            "-",
-        ]
-        if model_catalog:
-            command[2:2] = [
-                "--config",
-                f"model_catalog_json={json.dumps(str(model_catalog))}",
-            ]
-        completed = subprocess.run(
-            command,
-            input=prompt,
-            cwd=workdir,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=int(route.get("request_timeout_seconds", 600)),
-            shell=False,
-            check=False,
-        )
-        if completed.returncode:
-            detail = (completed.stderr or completed.stdout)[-1200:]
-            raise RuntimeError(
-                f"codex exec exited {completed.returncode}: {detail.strip()}"
-            )
-        result = json.loads(output_path.read_text(encoding="utf-8"))
-        usage = None
-        for line in completed.stdout.splitlines():
-            try:
-                event = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if event.get("type") == "turn.completed":
-                usage = event.get("usage")
-        result["_provider_usage"] = usage
-        return result
-
-
-def parse_content(content: str) -> dict[str, Any]:
-    """Parse judge JSON, tolerating markdown fences some relays allow through.
-
-    The OpenAI-compatible `response_format: json_object` is honoured by the
-    model providers but not always enforced by relay frontends; glm-5.2 behind
-    one such relay emits ```json-fenced output. Stripping the fence is safe:
-    clean JSON passes through unchanged.
-    """
-    text = (content or "").strip()
-    if not text:
-        # relays occasionally answer with null content; treat as unparseable
-        # so the retry loop re-asks instead of crashing the measurement
-        raise ValueError("judge returned empty content")
-    if text.startswith("```"):
-        first_newline = text.find("\n")
-        if first_newline != -1:
-            text = text[first_newline + 1 :]
-        if text.rstrip().endswith("```"):
-            text = text.rstrip()[:-3]
-    return json.loads(text)
-
-
-def request(
-    route: dict[str, Any],
-    model: str,
-    system: str,
-    api_key: str | None,
-    first: dict[str, Any],
-    second: dict[str, Any],
-    temperature: float,
-    validation_error: str | None = None,
-    user_prompt: str | None = None,
-) -> dict[str, Any]:
-    if route["provider"] == "local_codex_exec":
-        return request_codex(
-            route, model, system, first, second, validation_error,
-            user_prompt=user_prompt,
-        )
+def check_http_connectivity(judge: dict[str, Any], route: dict[str, Any]) -> bool:
+    name = f"{judge['model']} via {route['provider']}"
+    if not route.get("endpoint"):
+        print(f"SKIP {name}: no endpoint recorded in eval/judges.json")
+        return False
+    api_key = os.environ.get(route["api_key_env"])
     if not api_key:
-        raise RuntimeError(f"{route['provider']}: missing API key")
-    prompt = (
-        user_prompt
-        if user_prompt is not None
-        else build_user_prompt(first, second, validation_error)
-    )
-    request_body = {
-        "model": route.get("model", model),
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": prompt},
-        ],
-        "response_format": {"type": "json_object"},
-        "temperature": temperature,
-        "max_tokens": 8192,
-    }
-    if route.get("thinking"):
-        request_body["thinking"] = route["thinking"]
-    body = json.dumps(request_body, ensure_ascii=False).encode("utf-8")
-    http = urllib.request.Request(
-        route["endpoint"],
-        data=body,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    response_body = urlopen_with_retry(
-        http,
-        timeout=int(route.get("request_timeout_seconds", 120)),
-        attempts=int(route.get("transport_attempts", 2)),
-    )
+        print(f"SKIP {name}: {route['api_key_env']} not set")
+        return False
+    body = json.dumps({
+        "model": route.get("model", judge["model"]),
+        "messages": [{"role": "system", "content": '只输出 JSON：{"ok":true}'}, {"role": "user", "content": "ping"}],
+        "response_format": {"type": "json_object"}, "temperature": 0,
+        **({"thinking": route["thinking"]} if route.get("thinking") else {}),
+    }, ensure_ascii=False).encode("utf-8")
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     try:
-        raw = json.loads(response_body.decode("utf-8"))
-    except json.JSONDecodeError as error:
-        # a relay can cut the HTTP body mid-stream; as retryable as a timeout
-        raise ValueError(f"truncated HTTP body from relay: {error}")
-    result = parse_content(raw["choices"][0]["message"]["content"])
-    result["_provider_usage"] = raw.get("usage")
-    return result
-
-
-def validate_judgment(
-    value: dict[str, Any],
-    first: dict[str, Any],
-    second: dict[str, Any],
-    dimension_ids: list[str],
-) -> None:
-    allowed = {"A": valid_line_spans(first), "B": valid_line_spans(second)}
-    for label in ("A", "B"):
-        block = value.get(label)
-        if not isinstance(block, dict):
-            raise ValueError(f"{label} must be an object of dimensions")
-        missing = [d for d in dimension_ids if d not in block]
-        if missing:
-            raise ValueError(f"{label} missing dimensions: {missing}")
-        for dimension in dimension_ids:
-            entry = block[dimension]
-            score = entry.get("score")
-            if not isinstance(score, int) or not 1 <= score <= 5:
-                raise ValueError(f"{label}.{dimension}.score must be 1-5")
-            if not entry.get("reason") or not entry.get("spans"):
-                raise ValueError(f"{label}.{dimension} requires a reason and spans")
-            invalid = set(entry["spans"]) - allowed[label]
-            if invalid:
-                raise ValueError(
-                    f"{label}.{dimension} invalid spans: {sorted(invalid)}"
-                )
-    if value.get("preferred") not in {"A", "B", "tie"}:
-        raise ValueError("preferred must be A, B, or tie")
-
-
-def normalize_span_list(
-    spans: list[Any], artifact: dict[str, Any], allowed: set[str]
-) -> list[Any]:
-    """Map each cited span back to an unambiguous owning addressable node."""
-    collections = {
-        "story-package/characters": artifact["characters"],
-        "story-package/beats": artifact["beats"],
-        "story-package/episodes": artifact["episodes"],
-        "story-package/scenes": artifact["scenes"],
-    }
-    normalized: list[Any] = []
-    for span in spans:
-        # glm sometimes pluralises the fixed prefix ("story-packages/char-1");
-        # repair that one typo before any other matching
-        if isinstance(span, str) and span.startswith("story-packages/"):
-            span = "story-package/" + span[len("story-packages/"):]
-        if span in collections:
-            normalized.extend(
-                f"story-package/{node['node_id']}" for node in collections[span]
-            )
-            continue
-        if span in {
-            "story-package/production",
-            "story-package/production/locations",
-        }:
-            normalized.extend(
-                f"story-package/{scene['node_id']}"
-                for scene in artifact["scenes"]
-            )
-            if span != "story-package/production":
-                continue
-        if span in {
-            "story-package/production",
-            "story-package/production/speaking_cast",
-        }:
-            normalized.extend(artifact["production"]["speaking_cast"])
-            continue
-        candidate = span.split(".", 1)[0] if isinstance(span, str) else span
-        while (
-            isinstance(candidate, str)
-            and candidate not in allowed
-            and "/" in candidate.removeprefix("story-package/")
-        ):
-            candidate = candidate.rsplit("/", 1)[0]
-        normalized.append(candidate if candidate in allowed else span)
-    return list(dict.fromkeys(normalized))
-
-
-def normalize_owned_field_spans(
-    value: dict[str, Any],
-    first: dict[str, Any],
-    second: dict[str, Any],
-) -> None:
-    """Map a cited field back to its unambiguous owning addressable node."""
-    allowed = {"A": valid_line_spans(first), "B": valid_line_spans(second)}
-    artifacts = {"A": first, "B": second}
-    for label in ("A", "B"):
-        for entry in value.get(label, {}).values():
-            if not isinstance(entry, dict) or not isinstance(entry.get("spans"), list):
-                continue
-            entry["spans"] = normalize_span_list(
-                entry["spans"], artifacts[label], allowed[label]
-            )
-
-
-def request_validated(
-    route: dict[str, Any],
-    model: str,
-    system: str,
-    api_key: str | None,
-    first: dict[str, Any],
-    second: dict[str, Any],
-    temperature: float,
-    dimension_ids: list[str],
-    max_attempts: int = 3,
-) -> dict[str, Any]:
-    validation_error: str | None = None
-    for attempt in range(1, max_attempts + 1):
-        try:
-            sample = request(
-                route,
-                model,
-                system,
-                api_key,
-                first,
-                second,
-                temperature,
-                validation_error,
-            )
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as error:
-            # ValueError covers the empty-content and fence-trim cases a relay
-            # produces; they are as retryable as malformed JSON
-            validation_error = f"{type(error).__name__}: {error}"
-            if attempt == max_attempts:
-                raise
-            print(
-                f"RETRY {model} via {route['provider']}: "
-                f"unparseable judge output ({validation_error})"
-            )
-            continue
-        normalize_owned_field_spans(sample, first, second)
-        try:
-            validate_judgment(sample, first, second, dimension_ids)
-            return sample
-        except ValueError as error:
-            validation_error = str(error)
-            if attempt == max_attempts:
-                raise
-            print(
-                f"RETRY {model} via {route['provider']}: "
-                f"invalid judge output ({validation_error})"
-            )
-    raise AssertionError("unreachable")
+        raw = json.loads(https_exchange(route["endpoint"], "POST", headers, body, 60).decode("utf-8"))
+        json.loads(raw["choices"][0]["message"]["content"])
+        print(f"OK   {name}: endpoint reachable, JSON mode honoured")
+        return True
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")[:400]
+        print(f"FAIL {name}: HTTP {error.code}: {detail}")
+    except (urllib.error.URLError, KeyError, ValueError) as error:
+        print(f"FAIL {name}: {type(error).__name__}: {error}")
+    return False
 
 
 def check_connectivity(judges: list[dict[str, Any]]) -> int:
@@ -635,82 +267,11 @@ def check_connectivity(judges: list[dict[str, Any]]) -> int:
     failures = 0
     for judge in judges:
         for route in judge["routes"]:
-            name = f"{judge['model']} via {route['provider']}"
             if route.get("provider") == "local_codex_exec":
-                command_path = shutil.which(route.get("command", "codex"))
-                if not command_path:
-                    print(f"FAIL {name}: command not found")
-                    failures += 1
-                    continue
-                completed = subprocess.run(
-                    [command_path, "login", "status"],
-                    capture_output=True,
-                    text=True,
-                    encoding="utf-8",
-                    errors="replace",
-                    timeout=30,
-                    shell=False,
-                    check=False,
-                )
-                if completed.returncode:
-                    detail = (completed.stderr or completed.stdout).strip()[:400]
-                    print(f"FAIL {name}: {detail}")
-                    failures += 1
-                else:
-                    print(f"OK   {name}: command found and login is active")
-                continue
-            if not route.get("endpoint"):
-                print(f"SKIP {name}: no endpoint recorded in eval/judges.json")
-                failures += 1
-                continue
-            api_key = os.environ.get(route["api_key_env"])
-            if not api_key:
-                print(f"SKIP {name}: {route['api_key_env']} not set")
-                failures += 1
-                continue
-            request_body = {
-                "model": route.get("model", judge["model"]),
-                "messages": [
-                    {"role": "system", "content": '只输出 JSON：{"ok":true}'},
-                    {"role": "user", "content": "ping"},
-                ],
-                "response_format": {"type": "json_object"},
-                "temperature": 0,
-            }
-            if route.get("thinking"):
-                request_body["thinking"] = route["thinking"]
-            body = json.dumps(request_body, ensure_ascii=False).encode("utf-8")
-            http = urllib.request.Request(
-                route["endpoint"],
-                data=body,
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                method="POST",
-            )
-            try:
-                raw = json.loads(
-                    https_exchange(
-                        route["endpoint"],
-                        "POST",
-                        {"Authorization": f"Bearer {api_key}",
-                         "Content-Type": "application/json"},
-                        body,
-                        60,
-                    ).decode("utf-8")
-                )
-                json.loads(raw["choices"][0]["message"]["content"])
-                print(f"OK   {name}: endpoint reachable, JSON mode honoured")
-            except urllib.error.HTTPError as error:
-                # The provider's own error code lives in the body. Swallowing
-                # it turns "quota exhausted" and "wrong model id" into the same
-                # unactionable status line.
-                detail = error.read().decode("utf-8", errors="replace")[:400]
-                print(f"FAIL {name}: HTTP {error.code}: {detail}")
-                failures += 1
-            except (urllib.error.URLError, KeyError, ValueError) as error:
-                print(f"FAIL {name}: {type(error).__name__}: {error}")
+                healthy = check_local_connectivity(judge, route)
+            else:
+                healthy = check_http_connectivity(judge, route)
+            if not healthy:
                 failures += 1
     return failures
 
@@ -897,6 +458,59 @@ def summarize_judge(
     return result
 
 
+def reusable_probe_summary(
+    result_path: Path, judge: dict[str, Any], samples_per_artifact: int,
+    expected_fingerprint: str, target: str, dimensions: list[dict[str, Any]], force: bool,
+) -> dict[str, Any] | None:
+    if not result_path.exists() or force:
+        return None
+    saved = load(result_path)
+    provider = saved.get("summary", {}).get("route_provider")
+    route = next((item for item in judge["routes"] if item["provider"] == provider), None)
+    config = judge_config_fingerprint(judge) if provider == "local_codex_exec" else None
+    if not route or not saved_result_is_reusable(
+        saved, judge, route, samples_per_artifact, expected_fingerprint, config,
+    ):
+        return None
+    summary = refresh_saved_summary(saved, target, dimensions)
+    if provider == "local_codex_exec":
+        summary["temperature"] = None
+        summary["sampling_control"] = "codex_cli_provider_default"
+    saved["summary"] = summary
+    atomic_write(result_path, saved)
+    print(f"RESUME {judge['model']} via {provider}: reusing complete saved samples")
+    return summary
+
+
+def load_probe_partial(
+    partial_path: Path, expected_fingerprint: str, config_fingerprint: str | None,
+) -> dict[str, Any]:
+    partial = load(partial_path) if partial_path.exists() else {}
+    if (
+        partial.get("input_fingerprint") != expected_fingerprint
+        or partial.get("judge_config_fingerprint") != config_fingerprint
+    ):
+        return {"input_fingerprint": expected_fingerprint, "judge_config_fingerprint": config_fingerprint, "forward": [], "reverse": []}
+    return partial
+
+
+def collect_order_samples(
+    partial_path: Path, partial: dict[str, Any], key: str, count: int,
+    route: dict[str, Any], judge: dict[str, Any], system: str, api_key: str | None,
+    first: dict[str, Any], second: dict[str, Any], temperature: float,
+    dimension_ids: list[str],
+) -> list[dict[str, Any]]:
+    samples = partial[key][:count]
+    while len(samples) < count:
+        samples.append(request_validated(
+            route, judge["model"], system, api_key, first, second, temperature, dimension_ids,
+        ))
+        partial[key] = samples
+        atomic_write(partial_path, partial)
+        print(f"CHECKPOINT {judge['model']}: {key} {len(samples)}/{count}")
+    return samples
+
+
 def run_judge(
     judge: dict[str, Any],
     pair_dir: Path,
@@ -915,41 +529,11 @@ def run_judge(
     suffix = f".{result_suffix}" if result_suffix else ""
     result_path = pair_dir / f"judge-{judge['model']}{suffix}.result.json"
     partial_path = pair_dir / f"judge-{judge['model']}{suffix}.partial.json"
-    if result_path.exists() and not force:
-        saved = load(result_path)
-        saved_provider = saved.get("summary", {}).get("route_provider")
-        saved_route = next(
-            (
-                route
-                for route in judge["routes"]
-                if route["provider"] == saved_provider
-            ),
-            None,
-        )
-        saved_config_fingerprint = (
-            judge_config_fingerprint(judge)
-            if saved_provider == "local_codex_exec"
-            else None
-        )
-        if saved_route and saved_result_is_reusable(
-            saved,
-            judge,
-            saved_route,
-            samples_per_artifact,
-            expected_fingerprint,
-            saved_config_fingerprint,
-        ):
-            summary = refresh_saved_summary(saved, target, dimensions)
-            if saved_route["provider"] == "local_codex_exec":
-                summary["temperature"] = None
-                summary["sampling_control"] = "codex_cli_provider_default"
-            saved["summary"] = summary
-            atomic_write(result_path, saved)
-            print(
-                f"RESUME {judge['model']} via {saved_route['provider']}: "
-                "reusing complete saved samples"
-            )
-            return summary
+    if saved := reusable_probe_summary(
+        result_path, judge, samples_per_artifact, expected_fingerprint,
+        target, dimensions, force,
+    ):
+        return saved
     route = resolve_route(judge)
     config_fingerprint = (
         judge_config_fingerprint(judge)
@@ -962,60 +546,15 @@ def run_judge(
         else None
     )
     dimension_ids = [dimension["id"] for dimension in dimensions]
-    partial = (
-        load(partial_path)
-        if partial_path.exists()
-        else {
-            "input_fingerprint": expected_fingerprint,
-            "judge_config_fingerprint": config_fingerprint,
-            "forward": [],
-            "reverse": [],
-        }
+    partial = load_probe_partial(partial_path, expected_fingerprint, config_fingerprint)
+    forward = collect_order_samples(
+        partial_path, partial, "forward", samples_per_artifact, route, judge,
+        system, api_key, baseline, negative, temperature, dimension_ids,
     )
-    if (
-        partial.get("input_fingerprint") != expected_fingerprint
-        or partial.get("judge_config_fingerprint") != config_fingerprint
-    ):
-        partial = {
-            "input_fingerprint": expected_fingerprint,
-            "judge_config_fingerprint": config_fingerprint,
-            "forward": [],
-            "reverse": [],
-        }
-    forward = partial["forward"][:samples_per_artifact]
-    reverse = partial["reverse"][:samples_per_artifact]
-    while len(forward) < samples_per_artifact:
-        forward.append(
-            request_validated(
-                route,
-                judge["model"],
-                system,
-                api_key,
-                baseline,
-                negative,
-                temperature,
-                dimension_ids,
-            )
-        )
-        partial["forward"] = forward
-        atomic_write(partial_path, partial)
-        print(f"CHECKPOINT {judge['model']}: forward {len(forward)}/{samples_per_artifact}")
-    while len(reverse) < samples_per_artifact:
-        reverse.append(
-            request_validated(
-                route,
-                judge["model"],
-                system,
-                api_key,
-                negative,
-                baseline,
-                temperature,
-                dimension_ids,
-            )
-        )
-        partial["reverse"] = reverse
-        atomic_write(partial_path, partial)
-        print(f"CHECKPOINT {judge['model']}: reverse {len(reverse)}/{samples_per_artifact}")
+    reverse = collect_order_samples(
+        partial_path, partial, "reverse", samples_per_artifact, route, judge,
+        system, api_key, negative, baseline, temperature, dimension_ids,
+    )
     summary = summarize_judge(
         judge, route, forward, reverse, dimensions, target, defect_spans, temperature
     )

@@ -1,0 +1,90 @@
+feature: story-image-agent
+requirements:
+  - id: REQ-401
+    interfaces: [API-201]
+    implementation: [BE-201, BE-203, FE-201]
+    tests: [TEST-401, TEST-403, TEST-410]
+  - id: REQ-402
+    interfaces: [API-201]
+    implementation: [BE-201]
+    tests: [TEST-401, TEST-402]
+  - id: REQ-403
+    interfaces: [API-201, API-203]
+    implementation: [BE-201]
+    tests: [TEST-401]
+interfaces:
+  - id: API-201
+    location: contracts/media-agent/image-generation-request-v1.json
+    status: REVIEWED
+    purpose: request an immutable image generation from one prompt revision
+  - id: API-203
+    location: contracts/media-agent/task-event-v1.json
+    status: REVIEWED
+    purpose: reuse one media task event envelope across image and video projects
+  - id: API-204
+    location: contracts/media-agent/media-project-capability-v1.json
+    status: BACKEND_IMPLEMENTED
+    purpose: append prompt revisions and generation requests through authenticated Rust storage
+  - id: API-205
+    location: contracts/media-agent/media-gateway-v1.json
+    status: BACKEND_IMPLEMENTED
+    purpose: provider-neutral authenticated media gateway response contract
+implementation:
+  - id: BE-201
+    location: projects/story-image-agent/story_image_agent/workflow.py
+    owner: CAP-013
+  - id: BE-203
+    location: crates/story-media/src/run.rs
+    owner: CAP-015
+  - id: BE-205
+    location: crates/story-storage/src/media_projects.rs
+    owner: CAP-016
+  - id: BE-206
+    location: crates/story-provider/src/media_capability.rs
+    owner: CAP-016
+  - id: BE-207
+    location: apps/desktop/src-tauri/src/media_projects.rs
+    owner: CAP-016
+  - id: BE-208
+    location: crates/story-media/src/gateway.rs
+    owner: CAP-015
+  - id: BE-209
+    location: apps/desktop/src-tauri/src/media_gateway_settings.rs
+    owner: CAP-015
+  - id: BE-210
+    location: apps/desktop/src-tauri/src/media_runtime.rs
+    owner: CAP-015
+  - id: FE-201
+    location: apps/desktop/src/lib/MediaStudio.svelte
+    owner: CAP-008
+tests:
+  - id: TEST-401
+    location: projects/story-image-agent/tests/test_workflow.py
+    proves: prompt edits and repeated generation append revisions and requests
+  - id: TEST-402
+    location: projects/story-image-agent/tests/test_workflow.py
+    proves: missing provenance and unknown revisions fail closed
+  - id: TEST-403
+    location: crates/story-media/src/run.rs
+    proves: media runs have one terminal, cancellable provider work and restart recovery
+  - id: TEST-404
+    location: crates/story-provider/src/capability_host.rs
+    proves: authenticated media history writes succeed while invalid parentage, duplicates and unauthenticated calls fail closed
+  - id: TEST-405
+    location: apps/desktop/src-tauri/src/media_projects.rs
+    proves: desktop IPC persists typed prompt revisions and image requests through the shared Rust repository
+  - id: TEST-406
+    location: crates/story-provider/src/media_gateway.rs
+    proves: authenticated gateway HTTP response is decoded and invalid routes are rejected
+  - id: TEST-407
+    location: apps/desktop/src-tauri/src/media_gateway_settings.rs
+    proves: desktop persists only validated HTTPS media gateway endpoints without credential material
+  - id: TEST-408
+    location: apps/desktop/src-tauri/src/media_runtime.rs
+    proves: desktop start resume and cancel remain bound to persisted requests and the active run identity
+  - id: TEST-409
+    location: apps/desktop/src-tauri/src/media_runtime.rs
+    proves: desktop sends the direct image request over HTTP and retains a verified artifact with a durable completed event
+  - id: TEST-410
+    location: apps/desktop/src/lib/MediaStudio.test.ts
+    proves: desktop saves story-grounded prompt revisions and persists image requests before starting media runs

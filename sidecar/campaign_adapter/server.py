@@ -14,25 +14,26 @@ import time
 from dataclasses import dataclass
 from collections.abc import Awaitable, Callable, Mapping
 from datetime import datetime
+from functools import partial
 from typing import Any, Protocol
 from uuid import uuid4
 
 from aiohttp import web
+
+from .command_validation import (
+    START_RUN_SCHEMA,
+    STORY_JOB_SCHEMA,
+    SUPPORTED_CONTENT_FORMS,
+    validate_genre_context,
+    validate_human_writing_context,
+    validate_start_command,
+)
 
 CONTROL_PROTOCOL = "story-sidecar-control/v1"
 TOKEN_ENV = "MICROCODEX_SIDECAR_TOKEN"
 MAX_REQUEST_BYTES = 1024 * 1024
 HEARTBEAT_SECONDS = 15
 POLL_SECONDS = 0.1
-
-# Wire-level command/job schemas. These must match the Rust side: the StartRun
-# command schema in story-runtime/src/run_protocol.rs, the job schema in
-# story-core/src/lib.rs, and the content-form enum (`ContentForm`), which
-# currently exposes only `scripted_short_drama`.
-START_RUN_SCHEMA = "start-run-command/v1"
-STORY_JOB_SCHEMA = "story-job/v1"
-SUPPORTED_CONTENT_FORMS = frozenset({"scripted_short_drama"})
-
 
 class RpcHandler(Protocol):
     async def handle_rpc(
@@ -343,101 +344,6 @@ def validate_idempotency_key(value: str) -> None:
         raise ValueError("invalid idempotency key")
 
 
-def validate_start_command(command: dict[str, Any]) -> None:
-    if (
-        not {"schema", "job"} <= set(command)
-        or not set(command) <= {"schema", "job", "genre_context"}
-        or command.get("schema") != START_RUN_SCHEMA
-    ):
-        raise ValueError("invalid StartRun command")
-    job = command.get("job")
-    if not isinstance(job, dict):
-        raise ValueError("invalid StoryJob")
-    if (
-        job.get("schema") != STORY_JOB_SCHEMA
-        or job.get("content_form") not in SUPPORTED_CONTENT_FORMS
-    ):
-        raise ValueError("invalid StoryJob")
-    if not isinstance(job.get("job_id"), str) or not job["job_id"].strip():
-        raise ValueError("invalid StoryJob")
-    if "genre_context" in command:
-        validate_genre_context(command["genre_context"])
-
-
-def validate_genre_context(context: Any) -> None:
-    required_fields = {
-        "schema",
-        "pack_id",
-        "constraint_profile_id",
-        "genre",
-        "architect_directives",
-        "reviewer_directives",
-        "retrieval_sources",
-    }
-    allowed_fields = required_fields | {"human_writing"}
-    if (
-        not isinstance(context, dict)
-        or not required_fields <= set(context)
-        or not set(context) <= allowed_fields
-    ):
-        raise ValueError("invalid genre context")
-    if context.get("schema") != "genre-context/v1":
-        raise ValueError("invalid genre context")
-    for field in ("pack_id", "constraint_profile_id", "genre"):
-        if not isinstance(context.get(field), str) or not context[field].strip():
-            raise ValueError("invalid genre context")
-    for field in ("architect_directives", "reviewer_directives"):
-        values = context.get(field)
-        if (
-            not isinstance(values, list)
-            or not values
-            or any(not isinstance(value, str) or not value.strip() for value in values)
-        ):
-            raise ValueError("invalid genre context")
-    sources = context.get("retrieval_sources")
-    if not isinstance(sources, list):
-        raise ValueError("invalid genre context")
-    for source in sources:
-        if not isinstance(source, dict) or set(source) != {
-            "source_id",
-            "license_id",
-            "content_sha256",
-            "usage",
-        }:
-            raise ValueError("invalid genre context")
-        if any(
-            not isinstance(source.get(field), str) or not source[field].strip()
-            for field in source
-        ):
-            raise ValueError("invalid genre context")
-    if "human_writing" in context:
-        validate_human_writing_context(context["human_writing"])
-
-
-def validate_human_writing_context(context: Any) -> None:
-    if not isinstance(context, dict) or set(context) != {
-        "profile_id",
-        "task_directives",
-    }:
-        raise ValueError("invalid human writing context")
-    if not isinstance(context.get("profile_id"), str) or not context["profile_id"].strip():
-        raise ValueError("invalid human writing context")
-    task_directives = context.get("task_directives")
-    expected_tasks = {"t07", "t10", "t12", "t15", "t16"}
-    if not isinstance(task_directives, dict) or set(task_directives) != expected_tasks:
-        raise ValueError("invalid human writing context")
-    for directives in task_directives.values():
-        if (
-            not isinstance(directives, list)
-            or not directives
-            or any(
-                not isinstance(directive, str) or not directive.strip()
-                for directive in directives
-            )
-        ):
-            raise ValueError("invalid human writing context")
-
-
 def command_fingerprint(command: dict[str, Any]) -> str:
     canonical = json.dumps(
         command, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -508,136 +414,148 @@ def _is_authorized(request: web.Request, token: str) -> bool:
     return hmac.compare_digest(supplied, f"Bearer {token}")
 
 
+def _authorize(request: web.Request, token: str) -> None:
+    if not _is_authorized(request, token):
+        raise web.HTTPUnauthorized()
+
+
+def _require_runs(runs: RunService | None) -> RunService:
+    if runs is None:
+        raise web.HTTPServiceUnavailable()
+    return runs
+
+
+async def _health(request: web.Request, *, token: str) -> web.Response:
+    _authorize(request, token)
+    return web.json_response(
+        {"protocol": CONTROL_PROTOCOL, "status": "ready"},
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+async def _rpc(request: web.Request, *, token: str, handler: RpcHandler) -> web.Response:
+    _authorize(request, token)
+    try:
+        payload = await request.json()
+    except (json.JSONDecodeError, web.HTTPBadRequest) as exc:
+        raise web.HTTPBadRequest(text="request body must be JSON") from exc
+    if not isinstance(payload, dict):
+        raise web.HTTPBadRequest(text="request body must be a JSON object")
+    response = await handler.handle_rpc(payload, dict(request.headers))
+    return web.json_response(response, headers={"Cache-Control": "no-store"})
+
+
+async def _start_run(
+    request: web.Request, *, token: str, runs: RunService | None
+) -> web.Response:
+    _authorize(request, token)
+    service = _require_runs(runs)
+    try:
+        payload = await request.json()
+        if not isinstance(payload, dict):
+            raise ValueError("command must be an object")
+        result = await service.start_run(
+            payload, request.headers.get("Idempotency-Key", "")
+        )
+    except IdempotencyConflict as exc:
+        raise web.HTTPConflict(text="idempotency key conflict") from exc
+    except (json.JSONDecodeError, ValueError, web.HTTPBadRequest) as exc:
+        raise web.HTTPBadRequest(text="invalid StartRun command") from exc
+    return web.json_response(
+        result.acceptance,
+        status=202,
+        headers={
+            "Cache-Control": "no-store",
+            "Idempotent-Replayed": "true" if result.replayed else "false",
+        },
+    )
+
+
+async def _stream_events(
+    request: web.Request, *, token: str, runs: RunService | None
+) -> web.StreamResponse:
+    _authorize(request, token)
+    service = _require_runs(runs)
+    run_id = request.match_info["run_id"]
+    try:
+        since = int(request.headers.get("Last-Event-ID", "0"))
+        if since < 0:
+            raise ValueError
+    except ValueError as exc:
+        raise web.HTTPBadRequest(text="Last-Event-ID must be non-negative") from exc
+    if not await service.run_exists(run_id):
+        raise web.HTTPNotFound()
+    response = web.StreamResponse(status=200, headers={
+        "Content-Type": "text/event-stream", "Cache-Control": "no-store",
+        "Connection": "keep-alive", "X-Accel-Buffering": "no",
+    })
+    await response.prepare(request)
+    cursor = since
+    try:
+        cursor = await _send_replay(response, service, run_id, cursor)
+        await response.write(b": replay-complete\n\n")
+        heartbeat_at = time.monotonic()
+        while request.transport is not None and not request.transport.is_closing():
+            await asyncio.sleep(POLL_SECONDS)
+            cursor = await _send_replay(response, service, run_id, cursor)
+            if time.monotonic() - heartbeat_at >= HEARTBEAT_SECONDS:
+                await response.write(b": heartbeat\n\n")
+                heartbeat_at = time.monotonic()
+    except (ConnectionResetError, asyncio.CancelledError):
+        pass
+    return response
+
+
+async def _send_replay(
+    response: web.StreamResponse, runs: RunService, run_id: str, cursor: int
+) -> int:
+    for event in await runs.replay(run_id, cursor):
+        await write_sse_event(response, event)
+        cursor = event["seq"]
+    return cursor
+
+
+async def _get_run_result(
+    request: web.Request, *, token: str, runs: RunService | None
+) -> web.Response:
+    _authorize(request, token)
+    result = await _require_runs(runs).result(request.match_info["run_id"])
+    if result is None:
+        raise web.HTTPNotFound()
+    return web.json_response(result, headers={"Cache-Control": "no-store"})
+
+
+async def _cancel_run(
+    request: web.Request, *, token: str, runs: RunService | None
+) -> web.Response:
+    _authorize(request, token)
+    try:
+        event, created = await _require_runs(runs).cancel_run(request.match_info["run_id"])
+    except KeyError as exc:
+        raise web.HTTPNotFound() from exc
+    return web.json_response(
+        event, status=202 if created else 200, headers={"Cache-Control": "no-store"}
+    )
+
+
+async def _cleanup(_: web.Application, *, runs: RunService | None) -> None:
+    if runs is not None:
+        await runs.close()
+
+
 def create_app(
     handler: RpcHandler, token: str, runs: RunService | None = None
 ) -> web.Application:
     if len(token) < 32 or not token.isascii():
         raise ValueError("sidecar auth token must be at least 32 ASCII characters")
     app = web.Application(client_max_size=MAX_REQUEST_BYTES)
-
-    async def health(request: web.Request) -> web.Response:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        return web.json_response(
-            {"protocol": CONTROL_PROTOCOL, "status": "ready"},
-            headers={"Cache-Control": "no-store"},
-        )
-
-    async def rpc(request: web.Request) -> web.Response:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        try:
-            payload = await request.json()
-        except (json.JSONDecodeError, web.HTTPBadRequest) as exc:
-            raise web.HTTPBadRequest(text="request body must be JSON") from exc
-        if not isinstance(payload, dict):
-            raise web.HTTPBadRequest(text="request body must be a JSON object")
-        response = await handler.handle_rpc(payload, dict(request.headers))
-        return web.json_response(response, headers={"Cache-Control": "no-store"})
-
-    async def start_run(request: web.Request) -> web.Response:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        if runs is None:
-            raise web.HTTPServiceUnavailable()
-        idempotency_key = request.headers.get("Idempotency-Key", "")
-        try:
-            payload = await request.json()
-            if not isinstance(payload, dict):
-                raise ValueError("command must be an object")
-            result = await runs.start_run(payload, idempotency_key)
-        except IdempotencyConflict as exc:
-            raise web.HTTPConflict(text="idempotency key conflict") from exc
-        except (json.JSONDecodeError, ValueError, web.HTTPBadRequest) as exc:
-            raise web.HTTPBadRequest(text="invalid StartRun command") from exc
-        headers = {
-            "Cache-Control": "no-store",
-            "Idempotent-Replayed": "true" if result.replayed else "false",
-        }
-        return web.json_response(result.acceptance, status=202, headers=headers)
-
-    async def stream_events(request: web.Request) -> web.StreamResponse:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        if runs is None:
-            raise web.HTTPServiceUnavailable()
-        run_id = request.match_info["run_id"]
-        try:
-            since = int(request.headers.get("Last-Event-ID", "0"))
-            if since < 0:
-                raise ValueError
-        except ValueError as exc:
-            raise web.HTTPBadRequest(text="Last-Event-ID must be non-negative") from exc
-        if not await runs.run_exists(run_id):
-            raise web.HTTPNotFound()
-
-        response = web.StreamResponse(
-            status=200,
-            headers={
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-store",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
-        )
-        await response.prepare(request)
-        cursor = since
-        try:
-            for event in await runs.replay(run_id, cursor):
-                await write_sse_event(response, event)
-                cursor = event["seq"]
-            await response.write(b": replay-complete\n\n")
-            heartbeat_at = time.monotonic()
-            while True:
-                await asyncio.sleep(POLL_SECONDS)
-                if request.transport is None or request.transport.is_closing():
-                    break
-                for event in await runs.replay(run_id, cursor):
-                    await write_sse_event(response, event)
-                    cursor = event["seq"]
-                if time.monotonic() - heartbeat_at >= HEARTBEAT_SECONDS:
-                    await response.write(b": heartbeat\n\n")
-                    heartbeat_at = time.monotonic()
-        except (ConnectionResetError, asyncio.CancelledError):
-            pass
-        return response
-
-    async def get_run_result(request: web.Request) -> web.Response:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        if runs is None:
-            raise web.HTTPServiceUnavailable()
-        result = await runs.result(request.match_info["run_id"])
-        if result is None:
-            raise web.HTTPNotFound()
-        return web.json_response(result, headers={"Cache-Control": "no-store"})
-
-    async def cancel_run(request: web.Request) -> web.Response:
-        if not _is_authorized(request, token):
-            raise web.HTTPUnauthorized()
-        if runs is None:
-            raise web.HTTPServiceUnavailable()
-        try:
-            event, created = await runs.cancel_run(request.match_info["run_id"])
-        except KeyError as exc:
-            raise web.HTTPNotFound() from exc
-        return web.json_response(
-            event,
-            status=202 if created else 200,
-            headers={"Cache-Control": "no-store"},
-        )
-
-    async def cleanup(_: web.Application) -> None:
-        if runs is not None:
-            await runs.close()
-
-    app.router.add_get("/health", health)
-    app.router.add_post("/rpc", rpc)
-    app.router.add_post("/v1/runs", start_run)
-    app.router.add_get("/v1/runs/{run_id}/events", stream_events)
-    app.router.add_get("/v1/runs/{run_id}/result", get_run_result)
-    app.router.add_post("/v1/runs/{run_id}/cancel", cancel_run)
-    app.on_cleanup.append(cleanup)
+    app.router.add_get("/health", partial(_health, token=token))
+    app.router.add_post("/rpc", partial(_rpc, token=token, handler=handler))
+    app.router.add_post("/v1/runs", partial(_start_run, token=token, runs=runs))
+    app.router.add_get("/v1/runs/{run_id}/events", partial(_stream_events, token=token, runs=runs))
+    app.router.add_get("/v1/runs/{run_id}/result", partial(_get_run_result, token=token, runs=runs))
+    app.router.add_post("/v1/runs/{run_id}/cancel", partial(_cancel_run, token=token, runs=runs))
+    app.on_cleanup.append(partial(_cleanup, runs=runs))
     return app
 
 

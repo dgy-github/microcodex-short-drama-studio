@@ -1,0 +1,52 @@
+feature: provider-cost-budget
+requirements:
+  - id: REQ-421
+    interfaces: [API-211]
+    implementation: [BE-211, BE-212]
+    tests: [TEST-421, TEST-422]
+  - id: REQ-422
+    interfaces: [API-212]
+    implementation: [BE-212, BE-213]
+    tests: [TEST-423]
+  - id: REQ-423
+    interfaces: [API-212]
+    implementation: [BE-213, BE-214]
+    tests: [TEST-424, TEST-425]
+interfaces:
+  - id: API-211
+    location: schemas/provider-pricing-catalog-v1.json
+    status: REVIEWED
+    purpose: version exact provider and model token prices
+  - id: API-212
+    location: schemas/story-capability-response-v1.json
+    status: REVIEWED
+    purpose: return priced usage from the trusted provider capability
+implementation:
+  - id: BE-211
+    location: crates/story-provider/src/pricing.rs
+    owner: CAP-003
+  - id: BE-212
+    location: crates/story-provider/src/capability_host.rs
+    owner: CAP-003
+  - id: BE-213
+    location: sidecar/campaign_adapter/workflow/context.py
+    owner: CAP-004
+  - id: BE-214
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    owner: CAP-008
+tests:
+  - id: TEST-421
+    location: crates/story-provider/src/pricing.rs
+    proves: input and output prices are exact and fractional fen rounds up
+  - id: TEST-422
+    location: crates/story-provider/src/pricing.rs
+    proves: unknown and duplicate routes fail closed
+  - id: TEST-423
+    location: sidecar/test_workflow.py
+    proves: cost overrun fails before artifact retention
+  - id: TEST-424
+    location: sidecar/test_workflow.py
+    proves: cost survives run recovery
+  - id: TEST-425
+    location: apps/desktop/src-tauri/src/run_controller.rs
+    proves: duplicate sequence does not double count cost

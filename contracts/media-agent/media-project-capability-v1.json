@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/media-project-capability-v1.json",
+  "title": "Media project capability v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "operation", "record"],
+  "properties": {
+    "schema": {"const": "media-project-capability-request/v1"},
+    "operation": {"enum": ["append_prompt_revision", "append_generation_request"]},
+    "record": {"type": "object", "minProperties": 1}
+  }
+}

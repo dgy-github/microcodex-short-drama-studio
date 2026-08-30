@@ -1,6 +1,10 @@
 //! Storage boundary for product jobs, projections, immutable artifacts, and rights metadata.
 
+pub mod artifacts;
 mod export_formats;
+pub mod media;
+pub mod media_events;
+pub mod media_projects;
 mod operations;
 mod revisions;
 

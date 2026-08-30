@@ -1,10 +1,21 @@
 {
   "defect_localisation": {
-    "caveat": "Every dialogue node in this negative is seeded, so any cited line is a hit by construction and this figure reflects no localisation skill. It becomes meaningful only once the degradation is narrowed and unseeded dialogue exists.",
-    "constructively_guaranteed": true,
+    "constructively_guaranteed_pairs": [
+      "stage0-comedy-002-motive-explicit-001"
+    ],
     "meets_target": true,
     "target": 0.5,
     "value": 1.0
+  },
+  "inter_model_agreement": {
+    "items": 20,
+    "judges": [
+      "glm-5.2",
+      "qwen3-vl-plus"
+    ],
+    "method": "krippendorff_alpha_interval",
+    "raters": 2,
+    "value": 0.5163588390501319
   },
   "judges_counted": [
     "glm-5.2",
@@ -12,201 +23,57 @@
   ],
   "manifest": "eval-v0.1.0",
   "not_computable_here": {
-    "inter_model_agreement": "needs an agreement statistic over a shared rater set; scores exist but the estimator is not implemented",
     "spot_check_agreement": "needs the internal human spot check, which has never been run"
   },
   "pair_ids": [
     "stage0-comedy-002-motive-explicit-001"
   ],
   "pairs_total": 1,
-  "per_judge": [
+  "per_pair": [
     {
-      "detail": [
+      "all_inputs_fingerprinted": true,
+      "constructively_guaranteed_localisation": true,
+      "detected": true,
+      "input_fingerprints": [],
+      "localised": true,
+      "pair_dir": "eval/adversarial/stage0/motive-explicit",
+      "pair_id": "stage0-comedy-002-motive-explicit-001",
+      "per_judge": [
         {
-          "baseline_mean": 4.6,
-          "cited_spans": 25,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.1,
-          "on_defect": 10
+          "judge_model": "glm-5.2",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 6,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "volcano_ark",
+          "source": "judge-glm-5.2.result.json"
         },
         {
-          "baseline_mean": 4.9,
-          "cited_spans": 27,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.5,
-          "on_defect": 7
-        },
-        {
-          "baseline_mean": 4,
-          "cited_spans": 27,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3,
-          "on_defect": 8
-        },
-        {
-          "baseline_mean": 4.1,
-          "cited_spans": 14,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3,
-          "on_defect": 6
-        },
-        {
-          "baseline_mean": 4.3,
-          "cited_spans": 13,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.1,
-          "on_defect": 4
-        },
-        {
-          "baseline_mean": 4.4,
-          "cited_spans": 24,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.2,
-          "on_defect": 6
+          "judge_model": "qwen3-vl-plus",
+          "localised_rate": 1.0,
+          "negative_lower_rate": 1.0,
+          "observations": 6,
+          "pair_detected": true,
+          "pair_localised": true,
+          "route_provider": "aliyun_bailian",
+          "source": "judge-qwen3-vl-plus.result.json"
         }
       ],
-      "judge_model": "glm-5.2",
-      "localised_rate": 1.0,
-      "negative_lower_rate": 1.0,
-      "observations": 6,
-      "pair_detected": true,
-      "pair_localised": true,
-      "route_provider": "volcano_ark",
-      "source": "judge-glm-5.2.result.json"
-    },
-    {
-      "detail": [
-        {
-          "baseline_mean": 4.6,
-          "cited_spans": 19,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.4,
-          "on_defect": 7
-        },
-        {
-          "baseline_mean": 4.7,
-          "cited_spans": 19,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.2,
-          "on_defect": 7
-        },
-        {
-          "baseline_mean": 4.5,
-          "cited_spans": 28,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.1,
-          "on_defect": 9
-        },
-        {
-          "baseline_mean": 4.3,
-          "cited_spans": 14,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3,
-          "on_defect": 4
-        },
-        {
-          "baseline_mean": 4,
-          "cited_spans": 17,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3,
-          "on_defect": 7
-        },
-        {
-          "baseline_mean": 4.3,
-          "cited_spans": 15,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.1,
-          "on_defect": 5
-        }
+      "reruns_excluded_from_headline": [
+        "judge-glm-5.2.stability-rerun.result.json"
       ],
-      "judge_model": "glm-5.2",
-      "localised_rate": 1.0,
-      "negative_lower_rate": 1.0,
-      "observations": 6,
-      "pair_detected": true,
-      "pair_localised": true,
-      "route_provider": "volcano_ark",
-      "source": "judge-glm-5.2.stability-rerun.result.json"
-    },
-    {
-      "detail": [
-        {
-          "baseline_mean": 5,
-          "cited_spans": 32,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.7,
-          "on_defect": 8
-        },
-        {
-          "baseline_mean": 5,
-          "cited_spans": 34,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3,
-          "on_defect": 10
-        },
-        {
-          "baseline_mean": 5,
-          "cited_spans": 24,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 3.7,
-          "on_defect": 9
-        },
-        {
-          "baseline_mean": 5,
-          "cited_spans": 22,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 4.4,
-          "on_defect": 4
-        },
-        {
-          "baseline_mean": 5,
-          "cited_spans": 31,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 4.3,
-          "on_defect": 6
-        },
-        {
-          "baseline_mean": 5,
-          "cited_spans": 24,
-          "localised": true,
-          "negative_lower": true,
-          "negative_mean": 4.3,
-          "on_defect": 5
-        }
-      ],
-      "judge_model": "qwen3-vl-plus",
-      "localised_rate": 1.0,
-      "negative_lower_rate": 1.0,
-      "observations": 6,
-      "pair_detected": true,
-      "pair_localised": true,
-      "route_provider": "aliyun_bailian",
-      "source": "judge-qwen3-vl-plus.result.json"
+      "result_paths": {
+        "judge-glm-5.2.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-glm-5.2.result.json",
+        "judge-glm-5.2.stability-rerun.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-glm-5.2.stability-rerun.result.json",
+        "judge-qwen3-vl-plus.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-qwen3-vl-plus.result.json"
+      }
     }
   ],
-  "reruns_excluded_from_headline": [
-    "judge-glm-5.2.stability-rerun.result.json"
-  ],
-  "resolution_warning": "Both metrics are defined over pairs. With one pair the only attainable values are 0.0 and 1.0; this is not an estimate and has no confidence interval. Read the per-judge observation rates for texture.",
+  "resolution_note": "Both headline figures are defined over pairs; with 1 pair(s) the granularity is 1/1. A single pair can only attain 0.0 or 1.0 — not an estimate.",
   "schema": "evaluator-metrics/v1",
   "seeded_defect_detection": {
+    "detected_pairs": 1,
     "meets_target": true,
     "target": 0.75,
     "value": 1.0

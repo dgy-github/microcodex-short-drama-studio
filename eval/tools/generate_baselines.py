@@ -307,6 +307,60 @@ def canonicalize_scene_line_ids(package: dict[str, Any]) -> None:
     replace(package)
 
 
+def collect_package_refs(package: dict[str, Any]) -> tuple[set[str], set[str]]:
+    known_refs = {
+        f"story-package/{package['logline']['node_id']}",
+        f"story-package/{package['promise']['node_id']}",
+    }
+    for collection in ("characters", "beats", "episodes", "scenes"):
+        for node in package[collection]:
+            parent_ref = f"story-package/{node['node_id']}"
+            known_refs.add(parent_ref)
+            if collection == "episodes":
+                known_refs.add(f"{parent_ref}/{node['end_hook']['node_id']}")
+            if collection == "scenes":
+                known_refs.update(f"{parent_ref}/{line['node_id']}" for line in node["lines"])
+
+    for collection in ("facts", "relationships", "timeline", "setups"):
+        known_refs.update(
+            f"story-package/{node['node_id']}"
+            for node in package["continuity_ledger"][collection]
+        )
+    referenced: set[str] = set()
+
+    def collect(value: Any) -> None:
+        if isinstance(value, str) and re.fullmatch(r"story-package(?:/[a-z]+-[0-9]+)+", value):
+            referenced.add(value)
+        elif isinstance(value, list):
+            for item in value:
+                collect(item)
+        elif isinstance(value, dict):
+            for item in value.values():
+                collect(item)
+
+    collect(package)
+    return known_refs, referenced
+
+
+def collect_natural_text(package: dict[str, Any]) -> str:
+    keys = {"text", "name", "desire", "fear", "contradiction", "secret", "change", "pressure", "choice", "consequence", "opening_state", "conflict", "turn", "location", "statement", "relation", "when", "event", "tone"}
+    values: list[str] = []
+
+    def collect(value: Any) -> None:
+        if isinstance(value, list):
+            for item in value:
+                collect(item)
+        elif isinstance(value, dict):
+            for key, item in value.items():
+                if key in keys and isinstance(item, str):
+                    values.append(item)
+                else:
+                    collect(item)
+
+    collect(package)
+    return "\n".join(values)
+
+
 def validate_package(
     package: dict[str, Any], case: dict[str, Any], schema: dict[str, Any]
 ) -> None:
@@ -321,78 +375,12 @@ def validate_package(
     if len(package["production"]["speaking_cast"]) > constraints["max_speaking_cast"]:
         raise ValueError("production.speaking_cast exceeds max_speaking_cast")
 
-    known_refs = {
-        f"story-package/{package['logline']['node_id']}",
-        f"story-package/{package['promise']['node_id']}",
-    }
-    for collection in ("characters", "beats", "episodes", "scenes"):
-        for node in package[collection]:
-            parent_ref = f"story-package/{node['node_id']}"
-            known_refs.add(parent_ref)
-            if collection == "episodes":
-                known_refs.add(f"{parent_ref}/{node['end_hook']['node_id']}")
-            if collection == "scenes":
-                for line in node["lines"]:
-                    known_refs.add(f"{parent_ref}/{line['node_id']}")
-    for collection in ("facts", "relationships", "timeline", "setups"):
-        for node in package["continuity_ledger"][collection]:
-            known_refs.add(f"story-package/{node['node_id']}")
-
-    referenced: set[str] = set()
-
-    def collect_refs(value: Any) -> None:
-        if isinstance(value, str) and re.fullmatch(
-            r"story-package(?:/[a-z]+-[0-9]+)+", value
-        ):
-            referenced.add(value)
-        elif isinstance(value, list):
-            for item in value:
-                collect_refs(item)
-        elif isinstance(value, dict):
-            for item in value.values():
-                collect_refs(item)
-
-    collect_refs(package)
+    known_refs, referenced = collect_package_refs(package)
     dangling = sorted(referenced - known_refs)
     if dangling:
         raise ValueError(f"dangling span_ref values: {', '.join(dangling)}")
 
-    natural_text_keys = {
-        "text",
-        "name",
-        "desire",
-        "fear",
-        "contradiction",
-        "secret",
-        "change",
-        "pressure",
-        "choice",
-        "consequence",
-        "opening_state",
-        "conflict",
-        "turn",
-        "location",
-        "statement",
-        "relation",
-        "when",
-        "event",
-        "tone",
-    }
-    natural_text: list[str] = []
-
-    def collect_natural_text(value: Any) -> None:
-        if isinstance(value, list):
-            for item in value:
-                collect_natural_text(item)
-        elif isinstance(value, dict):
-            for key, item in value.items():
-                if key in natural_text_keys and isinstance(item, str):
-                    natural_text.append(item)
-                else:
-                    collect_natural_text(item)
-
-    collect_natural_text(package)
-    language_sample = "\n".join(natural_text)
+    language_sample = collect_natural_text(package)
     cjk_count = len(re.findall(r"[\u4e00-\u9fff]", language_sample))
     latin_count = len(re.findall(r"[A-Za-z]", language_sample))
     if cjk_count == 0 or latin_count > cjk_count:

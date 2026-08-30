@@ -1,5 +1,9 @@
 # MicrocodeX Short Drama Studio - 项目完整扫描报告
 
+> 历史快照，不能作为当前项目状态或待办事实源。当前状态以 `HANDOFF.md`、
+> `docs/project-memory/PROJECT_REGISTRY.yaml` 和实际门禁输出为准；本报告中关于 E2E、
+> 测试数量和未实现项的描述可能已经过时。
+
 **扫描日期**: 2026-08-12  
 **扫描范围**: 完整代码库  
 **项目状态**: Alpha

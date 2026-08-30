@@ -9,12 +9,15 @@ use crate::credentials::{CredentialAuditEvent, CredentialStatus};
 use crate::evaluations::{
     BlindAssignment, EvaluationBatchResult, EvaluationCatalog, HumanDimensionInput,
 };
+use crate::media_gateway_settings::MediaGatewaySettings;
+use crate::media_runtime::DesktopMediaRunResult;
 use crate::provider_settings::ProviderRouteSettings;
 use crate::provider_soak::ProviderSoakResult;
 use crate::revisions::{ExportReceipt, RevisionWorkspace};
 use crate::run_controller::RunSnapshot;
 use crate::{CommandError, DesktopState};
 use story_runtime::GenrePackOption;
+use story_storage::media_projects::MediaProjectRecord;
 use story_storage::{RevisionComparison, RevisionSummary};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -191,6 +194,91 @@ pub async fn sync_story_run(state: State<'_, DesktopState>) -> Result<RunSnapsho
 #[tauri::command]
 pub async fn cancel_story_run(state: State<'_, DesktopState>) -> Result<RunSnapshot, CommandError> {
     state.controller.cancel().await
+}
+
+#[tauri::command]
+pub fn append_media_prompt_revision(
+    state: State<'_, DesktopState>,
+    revision: Value,
+) -> Result<MediaProjectRecord, CommandError> {
+    state.media_projects.append_prompt_revision(revision)
+}
+
+#[tauri::command]
+pub fn append_media_generation_request(
+    state: State<'_, DesktopState>,
+    request: Value,
+) -> Result<MediaProjectRecord, CommandError> {
+    state.media_projects.append_generation_request(request)
+}
+
+#[tauri::command]
+pub fn read_media_project_history(
+    state: State<'_, DesktopState>,
+    project_id: String,
+) -> Result<Vec<MediaProjectRecord>, CommandError> {
+    state.media_projects.history(&project_id)
+}
+
+#[tauri::command]
+pub fn media_gateway_settings(
+    state: State<'_, DesktopState>,
+) -> Result<Option<MediaGatewaySettings>, CommandError> {
+    state.media_gateway_settings.load()
+}
+
+#[tauri::command]
+pub fn save_media_gateway_settings(
+    state: State<'_, DesktopState>,
+    endpoint: String,
+) -> Result<MediaGatewaySettings, CommandError> {
+    state.media_gateway_settings.save(endpoint)
+}
+
+#[tauri::command]
+pub async fn start_media_run(
+    state: State<'_, DesktopState>,
+    run_id: String,
+    request: Value,
+) -> Result<DesktopMediaRunResult, CommandError> {
+    state
+        .media_runtime
+        .start(
+            &state.credentials,
+            &state.media_gateway_settings,
+            &state.media_projects,
+            run_id,
+            request,
+            false,
+        )
+        .await
+}
+
+#[tauri::command]
+pub async fn resume_media_run(
+    state: State<'_, DesktopState>,
+    run_id: String,
+    request: Value,
+) -> Result<DesktopMediaRunResult, CommandError> {
+    state
+        .media_runtime
+        .start(
+            &state.credentials,
+            &state.media_gateway_settings,
+            &state.media_projects,
+            run_id,
+            request,
+            true,
+        )
+        .await
+}
+
+#[tauri::command]
+pub async fn cancel_media_run(
+    state: State<'_, DesktopState>,
+    run_id: String,
+) -> Result<(), CommandError> {
+    state.media_runtime.cancel(&run_id).await
 }
 
 #[tauri::command]

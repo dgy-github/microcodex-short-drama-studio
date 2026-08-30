@@ -103,7 +103,8 @@ class StoryAgent(Agent):
                 f"{spec.task_id} returned {artifact.get('schema')!r}, "
                 f"expected {spec.artifact_schema!r}"
             )
-        digest = await self._context.retain(spec, artifact, model, usage)
+        record = await self._context.retain(spec, artifact, model, usage)
+        digest = record["content_sha256"]
         if spec.task_id in REVIEW_TASKS:
             for finding in artifact.get("findings", []):
                 await self._context.emit(
@@ -119,7 +120,11 @@ class StoryAgent(Agent):
             "task.artifact.ready",
             spec.agent_id,
             spec.task_id,
-            {"artifact_schema": spec.artifact_schema, "content_sha256": digest},
+            {
+                "artifact_schema": spec.artifact_schema,
+                "content_sha256": digest,
+                **({"content_ref": record["content_ref"]} if "content_ref" in record else {}),
+            },
         )
         await self._context.emit(
             "task.completed",
@@ -197,70 +202,24 @@ class StoryAgent(Agent):
             raise RuntimeError("episode plan count does not match the story job")
 
         semaphore = asyncio.Semaphore(EPISODE_WRITER_CONCURRENCY)
-
-        async def write_one(index: int, episode: Any) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
-            agent_id = f"episode-writer-{index:02}"
-            await self._context.emit(
-                "episode.started",
-                agent_id,
-                self._task_spec.task_id,
-                {"episode_index": index, "episode_count": expected},
+        writers: list[asyncio.Task[Any]] = []
+        failures: list[Exception] = []
+        writers.extend(
+            asyncio.create_task(
+                self._write_one_episode(
+                    index, episode, expected, semaphore, writers, failures
+                )
             )
-            try:
-                async with semaphore:
-                    artifact, usage, model = await self._capability.generate(
-                        "generation",
-                        SYSTEM,
-                        episode_writer_prompt(index, episode, self._context),
-                    )
-                scenes = artifact.get("scenes")
-                if not isinstance(scenes, list) or not scenes:
-                    raise RuntimeError(
-                        f"episode writer {index} returned no scripted scenes"
-                    )
-                attributed = []
-                for scene in scenes:
-                    if not isinstance(scene, dict):
-                        raise RuntimeError(
-                            f"episode writer {index} returned an invalid scene"
-                        )
-                    attributed.append({**scene, "episode_index": index})
-                await self._context.emit(
-                    "episode.completed",
-                    agent_id,
-                    self._task_spec.task_id,
-                    {
-                        "episode_index": index,
-                        "scene_count": len(attributed),
-                        "usage": usage,
-                    },
-                )
-                return attributed, usage, model
-            except Exception as exc:
-                await self._context.emit(
-                    "episode.failed",
-                    agent_id,
-                    self._task_spec.task_id,
-                    {"episode_index": index, "error": str(exc)},
-                )
-                raise
-
-        # gather() hands the first exception to the caller but leaves the other
-        # children running: on a provider failure the remaining episode writers
-        # would keep spending flagship tokens on scenes nobody reads, and that
-        # usage never reaches retain() to be counted against the budget. Cancel
-        # the siblings and await them so the run stops paying the moment it has
-        # decided to fail.
-        writers = [
-            asyncio.create_task(write_one(index, episode))
             for index, episode in enumerate(episode_plan, start=1)
-        ]
+        )
         try:
             results = await asyncio.gather(*writers)
         except BaseException:
             for writer in writers:
                 writer.cancel()
             await asyncio.gather(*writers, return_exceptions=True)
+            if failures:
+                raise failures[0]
             raise
         scenes = [scene for child_scenes, _, _ in results for scene in child_scenes]
         usage = merge_usage(item[1] for item in results)
@@ -275,3 +234,56 @@ class StoryAgent(Agent):
             usage,
             "+".join(models),
         )
+
+    async def _write_one_episode(
+        self,
+        index: int,
+        episode: Any,
+        expected: int,
+        semaphore: asyncio.Semaphore,
+        writers: list[asyncio.Task[Any]],
+        failures: list[Exception],
+    ) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
+        agent_id = f"episode-writer-{index:02}"
+        await self._context.emit(
+            "episode.started", agent_id, self._task_spec.task_id,
+            {"episode_index": index, "episode_count": expected},
+        )
+        try:
+            async with semaphore:
+                artifact, usage, model = await self._capability.generate(
+                    "generation", SYSTEM,
+                    episode_writer_prompt(index, episode, self._context),
+                )
+            attributed = self._attributed_scenes(index, artifact)
+            await self._context.emit(
+                "episode.completed", agent_id, self._task_spec.task_id,
+                {"episode_index": index, "scene_count": len(attributed), "usage": usage},
+            )
+            return attributed, usage, model
+        except Exception as exc:
+            if not failures:
+                failures.append(exc)
+            # Cancel paid siblings before durable failure-event I/O; otherwise
+            # a slow append leaves a provider-spend window after first failure.
+            current = asyncio.current_task()
+            for writer in writers:
+                if writer is not current:
+                    writer.cancel()
+            await self._context.emit(
+                "episode.failed", agent_id, self._task_spec.task_id,
+                {"episode_index": index, "error": str(exc)},
+            )
+            raise
+
+    @staticmethod
+    def _attributed_scenes(index: int, artifact: Any) -> list[dict[str, Any]]:
+        scenes = artifact.get("scenes") if isinstance(artifact, dict) else None
+        if not isinstance(scenes, list) or not scenes:
+            raise RuntimeError(f"episode writer {index} returned no scripted scenes")
+        attributed = []
+        for scene in scenes:
+            if not isinstance(scene, dict):
+                raise RuntimeError(f"episode writer {index} returned an invalid scene")
+            attributed.append({**scene, "episode_index": index})
+        return attributed

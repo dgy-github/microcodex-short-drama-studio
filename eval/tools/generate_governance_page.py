@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -202,8 +201,7 @@ def render() -> str:
         .replace("%%SECTION_SEVEN%%", section_seven(manifest, status))
         .replace(
             "%%GENERATED_NOTE%%",
-            f"本页由 <code>eval/tools/generate_governance_page.py</code> 生成于 "
-            f"{date.today().isoformat()}，请勿手工编辑。",
+            "本页由 <code>eval/tools/generate_governance_page.py</code> 生成，请勿手工编辑。",
         )
     )
     return page

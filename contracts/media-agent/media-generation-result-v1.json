@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/media-generation-result-v1.json",
+  "title": "Media generation result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "project_id", "request_id", "kind", "mime_type", "content_ref", "content_sha256", "byte_len", "provider", "model", "cost_cny_fen", "pricing_catalog_id"],
+  "properties": {
+    "schema": {"const": "media-generation-result/v1"},
+    "project_id": {"type": "string", "minLength": 1},
+    "request_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["image", "video"]},
+    "mime_type": {"type": "string", "minLength": 1},
+    "content_ref": {"type": "string", "pattern": "^artifact://sha256/[0-9a-f]{64}$"},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "byte_len": {"type": "integer", "minimum": 1},
+    "provider": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "cost_cny_fen": {"type": "integer", "minimum": 0},
+    "pricing_catalog_id": {"type": "string", "minLength": 1}
+  }
+}

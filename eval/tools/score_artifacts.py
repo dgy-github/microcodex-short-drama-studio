@@ -302,6 +302,49 @@ def pointwise_score_record(
     }
 
 
+def reusable_summary(
+    result_path: Path, judge: dict[str, Any], samples_per_artifact: int,
+    expected_fingerprint: str, force: bool, case_id: str,
+) -> dict[str, Any] | None:
+    if not result_path.exists() or force:
+        return None
+    saved = load(result_path)
+    provider = saved.get("summary", {}).get("route_provider")
+    route = next((item for item in judge["routes"] if item["provider"] == provider), None)
+    config = judge_config_fingerprint(judge) if provider == "local_codex_exec" else None
+    if route and saved_pointwise_is_reusable(
+        saved, judge, provider, samples_per_artifact, expected_fingerprint, config,
+    ):
+        print(f"RESUME {judge['model']} {case_id} via {provider}: reusing complete saved samples")
+        return saved["summary"]
+    print(f"STALE {judge['model']} {case_id}: saved fingerprint or sample count does not match; rescoring")
+    return None
+
+
+def collect_samples(
+    partial_path: Path, route: dict[str, Any], judge: dict[str, Any], case: dict[str, Any],
+    artifact: dict[str, Any], system: str, temperature: float, samples_per_artifact: int,
+    retry_limit: int, dimension_ids: list[str], expected_fingerprint: str,
+    config_fingerprint: str | None, api_key: str | None,
+) -> list[dict[str, Any]]:
+    partial = (
+        existing if partial_path.exists()
+        and (existing := load(partial_path)).get("input_fingerprint") == expected_fingerprint
+        and existing.get("judge_config_fingerprint") == config_fingerprint
+        else {"input_fingerprint": expected_fingerprint, "judge_config_fingerprint": config_fingerprint, "samples": []}
+    )
+    samples = partial["samples"][:samples_per_artifact]
+    while len(samples) < samples_per_artifact:
+        samples.append(request_validated_pointwise(
+            route, judge["model"], system, api_key, case["case_id"], artifact,
+            temperature, dimension_ids, retry_limit,
+        ))
+        partial["samples"] = samples
+        atomic_write(partial_path, partial)
+        print(f"CHECKPOINT {judge['model']} {case['case_id']}: sample {len(samples)}/{samples_per_artifact}")
+    return samples
+
+
 def score_case(
     judge: dict[str, Any],
     case: dict[str, Any],
@@ -317,71 +360,20 @@ def score_case(
 ) -> dict[str, Any] | None:
     result_path = run_dir / f"judge-{judge['model']}.{case['case_id']}.result.json"
     partial_path = run_dir / f"judge-{judge['model']}.{case['case_id']}.partial.json"
-    if result_path.exists() and not force:
-        saved = load(result_path)
-        saved_provider = saved.get("summary", {}).get("route_provider")
-        saved_route = next(
-            (r for r in judge["routes"] if r["provider"] == saved_provider), None
-        )
-        saved_config_fingerprint = (
-            judge_config_fingerprint(judge)
-            if saved_provider == "local_codex_exec"
-            else None
-        )
-        if saved_route and saved_pointwise_is_reusable(
-            saved,
-            judge,
-            saved_provider,
-            samples_per_artifact,
-            expected_fingerprint,
-            saved_config_fingerprint,
-        ):
-            print(
-                f"RESUME {judge['model']} {case['case_id']} via {saved_provider}: "
-                "reusing complete saved samples"
-            )
-            return saved["summary"]
-        print(
-            f"STALE {judge['model']} {case['case_id']}: saved fingerprint or sample "
-            "count does not match; rescoring"
-        )
+    if saved := reusable_summary(
+        result_path, judge, samples_per_artifact, expected_fingerprint, force, case["case_id"]
+    ):
+        return saved
     route = resolve_route(judge)
     config_fingerprint = (
         judge_config_fingerprint(judge) if route["provider"] == "local_codex_exec" else None
     )
     api_key = os.environ[route["api_key_env"]] if route.get("api_key_env") else None
-    partial = (
-        existing
-        if partial_path.exists()
-        and (existing := load(partial_path)).get("input_fingerprint") == expected_fingerprint
-        and existing.get("judge_config_fingerprint") == config_fingerprint
-        else {
-            "input_fingerprint": expected_fingerprint,
-            "judge_config_fingerprint": config_fingerprint,
-            "samples": [],
-        }
+    samples = collect_samples(
+        partial_path, route, judge, case, artifact, system, temperature,
+        samples_per_artifact, retry_limit, dimension_ids, expected_fingerprint,
+        config_fingerprint, api_key,
     )
-    samples = partial["samples"][:samples_per_artifact]
-    while len(samples) < samples_per_artifact:
-        samples.append(
-            request_validated_pointwise(
-                route,
-                judge["model"],
-                system,
-                api_key,
-                case["case_id"],
-                artifact,
-                temperature,
-                dimension_ids,
-                retry_limit,
-            )
-        )
-        partial["samples"] = samples
-        atomic_write(partial_path, partial)
-        print(
-            f"CHECKPOINT {judge['model']} {case['case_id']}: "
-            f"sample {len(samples)}/{samples_per_artifact}"
-        )
     medians = {
         dimension: statistics.median(
             sample[dimension]["score"]

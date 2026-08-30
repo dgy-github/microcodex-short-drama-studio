@@ -59,6 +59,18 @@ impl ArtifactRepository {
         Self { root }
     }
 
+    /// Retained candidate artifacts (CAP-006) live beside run artifacts so
+    /// the trusted store shares one root: `<artifact_root>/retained-store`.
+    pub fn retained_store_root(&self) -> PathBuf {
+        self.root.join("retained-store")
+    }
+
+    /// Media prompt revisions and requests use a separate append-only store
+    /// under the trusted artifact root; sidecars never receive this path.
+    pub fn media_project_store_root(&self) -> PathBuf {
+        self.root.join("media-projects")
+    }
+
     pub fn list(&self) -> Result<Vec<RunSummary>, CommandError> {
         if !self.root.exists() {
             return Ok(Vec::new());

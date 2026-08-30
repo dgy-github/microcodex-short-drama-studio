@@ -131,6 +131,29 @@ def dimension_ids_from_rubric() -> list[str]:
     return [dimension["id"] for dimension in document["dimensions"]]
 
 
+def joined_agreement_metrics(
+    joined: list[str], judges: dict[str, Any], humans: dict[str, Any], dimension_ids: list[str],
+) -> tuple[list[dict[str, Any]], dict[str, dict[str, float]], list[dict[str, Any]], list[float]]:
+    raters: list[dict[str, Any]] = []
+    per_dimension: dict[str, dict[str, float]] = {}
+    per_artifact: list[dict[str, Any]] = []
+    alphas: list[float] = []
+    for artifact_id in joined:
+        judge = judges[artifact_id]
+        block = [[bin_score(judge["median_scores"][dimension]) for dimension in dimension_ids]]
+        raters.append({"role": "judge", "name": judge["judge_model"], "artifact_id": artifact_id})
+        for human in humans[artifact_id]["raters"]:
+            block.append([bin_score(human["scores"][dimension]) for dimension in dimension_ids])
+            raters.append({"role": "internal_spot_check", "name": human["rater_id"], "artifact_id": artifact_id})
+            for dimension in dimension_ids:
+                key = f"{judge['judge_model']}-{human['rater_id']}"
+                per_dimension.setdefault(dimension, {})[key] = judge["median_scores"][dimension] - human["scores"][dimension]
+        alpha = krippendorff_alpha_nominal(block)
+        alphas.append(alpha)
+        per_artifact.append({"artifact_id": artifact_id, "case_id": judge["case_id"], "raters_in_block": len(block), "alpha": alpha})
+    return raters, per_dimension, per_artifact, alphas
+
+
 def build_agreement(
     evaluation_root: Path, run_dirs: list[Path]
 ) -> dict[str, Any]:
@@ -142,61 +165,9 @@ def build_agreement(
     human_only = sorted(set(humans) - set(judges))
     judge_only = sorted(set(judges) - set(humans))
 
-    # Nominal alpha needs every rater to score the same complete item set,
-    # which only holds inside one artifact (all raters scored its ten
-    # dimensions). Alpha is therefore computed per artifact as a complete
-    # block and aggregated; cross-artifact pooling would have holes.
-    raters: list[dict[str, Any]] = []
-    per_dimension: dict[str, dict[str, float]] = {}
-    per_artifact: list[dict[str, Any]] = []
-    alphas: list[float] = []
-    for artifact_id in joined:
-        judge = judges[artifact_id]
-        block: list[list[str]] = []
-        block.append(
-            [
-                bin_score(judge["median_scores"][dimension])
-                for dimension in dimension_ids
-            ]
-        )
-        raters.append(
-            {
-                "role": "judge",
-                "name": judge["judge_model"],
-                "artifact_id": artifact_id,
-            }
-        )
-        for human in humans[artifact_id]["raters"]:
-            block.append(
-                [
-                    bin_score(human["scores"][dimension])
-                    for dimension in dimension_ids
-                ]
-            )
-            raters.append(
-                {
-                    "role": "internal_spot_check",
-                    "name": human["rater_id"],
-                    "artifact_id": artifact_id,
-                }
-            )
-            for dimension in dimension_ids:
-                difference = (
-                    judge["median_scores"][dimension] - human["scores"][dimension]
-                )
-                per_dimension.setdefault(dimension, {})[
-                    f"{judge['judge_model']}-{human['rater_id']}"
-                ] = difference
-        alpha = krippendorff_alpha_nominal(block)
-        alphas.append(alpha)
-        per_artifact.append(
-            {
-                "artifact_id": artifact_id,
-                "case_id": judge["case_id"],
-                "raters_in_block": len(block),
-                "alpha": alpha,
-            }
-        )
+    raters, per_dimension, per_artifact, alphas = joined_agreement_metrics(
+        joined, judges, humans, dimension_ids
+    )
 
     mean_differences = {
         dimension: round(statistics.mean(pairs.values()), 3)

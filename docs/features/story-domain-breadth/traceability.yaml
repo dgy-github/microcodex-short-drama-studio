@@ -82,7 +82,7 @@ implementation:
     location: eval/tools/maintain_challenge_set.py
     owner: CAP-005
   - id: RT-114
-    location: sidecar/campaign_adapter/workflow.py
+    location: sidecar/campaign_adapter/workflow/runner.py
     owner: CAP-002
   - id: BE-123
     location: apps/desktop/src-tauri/src/commands.rs

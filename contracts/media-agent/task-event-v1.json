@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/media-agent-task-event-v1.json",
+  "title": "Media agent task event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "event_id", "project_id", "run_id", "event_type", "payload"],
+  "properties": {
+    "schema": {"const": "media-agent-task-event/v1"},
+    "event_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "event_type": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"}
+  }
+}

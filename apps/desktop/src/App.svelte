@@ -5,9 +5,10 @@
   import CredentialPanel from "./lib/CredentialPanel.svelte";
   import EvaluationCenter from "./lib/EvaluationCenter.svelte";
   import StoryJobForm from "./lib/StoryJobForm.svelte";
+  import MediaStudio from "./lib/MediaStudio.svelte";
   import { initTheme, toggleTheme, getTheme, type Theme } from "./lib/theme";
 
-  let active = $state<"create" | "library" | "evaluation" | "settings">("create");
+  let active = $state<"create" | "library" | "media" | "evaluation" | "settings">("create");
   let runCount = $state<number | null>(null);
   let latestCompletedRunId = $state<string | null>(null);
   let currentTheme = $state<Theme>(getTheme());
@@ -55,6 +56,9 @@
       <button class:active={active === "library"} onclick={() => (active = "library")}>
         <span>▤</span>作品库
       </button>
+      <button class:active={active === "media"} onclick={() => (active = "media")}>
+        <span>◈</span>媒体工作室
+      </button>
       <button class:active={active === "evaluation"} onclick={() => (active = "evaluation")}>
         <span>◎</span>评测中心
       </button>
@@ -77,7 +81,7 @@
       <div>
         <span class="eyebrow">STORY OPERATING SYSTEM</span>
         <h1>
-          {active === "create" ? "创作台" : active === "library" ? "作品库" : active === "evaluation" ? "评测中心" : "模型配置"}
+          {active === "create" ? "创作台" : active === "library" ? "作品库" : active === "media" ? "媒体工作室" : active === "evaluation" ? "评测中心" : "模型配置"}
         </h1>
       </div>
       <div class="topbar-state">
@@ -97,6 +101,8 @@
         <StoryJobForm oncompleted={openCompletedRun} />
       {:else if active === "library"}
         <ArtifactBrowser initialRunId={latestCompletedRunId} />
+      {:else if active === "media"}
+        <MediaStudio />
       {:else if active === "evaluation"}
         <EvaluationCenter />
       {:else}

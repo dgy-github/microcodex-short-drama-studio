@@ -131,7 +131,7 @@ def panel_evidence(
     )
 
 
-def evaluate_release(evidence: dict[str, Any]) -> dict[str, Any]:
+def validate_evidence(evidence: dict[str, Any]) -> None:
     schema = json.loads(
         (ROOT / "schemas/professional-release-evidence-v1.json").read_text("utf-8")
     )
@@ -139,6 +139,28 @@ def evaluate_release(evidence: dict[str, Any]) -> dict[str, Any]:
         (ROOT / "schemas/holdout-seal-v1.json").read_text("utf-8")
     )
     jsonschema.Draft202012Validator(schema).validate(evidence)
+
+
+def release_gate_failures(
+    evidence: dict[str, Any], preference_lcb: float | None, agreement: float | None,
+    adjudications_required: int, adjudications_complete: int,
+) -> list[str]:
+    gates = [
+        (all(value >= -0.10 for value in evidence["critical_dimension_deltas"].values()), "critical_dimension_regression"),
+        (all(value >= -0.15 for value in evidence["genre_slice_deltas"].values()), "genre_slice_regression"),
+        (preference_lcb is not None and preference_lcb > 0.50, "holdout_preference_lcb_not_above_half"),
+        (evidence["critical_failure_delta"] <= 0, "critical_failures_increased"),
+        (evidence["overlap_blocking_violations"] == 0, "originality_overlap_blocked"),
+        ((evidence["mean_cost_within_budget"] and evidence["p95_latency_within_budget"]) or evidence["quality_gain_cost_approved"], "cost_or_latency_budget_failed"),
+        (evidence["stochastic_samples"] >= 3, "insufficient_stochastic_samples"),
+        (agreement is not None and agreement >= 0.67, "professional_agreement_below_threshold"),
+        (adjudications_required == adjudications_complete, "adjudication_incomplete"),
+    ]
+    return [reason for passed, reason in gates if not passed]
+
+
+def evaluate_release(evidence: dict[str, Any]) -> dict[str, Any]:
+    validate_evidence(evidence)
     (
         human_ready,
         agreement,
@@ -154,46 +176,10 @@ def evaluate_release(evidence: dict[str, Any]) -> dict[str, Any]:
     )
     preference_lcb = stratified_bootstrap_lcb(pairs)
     if human_ready:
-        gates = [
-            (
-                all(value >= -0.10 for value in evidence["critical_dimension_deltas"].values()),
-                "critical_dimension_regression",
-            ),
-            (
-                all(value >= -0.15 for value in evidence["genre_slice_deltas"].values()),
-                "genre_slice_regression",
-            ),
-            (
-                preference_lcb is not None and preference_lcb > 0.50,
-                "holdout_preference_lcb_not_above_half",
-            ),
-            (
-                evidence["critical_failure_delta"] <= 0,
-                "critical_failures_increased",
-            ),
-            (
-                evidence["overlap_blocking_violations"] == 0,
-                "originality_overlap_blocked",
-            ),
-            (
-                (
-                    evidence["mean_cost_within_budget"]
-                    and evidence["p95_latency_within_budget"]
-                )
-                or evidence["quality_gain_cost_approved"],
-                "cost_or_latency_budget_failed",
-            ),
-            (evidence["stochastic_samples"] >= 3, "insufficient_stochastic_samples"),
-            (
-                agreement is not None and agreement >= 0.67,
-                "professional_agreement_below_threshold",
-            ),
-            (
-                adjudications_required == adjudications_complete,
-                "adjudication_incomplete",
-            ),
-        ]
-        reasons.extend(reason for passed, reason in gates if not passed)
+        reasons.extend(release_gate_failures(
+            evidence, preference_lcb, agreement,
+            adjudications_required, adjudications_complete,
+        ))
         decision = "promote" if not reasons else "reject"
     else:
         decision = "non_promotable"

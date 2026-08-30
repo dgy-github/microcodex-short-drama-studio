@@ -7,7 +7,8 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 use story_core::StoryJob;
 use story_provider::{
-    CapabilityHost, CapabilityHostConfig, CapabilityToken, ProviderRoute, ProviderSecret,
+    CapabilityHost, CapabilityHostConfig, CapabilityToken, PricingCatalog, ProviderRoute,
+    ProviderSecret,
 };
 use story_runtime::{
     CommandAcceptance, IdempotencyKey, SidecarAuthToken, SidecarLaunchConfig, SidecarProcess,
@@ -23,13 +24,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let review_model = required_config("REVIEW_MODEL")?;
     let generation_secret = required_secret("GENERATOR_API_KEY")?;
     let review_secret = required_secret("JUDGE_API_KEY")?;
+    let pricing_path = PathBuf::from(required_config("STORY_PRICING_CATALOG")?);
+    let pricing = PricingCatalog::from_json(&std::fs::read_to_string(pricing_path)?)?;
     let capability_token_value = "advisory-capability-token-20260728-000001";
     let capability_host = CapabilityHost::start(CapabilityHostConfig {
         generation: ProviderRoute::new(generation_endpoint, generation_model, generation_secret)?
             .with_thinking_disabled(),
         review: ProviderRoute::new(review_endpoint, review_model, review_secret)?
             .with_thinking_disabled(),
+        pricing,
         package_schema_path: repository.join("schemas/story-package-v1.json"),
+        retained_store_root: std::env::var_os("RETAINED_STORE_ROOT")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| repository.join("artifacts/retained-store")),
+        media_project_store_root: repository.join("artifacts/media-projects"),
         token: CapabilityToken::new(capability_token_value)?,
         request_timeout: Duration::from_secs(240),
     })

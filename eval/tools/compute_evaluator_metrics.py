@@ -224,110 +224,84 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> int:
-    args = parse_args()
-    pair_dirs = [
-        path if path.is_absolute() else ROOT / path
-        for path in (args.pair_dir or [DEFAULT_PAIR])
-    ]
+def load_pairs(args: argparse.Namespace, dimension_ids: list[str]) -> list[dict[str, Any]]:
+    pair_dirs = [path if path.is_absolute() else ROOT / path for path in (args.pair_dir or [DEFAULT_PAIR])]
     for pair_dir in pair_dirs:
         if not (pair_dir / "pair.json").exists():
             raise SystemExit(f"no pair.json under {pair_dir}")
+    return [measure_pair(pair_dir, dimension_ids) for pair_dir in pair_dirs]
 
+
+def build_report(manifest: dict[str, Any], metrics: dict[str, Any], pairs: list[dict[str, Any]], dimension_ids: list[str]) -> dict[str, Any]:
+    pairs_total = len(pairs)
+    detected = sum(1 for pair in pairs if pair["detected"])
+    localised = sum(1 for pair in pairs if pair["localised"])
+    guaranteed = [pair["pair_id"] for pair in pairs if pair["constructively_guaranteed_localisation"]]
+    return {
+        "schema": "evaluator-metrics/v1", "manifest": manifest["eval_version"],
+        "pair_ids": [pair["pair_id"] for pair in pairs], "pairs_total": pairs_total,
+        "resolution_note": (
+            f"Both headline figures are defined over pairs; with {pairs_total} pair(s) the granularity is 1/{pairs_total}. "
+            + ("A single pair can only attain 0.0 or 1.0 — not an estimate." if pairs_total == 1 else "Read the per-judge observation rates for texture.")
+        ),
+        "seeded_defect_detection": {
+            "value": detected / pairs_total, "target": metrics["seeded_defect_detection"]["target"],
+            "meets_target": detected / pairs_total >= metrics["seeded_defect_detection"]["target"], "detected_pairs": detected,
+        },
+        "defect_localisation": {
+            "value": localised / pairs_total, "target": metrics["defect_localisation"]["target"],
+            "meets_target": localised / pairs_total >= metrics["defect_localisation"]["target"], "constructively_guaranteed_pairs": guaranteed,
+        },
+        "judges_counted": sorted({judge["judge_model"] for pair in pairs for judge in pair["primary"]}),
+        "inter_model_agreement": pooled_agreement(pairs, dimension_ids),
+        "per_pair": [{k: v for k, v in pair.items() if k != "primary"} | {"per_judge": [{k: v for k, v in judge.items() if k != "detail"} for judge in pair["primary"]]} for pair in pairs],
+        "not_computable_here": {"spot_check_agreement": "needs the internal human spot check, which has never been run"},
+    }
+
+
+def write_report(report: dict[str, Any], out: Path, pairs: list[dict[str, Any]]) -> None:
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({key: value for key, value in report.items() if key != "per_pair"}, ensure_ascii=False, indent=2))
+    for pair in pairs:
+        for judge in pair["primary"]:
+            print(f"  {pair['pair_id'][:44]:44} {judge['judge_model']:16} n={judge['observations']} negative_lower={judge['negative_lower_rate']:.2f} localised={judge['localised_rate']:.2f}")
+    print(f"report: {out}")
+
+
+def report_is_current(report: dict[str, Any], out: Path) -> bool:
+    """Compare semantic JSON so formatting and key order cannot hide drift."""
+    if not out.exists():
+        return False
+    try:
+        return load(out) == report
+    except (OSError, json.JSONDecodeError):
+        return False
+
+
+def main() -> int:
+    args = parse_args()
     manifest = load(MANIFEST)
-    metrics = manifest["evaluator_metrics"]
     dimension_ids = [
         d for pillar in manifest["pillars"].values() for d in pillar["dimensions"]
     ]
-    pairs = [measure_pair(pair_dir, dimension_ids) for pair_dir in pair_dirs]
-
-    pairs_total = len(pairs)
-    detected = sum(1 for p in pairs if p["detected"])
-    localised = sum(1 for p in pairs if p["localised"])
-    guaranteed = [
-        p["pair_id"] for p in pairs if p["constructively_guaranteed_localisation"]
-    ]
+    pairs = load_pairs(args, dimension_ids)
     out_dir = (
         ROOT / pairs[0]["pair_dir"]
-        if pairs_total == 1
+        if len(pairs) == 1
         else ROOT / "eval" / "adversarial"
     )
     out = args.out or (out_dir / "evaluator-metrics.json")
-
-    report = {
-        "schema": "evaluator-metrics/v1",
-        "manifest": manifest["eval_version"],
-        "pair_ids": [p["pair_id"] for p in pairs],
-        "pairs_total": pairs_total,
-        "resolution_note": (
-            f"Both headline figures are defined over pairs; with {pairs_total} "
-            f"pair(s) the granularity is 1/{pairs_total}. "
-            + (
-                "A single pair can only attain 0.0 or 1.0 — not an estimate."
-                if pairs_total == 1
-                else "Read the per-judge observation rates for texture."
-            )
-        ),
-        "seeded_defect_detection": {
-            "value": detected / pairs_total,
-            "target": metrics["seeded_defect_detection"]["target"],
-            "meets_target": detected / pairs_total
-            >= metrics["seeded_defect_detection"]["target"],
-            "detected_pairs": detected,
-        },
-        "defect_localisation": {
-            "value": localised / pairs_total,
-            "target": metrics["defect_localisation"]["target"],
-            "meets_target": localised / pairs_total
-            >= metrics["defect_localisation"]["target"],
-            "constructively_guaranteed_pairs": guaranteed,
-        },
-        "judges_counted": sorted(
-            {j["judge_model"] for p in pairs for j in p["primary"]}
-        ),
-        "inter_model_agreement": pooled_agreement(pairs, dimension_ids),
-        "per_pair": [
-            {k: v for k, v in p.items() if k != "primary"} | {
-                "per_judge": [
-                    {k: v for k, v in j.items() if k != "detail"}
-                    for j in p["primary"]
-                ]
-            }
-            for p in pairs
-        ],
-        "not_computable_here": {
-            "spot_check_agreement": "needs the internal human spot check, which has never been run",
-        },
-    }
+    report = build_report(manifest, manifest["evaluator_metrics"], pairs, dimension_ids)
     report = json.loads(json.dumps(report, ensure_ascii=False, default=str))
 
     if args.check:
-        if not out.exists():
-            print("MISSING evaluator-metrics.json")
+        if not report_is_current(report, out):
+            print("STALE evaluator-metrics.json; regenerate with compute_evaluator_metrics.py")
             return 1
-        print("OK evaluator-metrics.json present")
+        print("OK evaluator-metrics.json is current")
         return 0
 
-    out.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    print(
-        json.dumps(
-            {k: v for k, v in report.items() if k != "per_pair"},
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
-    for p in pairs:
-        for judge in p["primary"]:
-            print(
-                f"  {p['pair_id'][:44]:44} {judge['judge_model']:16} "
-                f"n={judge['observations']} "
-                f"negative_lower={judge['negative_lower_rate']:.2f} "
-                f"localised={judge['localised_rate']:.2f}"
-            )
-    print(f"report: {out}")
+    write_report(report, out, pairs)
     return 0
 
 

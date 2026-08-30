@@ -16,10 +16,10 @@ capabilities:
     reuse_rule: Extend the runtime task lifecycle; do not add a second orchestrator in UI or sidecar.
   - id: CAP-003
     name: Provider access
-    summary: Owns credentials, validated provider routes, bounded live-provider evidence, OpenAI-compatible model calls and the authenticated typed capability host.
-    keywords: [authorization, configuration, endpoint, model, retry, provider, soak]
+    summary: Owns credentials, validated provider routes, versioned pricing and cost quotes, bounded live-provider evidence, OpenAI-compatible model calls and the authenticated typed capability host.
+    keywords: [authorization, configuration, endpoint, model, retry, provider, pricing, cost, soak]
     owner: crates/story-provider/src/lib.rs
-    interfaces: [IFACE-003, IFACE-011, IFACE-022, IFACE-023]
+    interfaces: [IFACE-003, IFACE-011, IFACE-022, IFACE-023, IFACE-031]
     reuse_rule: All production provider access goes through story-provider.
   - id: CAP-004
     name: Campaign sidecar protocol
@@ -77,6 +77,34 @@ capabilities:
     owner: scripts/build_windows_release.ps1
     interfaces: [IFACE-019, IFACE-020]
     reuse_rule: Extend the release evidence pipeline; unlicensed artifacts are not releasable, and unsigned artifacts remain personal-only unless a future public channel requires signing.
+  - id: CAP-013
+    name: Story image request planning
+    summary: Owns story-grounded image prompt revisions and immutable generation request planning.
+    keywords: [image, prompt, revision, regeneration, story-span]
+    owner: projects/story-image-agent/story_image_agent/workflow.py
+    interfaces: [IFACE-029]
+    reuse_rule: Extend prompt planning here; persistent revision/request history is owned by story-storage, while provider access, pricing, retries and run lifecycle remain with existing Rust owners.
+  - id: CAP-014
+    name: Story video request planning
+    summary: Owns provider-neutral video requests that bind immutable image artifacts to story and shot intent.
+    keywords: [video, image-to-video, shot, story-span, generation-request]
+    owner: projects/story-video-agent/story_video_agent/workflow.py
+    interfaces: [IFACE-030]
+    reuse_rule: Extend video request planning here; never add filesystem, shell, credential, storage or provider ownership to Python.
+  - id: CAP-015
+    name: Trusted media execution
+    summary: Owns typed image/video request validation and provider execution seam while delegating pricing to story-provider and immutable bytes to story-storage.
+    keywords: [media, image, video, typed-request, execution, artifact]
+    owner: crates/story-media/src/lib.rs
+    interfaces: [IFACE-032]
+    reuse_rule: Extend this media execution seam for real providers; do not add media provider HTTP, credentials, pricing or storage implementations in Python or UI.
+  - id: CAP-016
+    name: Media project history retention
+    summary: Owns append-only prompt revision and image/video generation request history for independent media projects.
+    keywords: [media-project, prompt-revision, request-history, append-only]
+    owner: crates/story-storage/src/media_projects.rs
+    interfaces: [IFACE-033]
+    reuse_rule: Persist media project history through this owner; Python workspaces may only use the authenticated typed capability.
 interfaces:
   - id: IFACE-001
     name: story-core public types
@@ -126,11 +154,11 @@ interfaces:
   - id: IFACE-006
     name: candidate decision store
     kind: Rust crate API
-    location: crates/story-storage/src/lib.rs
-    purpose: Atomically retain every ranked candidate from one online decision.
-    inputs: [validated candidate decision trace]
-    outputs: [idempotent persistence result]
-    errors: [storage errors]
+    location: crates/story-storage/src/artifacts.rs
+    purpose: Atomically retain every ranked candidate from one online decision in a content-addressed store with an append-only per-run index and digest-verified loads.
+    inputs: [run id, task id, artifact schema, canonical artifact JSON]
+    outputs: [content ref artifact://sha256/<digest>, digest-verified artifact, retained-artifact-index/v1]
+    errors: [invalid identity, invalid reference, hash mismatch, corrupt index, storage errors]
     side_effects: [durable candidate decision write]
   - id: IFACE-007
     name: artifact span reference
@@ -172,11 +200,11 @@ interfaces:
     name: Rust provider capability host
     kind: Authenticated loopback HTTP capability
     location: crates/story-provider/src/capability_host.rs
-    purpose: Keep provider credentials in Rust while serving allowlisted structured generation and artifact validation.
+    purpose: Keep provider credentials in Rust while serving allowlisted structured generation, artifact validation and durable artifact retention/loading through the trusted store.
     inputs: [story-capability-request/v1, launch token]
-    outputs: [structured provider artifact, validation result]
-    errors: [unauthorized capability, provider failure, invalid artifact]
-    side_effects: [provider network request, token usage]
+    outputs: [structured provider artifact, validation result, retained artifact reference, loaded artifact]
+    errors: [unauthorized capability, provider failure, invalid artifact, retention failure]
+    side_effects: [provider network request, token usage, retained-store write]
   - id: IFACE-012
     name: Advisory fixed workflow result
     kind: JSON artifact contract
@@ -330,3 +358,48 @@ interfaces:
     outputs: [eval-freeze-record/v1]
     errors: [hash drift, missing evidence, incomplete record]
     side_effects: [freeze enforcement via scripts/check_eval_freeze.py]
+  - id: IFACE-029
+    name: image generation request
+    kind: JSON artifact contract
+    location: contracts/media-agent/image-generation-request-v1.json
+    purpose: Bind one append-only image prompt revision and story provenance to a unique provider request.
+    inputs: [project ID, prompt revision ID, prompt, story source spans]
+    outputs: [image-generation-request/v1]
+    errors: [blank prompt, missing provenance, unknown revision]
+    side_effects: [append-only generation request creation]
+  - id: IFACE-030
+    name: video generation request
+    kind: JSON artifact contract
+    location: contracts/media-agent/video-generation-request-v1.json
+    purpose: Bind one immutable image artifact and story spans to a unique provider-neutral video request.
+    inputs: [project ID, image artifact reference, story spans, shot prompt]
+    outputs: [video-generation-request/v1]
+    errors: [invalid artifact reference, missing story provenance]
+    side_effects: [append-only generation request creation]
+  - id: IFACE-031
+    name: provider pricing catalog
+    kind: JSON configuration contract and Rust API
+    location: schemas/provider-pricing-catalog-v1.json
+    purpose: Quote successful provider usage under an explicitly versioned provider and model price.
+    inputs: [provider ID, model ID, prompt tokens, completion tokens, reviewed pricing catalog]
+    outputs: [pricing catalog ID, cost in CNY fen]
+    errors: [missing catalog, invalid catalog, unknown route, duplicate route, arithmetic overflow]
+    side_effects: []
+  - id: IFACE-032
+    name: trusted media execution
+    kind: Rust crate API
+    location: crates/story-media/src/lib.rs
+    purpose: Validate provider-neutral image/video requests and retain generated bytes through trusted owners.
+    inputs: [image-generation-request/v1, video-generation-request/v1, typed media provider]
+    outputs: [media-generation-result/v1, immutable media artifact reference]
+    errors: [invalid request, provider failure, invalid output, storage failure]
+    side_effects: [provider execution, immutable media retention]
+  - id: IFACE-033
+    name: media project history
+    kind: Rust storage API and authenticated capability
+    location: crates/story-storage/src/media_projects.rs
+    purpose: Retain prompt revisions and generation requests with parent and provenance checks.
+    inputs: [image prompt revision, image/video generation request]
+    outputs: [media-project-record/v1 history]
+    errors: [duplicate record, missing parent, invalid record, corrupt history]
+    side_effects: [append-only project history write]

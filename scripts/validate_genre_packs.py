@@ -56,21 +56,11 @@ def all_cases() -> dict[tuple[str, str], dict[str, Any]]:
     return cases
 
 
-def validate_registry() -> dict[str, int]:
-    registry = load_json(CONFIG / "genre-packs/registry-v1.json")
-    registry_schema = load_json(ROOT / "schemas/genre-pack-registry-v1.json")
-    jsonschema.Draft202012Validator(registry_schema).validate(registry)
-    human_writing = load_json(resolve_config(registry["human_writing_profile"]))
-    human_writing_schema = load_json(
-        ROOT / "schemas/human-writing-profile-v1.json"
-    )
-    jsonschema.Draft202012Validator(human_writing_schema).validate(
-        human_writing
-    )
-    documents: dict[str, dict[str, dict[str, Any]]] = {}
+def load_registry_documents(registry: dict[str, Any]) -> dict[str, dict[str, dict[str, Any]]]:
+    documents = {}
     for section, schema_name in SECTION_SCHEMAS.items():
         schema = load_json(ROOT / "schemas" / schema_name)
-        section_docs: dict[str, dict[str, Any]] = {}
+        section_docs = {}
         for reference in registry[section]:
             document = load_json(resolve_config(reference))
             jsonschema.Draft202012Validator(schema).validate(document)
@@ -79,8 +69,10 @@ def validate_registry() -> dict[str, int]:
                 raise ValueError(f"duplicate {section} id: {identifier}")
             section_docs[identifier] = document
         documents[section] = section_docs
+    return documents
 
-    cases = all_cases()
+
+def validate_retrieval_sources(documents: dict[str, dict[str, dict[str, Any]]]) -> None:
     for collection in documents["retrieval_collections"].values():
         for source in collection["sources"]:
             path = (ROOT / source["path"]).resolve()
@@ -92,6 +84,11 @@ def validate_registry() -> dict[str, int]:
             if ROOT.resolve() not in evidence.parents or not evidence.is_file():
                 raise ValueError(f"rights evidence missing: {source['source_id']}")
 
+
+def validate_regression_cases(
+    documents: dict[str, dict[str, dict[str, Any]]],
+    cases: dict[tuple[str, str], dict[str, Any]],
+) -> None:
     for manifest in documents["regression_manifests"].values():
         for case_ref in manifest["case_refs"]:
             case = cases.get((case_ref["split"], case_ref["case_id"]))
@@ -100,54 +97,53 @@ def validate_registry() -> dict[str, int]:
                     f"regression case mismatch: {manifest['manifest_id']}:{case_ref['case_id']}"
                 )
 
+
+def validate_pack(pack: dict[str, Any], documents: dict[str, dict[str, dict[str, Any]]]) -> None:
+    profiles = [documents["constraint_profiles"].get(item) for item in pack["constraint_profiles"]]
+    if any(profile is None for profile in profiles):
+        raise ValueError(f"pack references unknown constraint profile: {pack['template_id']}")
+    variants = {profile["episode_count_variant"] for profile in profiles if profile}
+    if variants != {"short", "long"} or any(
+        profile["content_form"] != pack["content_form"] for profile in profiles if profile
+    ):
+        raise ValueError(f"pack lacks shared-contract short/long variants: {pack['template_id']}")
+    architect = documents["agent_profiles"].get(pack["agent_configuration"]["architect_profile"])
+    reviewers = [documents["agent_profiles"].get(item) for item in pack["agent_configuration"]["reviewer_profiles"]]
+    if architect is None or architect["role"] != "architect" or architect["genre"] != pack["genre"] or any(
+        reviewer is None or reviewer["role"] != "reviewer" or reviewer["genre"] != pack["genre"]
+        for reviewer in reviewers
+    ):
+        raise ValueError(f"pack agent profiles do not match genre: {pack['template_id']}")
+    for profile in [architect, *reviewers]:
+        if not (ROOT / profile["output_schema"]).is_file():
+            raise ValueError(f"agent output schema missing: {profile['profile_id']}")
+    if any(item not in documents["retrieval_collections"] for item in pack["retrieval_collections"]):
+        raise ValueError(f"pack retrieval collection missing: {pack['template_id']}")
+    regression = documents["regression_manifests"].get(pack["regression_manifest"])
+    if regression is None or regression["genre"] != pack["genre"]:
+        raise ValueError(f"pack regression manifest mismatch: {pack['template_id']}")
+    if pack.get("status") == "promoted" and not pack.get("promoted_by_eval_run"):
+        raise ValueError(f"promoted pack lacks hidden-gate evidence: {pack['template_id']}")
+    if pack.get("status") != "promoted" and pack.get("promoted_by_eval_run") is not None:
+        raise ValueError(f"unpromoted pack claims promotion evidence: {pack['template_id']}")
+
+
+def validate_registry() -> dict[str, int]:
+    registry = load_json(CONFIG / "genre-packs/registry-v1.json")
+    registry_schema = load_json(ROOT / "schemas/genre-pack-registry-v1.json")
+    jsonschema.Draft202012Validator(registry_schema).validate(registry)
+    human_writing = load_json(resolve_config(registry["human_writing_profile"]))
+    human_writing_schema = load_json(
+        ROOT / "schemas/human-writing-profile-v1.json"
+    )
+    jsonschema.Draft202012Validator(human_writing_schema).validate(
+        human_writing
+    )
+    documents = load_registry_documents(registry)
+    validate_retrieval_sources(documents)
+    validate_regression_cases(documents, all_cases())
     for pack in documents["packs"].values():
-        profiles = [
-            documents["constraint_profiles"].get(identifier)
-            for identifier in pack["constraint_profiles"]
-        ]
-        if any(profile is None for profile in profiles):
-            raise ValueError(f"pack references unknown constraint profile: {pack['template_id']}")
-        variants = {profile["episode_count_variant"] for profile in profiles if profile}
-        if variants != {"short", "long"} or any(
-            profile["content_form"] != pack["content_form"]
-            for profile in profiles
-            if profile
-        ):
-            raise ValueError(f"pack lacks shared-contract short/long variants: {pack['template_id']}")
-        architect = documents["agent_profiles"].get(
-            pack["agent_configuration"]["architect_profile"]
-        )
-        reviewers = [
-            documents["agent_profiles"].get(identifier)
-            for identifier in pack["agent_configuration"]["reviewer_profiles"]
-        ]
-        if (
-            architect is None
-            or architect["role"] != "architect"
-            or architect["genre"] != pack["genre"]
-            or any(
-                reviewer is None
-                or reviewer["role"] != "reviewer"
-                or reviewer["genre"] != pack["genre"]
-                for reviewer in reviewers
-            )
-        ):
-            raise ValueError(f"pack agent profiles do not match genre: {pack['template_id']}")
-        for profile in [architect, *reviewers]:
-            if not (ROOT / profile["output_schema"]).is_file():
-                raise ValueError(f"agent output schema missing: {profile['profile_id']}")
-        if any(
-            identifier not in documents["retrieval_collections"]
-            for identifier in pack["retrieval_collections"]
-        ):
-            raise ValueError(f"pack retrieval collection missing: {pack['template_id']}")
-        regression = documents["regression_manifests"].get(pack["regression_manifest"])
-        if regression is None or regression["genre"] != pack["genre"]:
-            raise ValueError(f"pack regression manifest mismatch: {pack['template_id']}")
-        if pack.get("status") == "promoted" and not pack.get("promoted_by_eval_run"):
-            raise ValueError(f"promoted pack lacks hidden-gate evidence: {pack['template_id']}")
-        if pack.get("status") != "promoted" and pack.get("promoted_by_eval_run") is not None:
-            raise ValueError(f"unpromoted pack claims promotion evidence: {pack['template_id']}")
+        validate_pack(pack, documents)
     counts = {section: len(values) for section, values in documents.items()}
     counts["human_writing_profiles"] = 1
     return counts

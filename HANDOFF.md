@@ -5,6 +5,65 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ## 最新改进 (2026-08-27) · 评测体系补完（P1/P3a 解锁线）
 
+## 最新改进 (2026-08-30) · 结构清理继续
+
+- 修复项目记忆与结构门禁对本地工具环境的误扫描：`.release-venv`、`.mimosa`、
+  `.workbuddy`、`.zcode` 及打包 sidecar 依赖树现在明确排除；新增项目记忆回归
+  覆盖。项目记忆测试 25/25、`generate_project_memory.py --check` 和全量结构检查
+  172 个文件均通过。此前报告的第三方依赖超长文件不再污染“存量清单”。
+- 本次回归验证：sidecar 41/41，eval/tools 150/150，图片/视频 Agent 5/5，
+  Rust workspace 测试通过，clippy `-D warnings` 通过；桌面 Vitest 141/141、
+  `svelte-check` 0 errors/0 warnings、Vite production build 通过。
+- 当前工作树仍保留本机 `.release-venv` 临时目录；删除操作受本机会话安全策略拦截，
+  但所有源码/项目记忆/结构扫描器均已忽略它。`npm audit` 受 npmmirror 未实现
+  security audit endpoint 阻断；此前 `npm audit --omit=dev --omit=optional` 在可用
+  registry 下的结果仍为 0 个生产漏洞。
+- 重新从评测 manifest 生成并校验 `docs/eval-governance.html`，修复了治理页生成物
+  漂移；`generate_governance_page.py --check` 现已通过。评测 freeze 仍不创建虚假
+  记录，缺失的人工证据继续作为外部门槛保留。
+- CI 治理输入门禁复核通过：120 个案例有效，拆分文件与 assignment table 一致，
+  premise family 交叉近重复为 0，治理页检查通过。freeze 检查仅剩人工证据缺失，
+  按范围不将其冒充为自动化缺陷。
+- GitHub 公共 Actions API 显示远端最近一次 Governance（run `31712246842`，旧提交
+  `37c9f06`）仍为失败：governance/init、python eval/tools、Rust clippy 和真实 Tauri
+  E2E 四个 job 失败。当前工作树已逐条重跑这些失败路径并全部通过：init/governance、
+  eval/tools 150/150、workspace clippy `-D warnings`、Tauri WebView2 IPC 4/4。由于
+  当前改动尚未形成并推送对应提交，不得把本地通过描述为远端 CI 已绿。
+
+- Desktop 评价服务的评分记录构造已拆到 `apps/desktop/src-tauri/src/evaluation_scoring.rs`，
+  32 个非付费测试通过，1 个真实付费 workflow 测试按设计 ignored。
+- stage-0 探针的 JSON 响应解析已拆到 `eval/tools/probe_parsing.py`，保留原 CLI 行为；
+  eval/tools 测试 149/149 通过。
+- 当前结构扫描剩余 `eval/tools/run_stage0_probe.py`（约 1074 行）。它仍需按
+- transport、judge validation、probe orchestration 三个职责继续拆分；本轮已将
+  transport 与 judge validation 拆为 `probe_transport.py`、`probe_judging.py`，
+  主脚本现已低于 700 行，结构扫描全量通过。
+- npm audit 已完成一次安全的非破坏性修复：Vitest 升至 4.1.11，critical 漏洞清零，
+  `npm audit fix` 可处理项已应用。当前仍有 13 个 high 级开发依赖告警，全部来自
+  WDIO 9/Tauri service 传递链；npm 建议降级到 8/7，属于破坏性变更，且 Tauri
+  service 没有可用修复版本，需单独安排 WDIO/Tauri 兼容性升级和真实 E2E 回归。
+  `npm audit --omit=dev --omit=optional` 的发布依赖结果为 0，且已接入
+  desktop-windows CI，避免生产供应链风险被已知的测试工具告警掩盖。
+- 修复 stage-0 历史评测产物漂移：`motive-explicit/evaluator-metrics.json` 不再声称
+  inter-model agreement estimator 未实现，已由当前计算器从磁盘 judge 样本重生成，
+  Krippendorff interval alpha 为 0.51636（2 个判官、20 项）；人工 spot check 仍按
+  项目边界明确标为不可计算。
+- WDIO Tauri 配置已从已弃用的 `driverProvider: "official"` 迁移为
+  `driverProvider: "external"`；依赖升级后真实 Tauri WebView2 IPC E2E 已复跑通过，
+  4/4 用例通过。tauri-service 仍输出窗口状态探测的 404 warning，但不影响测试断言，
+  应在后续 service 版本升级时继续跟踪。
+- 本机已实际尝试 unsigned Windows release pipeline，但在构建前被可复现工具链门禁
+  拒绝：脚本要求 Node v22.14.0，本机为 v22.21.1，且本机 nvm 无已安装的 22.14.0。
+  这不是 MSI/NSIS 构建失败；不得放宽脚本版本约束。`windows-release-smoke` CI 已固定
+  Node 22.14.0，需由 workflow_dispatch 或具备该版本的 clean 环境补齐 bundle smoke 证据。
+- 已修复 release 的实际 bundle 缺陷：NSIS hook 所需的 x64 `WebView2Loader.dll` 原先
+  未从 Cargo build 输出复制到 `target/release`，导致安装器构建失败；release 脚本现在
+  在 Tauri bundling 前执行 release Cargo build、要求唯一 x64 loader 并复制到约定位置。
+  使用官方 Node 22.14.0 与 Python 3.12.10 重跑后，MSI/NSIS 双包、MSI 提取、sidecar
+  协议、WebView2Loader、story schema 和桌面启动 smoke 全部通过。证据在
+  `target/release-evidence/windows-{bundle-smoke,release-evidence}.json`；产物 dirty/unsigned，
+  仅为本地验证，不具备稳定发行资格。
+
 REQ-320..326（`docs/features/eval-p3a-unlock/`），三笔提交：
 `9ead9e0` 工具链、`184b951` stage-1 对抗对、`72efc51` 120 案。
 
@@ -143,7 +202,88 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ## 当前结论
 
+### 2026-08-30 多 Agent 可靠性与媒体 Agent 基础
+
+- 原 `sidecar/campaign_adapter/workflow.py` 已按 graph、agent、context、capability、
+  prompt、packaging、runner 拆为 8 个模块；公共 import 保持兼容，结构门禁逐文件通过。
+- sidecar 增加 artifact retention/recovery、跨恢复 token、整轮 deadline、并发失败取消，
+  并验证已 terminal 的 run 不会被 `recover_incomplete()` 重新执行。
+- 新增两个独立 workspace：`projects/story-image-agent` 与
+  `projects/story-video-agent`。前者支持 append-only prompt revision 和重新生成 request；
+  后者将 immutable image artifact 与 story span/shot intent 绑定成 typed request。
+- 媒体链路当前通过 provider-neutral gateway 产生并持久化 schema-valid request、durable
+  event 与 content-addressed media artifact；测试使用 loopback fake gateway，只证明协议和
+  跨层执行，不得描述为已经由真实供应商生成图片或视频。
+- `max_cny_fen` 已接入版本化 Rust pricing catalog、capability usage、sidecar 恢复与
+  超限门禁、desktop 去重投影。未知 provider/model、缺目录和溢出均 fail-closed；仓库
+  不硬编码未经核验的实时价格。生产前需按
+  `config/provider-pricing-v1.example.json` 核验并创建 `config/provider-pricing-v1.json`。
+- 计价覆盖成功响应中供应商明确返回的 usage；失败 retry attempt 若供应商收费但不返回
+  usage，客户端无法推导，仍需通过供应商账单/真实 soak 记录残余偏差。
+- 新增 `crates/story-media` trusted execution seam：严格校验 image/video request，要求
+  视频图片在同一项目的 immutable media index 中真实存在，再调用 typed provider 并写入
+  binary content-addressed store。fixture 已验证 image→video 链路和伪造 URI 拒绝。
+- 媒体 run 已有 Rust durable JSONL events、全局连续 seq、单 terminal 仲裁、重复 start
+  拒绝、watch cancellation 和 restart recovery。取消慢 provider 不落媒体 artifact；
+  completed/failed/cancelled run 不会被重新恢复。
+- 新增 `story-storage::MediaProjectRepository`，将图片 prompt revision、父 revision、
+  来源 span 和 generation request 以 append-only JSONL 持久化；重开仓库恢复历史，重复
+  revision/request 与缺失父 revision fail-closed。下一步需让 Python image workspace
+  通过正式 typed adapter 使用它，不能继续以进程内列表作为生产事实源。
+- 生图 workspace 的 `RustMediaProjectClient` 已接通 Rust capability host 的
+  `/v1/media-projects/records`：复用同一 bearer token，只允许 typed prompt revision / generation
+  request，并由 Rust 派生可信存储根。未认证、错误 schema、缺父 revision 与重复记录均
+  fail-closed；桌面媒体项目 UI 已接入，真实图片 provider 仍待外部配置和验证。
+- `story-provider` 的媒体 history adapter 与 story-package validation 已从
+  `capability_host.rs` 拆到独立模块，host 文件重新低于 700 行结构门禁。
+- `story-media` 仍只有 Rust-owned executor/run/event/storage 与 fixture 集成，桌面端尚无
+  独立生成执行命令。桌面端现已新增常驻媒体历史服务及三个 typed IPC：追加 prompt
+  revision、追加 image/video generation request、读取项目历史；它们直接复用 Rust
+  `MediaProjectRepository`，不依赖故事 run。现有 capability host 生命周期仍绑定故事 run，
+  真正出图/出视频前需新增独立 media execution runtime 和真实 provider adapter。
+- 已新增 provider-neutral `media-gateway-response/v1` 契约、Rust authenticated gateway client
+  和 `story-media::GatewayMediaProvider` 适配器；真实 loopback HTTP 测试验证了鉴权、schema、
+  Base64 二进制和媒体元数据校验。它仍不绑定具体供应商，生产部署需由运营配置并验证实际
+  gateway endpoint、凭据、价格和返回格式。
+- Desktop credential owner 已允许 `media_gateway/default`，secret 仍只进入 Windows Credential
+  Manager；新增独立 media gateway settings 服务与读取/保存 IPC，仅持久化经 Rust 校验的
+  HTTPS `/v1/media/generate` endpoint。独立 execution runtime 可直接从这两个 owner 组装
+  `MediaGatewayRoute`，无需让前端或 Python 接触 token。
+- Desktop 已新增独立 `DesktopMediaRuntime` 与 start/resume/cancel IPC：它从 credential/settings
+  owner 组装 `GatewayMediaProvider`，通过 `MediaRunService` 写 durable events 和 immutable
+  media artifact，并在任何网络/密钥访问前要求 generation request 已存在于可信项目历史。
+  当前测试覆盖未持久化请求拒绝、active run 取消身份，以及完整
+  desktop→fake gateway→artifact 图片到视频链路；真实生产 gateway 验证仍待补齐。
+- Media gateway route 现在允许仅限 `127.0.0.1/localhost` 的 HTTP，以支持本机受控 gateway
+  进程；所有非 loopback endpoint 仍强制 HTTPS，URL 凭据、query 和 fragment 继续拒绝。
+- 修复 gateway adapter 跨层序列化：此前 `MediaRequest` 会发送 `{"Image":{...}}` 枚举
+  包装，gateway 契约无法识别；现在直接发送 image/video contract object。desktop →
+  loopback fake gateway → `MediaRunService` → content-addressed artifact 集成测试已通过，
+  并确认 `run.completed` durable event 与项目图片 digest 可校验。
+- 前端 `types.ts`/`api.ts` 已覆盖 gateway settings、prompt revision、media project history、
+  start/resume/cancel 和 generation result；同时将 `ChatProvider` 与通用 credential provider
+  分开，避免 `media_gateway` 被错误送入 chat route/health/soak 面板。媒体工作室页面和主导航
+  已落盘，支持 gateway 配置、提示词版本、图片/视频请求、取消及最近 append-only history；
+  `svelte-check` 0 错误、141 个 Vitest 全绿。
+- `MediaEventStore` 已改为 open 时完整校验一次并构建 acceptance/terminal 内存索引，追加
+  只执行 append+fsync，不再每次重读全日志；250-run 重开、cursor replay 和单 terminal
+  仲裁已验证。`MediaProjectRepository` 也在首次访问项目时完整校验并构建 record/parent
+  索引，后续 revision/request 只 append+fsync；250 版连续提示词历史的重开、父链校验与
+  重复拒绝已验证。跨进程并发写入锁和独立常驻 media runtime 仍是后续集成工作。
+
 - P5-P10 工程实现已完成；P10 clean-Windows Exit 尚未满足。
+- 2026-08-30 复扫：全仓共有 154 个受管源文件、97 份 Markdown 文档；持续拆分后
+  `scripts/check_code_structure.py --all` 当前命中 2 个文件级存量（桌面评测服务与
+  stage0 评测脚本）；函数级和测试 fixture 存量已清零。`run_controller` 测试已外移，
+  `evaluations.rs` 测试已外移但生产实现仍需按评分、admission、盲测存储边界继续拆分。
+  workflow、sidecar server、
+  story-storage export、EvaluationCenter、ArtifactBrowser、genre-pack 与
+  release-configuration 校验器已退出清单。
+  `scripts/check_code_structure.py --all`
+  可显式审计全量存量，默认无参数仍只检查 CI 传入的改动文件；剩余结构拆分是后续工程清理，
+  不应被“0 个默认参数文件通过”误报为全仓清零。
+- 本轮移除了作品库中没有后端支持的“批量删除”假入口；故事产物继续遵循不可变/append-only
+  规则，当前批量操作只提供已验证的多格式导出。
 - 当前版本是 `0.1.0-alpha.1`、advisory/non-promotable，不是稳定版。
 - 用户允许人工盲测后置；draft pack、模型、prompt、graph、policy 和 skill
   均不得宣称 promoted。

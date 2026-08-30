@@ -17,7 +17,9 @@
       "properties": {
         "prompt_tokens": {"type": "integer", "minimum": 0},
         "completion_tokens": {"type": "integer", "minimum": 0},
-        "total_tokens": {"type": "integer", "minimum": 0}
+        "total_tokens": {"type": "integer", "minimum": 0},
+        "cost_cny_fen": {"type": "integer", "minimum": 0},
+        "pricing_catalog_id": {"type": "string", "minLength": 1}
       }
     },
     "model": {"type": "string", "minLength": 1}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/image-generation-request-v1.json",
+  "title": "Image generation request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "request_id", "project_id", "prompt_revision_id", "prompt", "source_spans"],
+  "properties": {
+    "schema": {"const": "image-generation-request/v1"},
+    "request_id": {"type": "string", "pattern": "^img_[0-9a-f]{32}$"},
+    "project_id": {"type": "string", "minLength": 1},
+    "prompt_revision_id": {"type": "string", "minLength": 1},
+    "prompt": {"type": "string", "minLength": 1},
+    "source_spans": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  }
+}

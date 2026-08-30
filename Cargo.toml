@@ -6,6 +6,7 @@ members = [
     "crates/story-provider",
     "crates/story-eval",
     "crates/story-policy",
+    "crates/story-media",
 ]
 resolver = "2"
 
@@ -26,3 +27,4 @@ axum = { version = "=0.8.4", default-features = false, features = ["http1", "jso
 jsonschema = { version = "=0.30.0", default-features = false }
 sha2 = "0.10"
 uuid = { version = "1", features = ["v4"] }
+base64 = "0.22"

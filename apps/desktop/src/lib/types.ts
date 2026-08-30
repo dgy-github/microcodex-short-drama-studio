@@ -1,9 +1,11 @@
 export type CredentialStatus = {
   schema: "desktop-credential-status/v1";
-  provider: "deepseek" | "aliyun_bailian";
+  provider: "deepseek" | "aliyun_bailian" | "media_gateway";
   profile: "default";
   configured: boolean;
 };
+
+export type ChatProvider = "deepseek" | "aliyun_bailian";
 
 export type CredentialAuditEvent = {
   schema: "credential-audit-event/v1";
@@ -18,14 +20,14 @@ export type CredentialAuditEvent = {
 
 export type ProviderHealth = {
   schema: "provider-health/v1";
-  provider: CredentialStatus["provider"];
+  provider: ChatProvider;
   status: "ready";
   model: string;
 };
 
 export type ProviderRouteSettings = {
   schema: "desktop-provider-route/v1";
-  provider: CredentialStatus["provider"];
+  provider: ChatProvider;
   profile: "default";
   endpoint: string;
   model: string;
@@ -43,7 +45,7 @@ export type ProviderSoakResult = {
   started_at_unix_ms: number;
   finished_at_unix_ms: number;
   providers: Array<{
-    provider: CredentialStatus["provider"];
+    provider: ChatProvider;
     model: string;
     route_fingerprint: string;
     status: "ready" | "degraded";
@@ -350,4 +352,49 @@ export type HumanDimensionInput = {
   score: number;
   reason: string;
   span_refs: string[];
+};
+
+export type MediaGatewaySettings = {
+  schema: "desktop-media-gateway-settings/v1";
+  endpoint: string;
+};
+
+export type MediaProjectRecord = {
+  schema: "media-project-record/v1";
+  seq: number;
+  project_id: string;
+  record_id: string;
+  record_type: "image_prompt_revision" | "generation_request";
+  data: Record<string, unknown>;
+};
+
+export type ImagePromptRevision = {
+  schema: "image-prompt-revision/v1";
+  project_id: string;
+  revision_id: string;
+  parent_revision_id: string | null;
+  prompt: string;
+  source_spans: string[];
+};
+
+export type MediaGenerationResult = {
+  schema: "media-generation-result/v1";
+  project_id: string;
+  request_id: string;
+  kind: "Image" | "Video";
+  mime_type: string;
+  content_ref: string;
+  content_sha256: string;
+  byte_len: number;
+  provider: string;
+  model: string;
+  cost_cny_fen: number;
+  pricing_catalog_id: string;
+};
+
+export type DesktopMediaRunResult = {
+  schema: "desktop-media-run-result/v1";
+  run_id: string;
+  status: "completed" | "cancelled";
+  result: MediaGenerationResult | null;
 };

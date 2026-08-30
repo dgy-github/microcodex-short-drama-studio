@@ -1,0 +1,10 @@
+[project]
+name = "microcodex-story-image-agent"
+version = "0.1.0a1"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+test = ["jsonschema==4.26.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

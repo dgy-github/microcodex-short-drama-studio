@@ -1,12 +1,17 @@
 """Tests for the endpoint egress guard (SSRF mitigation)."""
 
 import unittest
+from unittest import mock
 
 from endpoint_guard import assert_public_https_endpoint
 
 
 class EndpointGuardTests(unittest.TestCase):
-    def test_public_https_passes(self) -> None:
+    @mock.patch(
+        "endpoint_guard._resolved_addresses",
+        return_value=("93.184.216.34",),
+    )
+    def test_public_https_passes(self, _resolved_addresses: mock.Mock) -> None:
         assert_public_https_endpoint(
             "https://api.teamorouter.cn/v1/chat/completions"
         )
