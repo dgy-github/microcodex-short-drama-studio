@@ -452,7 +452,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "start_media_run",
-    "line": 246,
+    "line": 250,
     "public": true
   },
   {
@@ -460,7 +460,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "resume_media_run",
-    "line": 265,
+    "line": 269,
     "public": true
   },
   {
@@ -468,7 +468,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "cancel_media_run",
-    "line": 284,
+    "line": 288,
     "public": true
   },
   {
@@ -476,7 +476,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "open_revision_workspace",
-    "line": 292,
+    "line": 296,
     "public": true
   },
   {
@@ -484,7 +484,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "read_revision_span",
-    "line": 301,
+    "line": 305,
     "public": true
   },
   {
@@ -492,7 +492,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "create_story_revision",
-    "line": 310,
+    "line": 314,
     "public": true
   },
   {
@@ -500,7 +500,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "approve_story_revision",
-    "line": 323,
+    "line": 327,
     "public": true
   },
   {
@@ -508,7 +508,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "compare_story_revisions",
-    "line": 336,
+    "line": 340,
     "public": true
   },
   {
@@ -516,7 +516,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "rollback_story_revision",
-    "line": 345,
+    "line": 349,
     "public": true
   },
   {
@@ -524,7 +524,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "export_story_revision",
-    "line": 357,
+    "line": 361,
     "public": true
   },
   {
@@ -532,7 +532,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "evaluation_catalog",
-    "line": 366,
+    "line": 370,
     "public": true
   },
   {
@@ -540,7 +540,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "run_automatic_evaluation",
-    "line": 373,
+    "line": 377,
     "public": true
   },
   {
@@ -548,7 +548,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "create_blind_assignments",
-    "line": 390,
+    "line": 394,
     "public": true
   },
   {
@@ -556,7 +556,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "submit_blind_review",
-    "line": 402,
+    "line": 406,
     "public": true
   },
   {
@@ -564,7 +564,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 414,
+    "line": 418,
     "public": false
   },
   {
@@ -572,7 +572,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "story_job_command_reuses_domain_validation",
-    "line": 418,
+    "line": 422,
     "public": false
   },
   {
@@ -1852,7 +1852,7 @@
     "path": "apps/desktop/src-tauri/src/media_gateway_settings.rs",
     "kind": "fn",
     "name": "validate",
-    "line": 85,
+    "line": 101,
     "public": false
   },
   {
@@ -1860,7 +1860,7 @@
     "path": "apps/desktop/src-tauri/src/media_gateway_settings.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 97,
+    "line": 119,
     "public": false
   },
   {
@@ -1868,7 +1868,7 @@
     "path": "apps/desktop/src-tauri/src/media_gateway_settings.rs",
     "kind": "fn",
     "name": "settings_persist_without_credentials_and_reject_unsafe_routes",
-    "line": 100,
+    "line": 122,
     "public": false
   },
   {
@@ -1996,7 +1996,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "execute_with_route",
-    "line": 72,
+    "line": 69,
     "public": false
   },
   {
@@ -2004,15 +2004,23 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "cancel",
-    "line": 119,
+    "line": 116,
     "public": true
   },
   {
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
+    "name": "route_for_request",
+    "line": 130,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
     "name": "parse_request",
-    "line": 133,
+    "line": 146,
     "public": false
   },
   {
@@ -2020,7 +2028,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "request_identity",
-    "line": 149,
+    "line": 162,
     "public": false
   },
   {
@@ -2028,7 +2036,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 157,
+    "line": 170,
     "public": false
   },
   {
@@ -2036,7 +2044,15 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "image_request",
-    "line": 166,
+    "line": 179,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "generation_tier_selects_the_expected_trusted_route",
+    "line": 191,
     "public": false
   },
   {
@@ -2044,7 +2060,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "unpersisted_request_fails_before_gateway_configuration",
-    "line": 178,
+    "line": 219,
     "public": false
   },
   {
@@ -2052,7 +2068,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "cancellation_requires_matching_active_run",
-    "line": 199,
+    "line": 240,
     "public": false
   },
   {
@@ -2060,7 +2076,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "fake_gateway",
-    "line": 209,
+    "line": 250,
     "public": false
   },
   {
@@ -2068,7 +2084,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "desktop_runtime_reaches_http_gateway_and_retains_durable_artifact",
-    "line": 241,
+    "line": 282,
     "public": false
   },
   {
