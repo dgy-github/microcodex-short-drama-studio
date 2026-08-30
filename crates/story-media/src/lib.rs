@@ -5,11 +5,13 @@ use std::future::Future;
 use std::pin::Pin;
 use story_storage::media::{MediaArtifactStore, MediaKind, MediaStoreError};
 
+mod editor;
 mod gateway;
 mod run;
 mod timeline;
 mod tool;
 mod tool_manifest;
+pub use editor::{execute_timeline, TimelineExecutionError, TimelineExecutionReceipt};
 pub use gateway::GatewayMediaProvider;
 pub use run::{MediaRunOutcome, MediaRunService};
 pub use timeline::{compile_concat_plan, FfmpegPlan, TimelineClip};

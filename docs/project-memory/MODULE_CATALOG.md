@@ -44,6 +44,7 @@
 | `apps/desktop/wdio.conf.ts` | Web |
 | `crates/story-core/src/lib.rs` | Rust |
 | `crates/story-eval/src/lib.rs` | Rust |
+| `crates/story-media/src/editor.rs` | Rust |
 | `crates/story-media/src/gateway.rs` | Rust |
 | `crates/story-media/src/lib.rs` | Rust |
 | `crates/story-media/src/run.rs` | Rust |

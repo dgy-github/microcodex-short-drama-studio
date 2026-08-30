@@ -439,3 +439,12 @@ interfaces:
     outputs: [hash-verified executable path]
     errors: [invalid manifest, missing binary, traversal, duplicate ID, hash mismatch]
     side_effects: [bounded file read]
+  - id: IFACE-038
+    name: trusted timeline execution
+    kind: Rust crate API
+    location: crates/story-media/src/editor.rs
+    purpose: Resolve a hash-verified FFmpeg, compile a validated timeline, supervise execution and accept only a new non-empty MP4 output.
+    inputs: [verified tool manifest, absolute tool root, timeline clips, new absolute MP4 path, timeout]
+    outputs: [timeline execution receipt with output path and byte length]
+    errors: [manifest failure, invalid timeline, process failure, timeout, missing or empty output]
+    side_effects: [supervised FFmpeg process, failed partial output cleanup]
