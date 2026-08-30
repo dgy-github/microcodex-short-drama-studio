@@ -4050,9 +4050,17 @@
   {
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "toolStatus",
+    "line": 29,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "revisions",
-    "line": 30,
+    "line": 31,
     "public": false
   },
   {
@@ -4060,14 +4068,6 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "latestRevision",
-    "line": 33,
-    "public": false
-  },
-  {
-    "language": "Web",
-    "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "videoQualityPassed",
     "line": 34,
     "public": false
   },
@@ -4075,8 +4075,16 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
+    "name": "videoQualityPassed",
+    "line": 35,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
     "name": "newId",
-    "line": 38,
+    "line": 39,
     "public": false
   },
   {
@@ -4084,7 +4092,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "refresh",
-    "line": 41,
+    "line": 42,
     "public": false
   },
   {
@@ -4092,7 +4100,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "saveGateway",
-    "line": 50,
+    "line": 51,
     "public": false
   },
   {
@@ -4100,7 +4108,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "coarse",
-    "line": 53,
+    "line": 54,
     "public": false
   },
   {
@@ -4108,7 +4116,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "fine",
-    "line": 54,
+    "line": 55,
     "public": false
   },
   {
@@ -4116,7 +4124,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "savePromptRevision",
-    "line": 70,
+    "line": 71,
     "public": false
   },
   {
@@ -4124,7 +4132,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateImage",
-    "line": 90,
+    "line": 91,
     "public": false
   },
   {
@@ -4132,7 +4140,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateVideo",
-    "line": 105,
+    "line": 106,
     "public": false
   },
   {
@@ -4140,7 +4148,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "run",
-    "line": 122,
+    "line": 123,
     "public": false
   },
   {
@@ -4148,7 +4156,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "outcome",
-    "line": 127,
+    "line": 128,
     "public": false
   },
   {
@@ -4156,7 +4164,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "cancel",
-    "line": 141,
+    "line": 142,
     "public": false
   },
   {
@@ -4164,7 +4172,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "validateTimeline",
-    "line": 145,
+    "line": 146,
     "public": false
   },
   {
@@ -4172,7 +4180,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "request",
-    "line": 146,
+    "line": 147,
     "public": false
   },
   {
@@ -4180,14 +4188,6 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "executeTimeline",
-    "line": 160,
-    "public": false
-  },
-  {
-    "language": "Web",
-    "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "request",
     "line": 161,
     "public": false
   },
@@ -4195,8 +4195,16 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
+    "name": "request",
+    "line": 162,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
     "name": "artifact",
-    "line": 168,
+    "line": 169,
     "public": false
   },
   {
@@ -4204,7 +4212,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "saved",
-    "line": 177,
+    "line": 178,
     "public": false
   },
   {
