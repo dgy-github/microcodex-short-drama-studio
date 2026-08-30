@@ -81,14 +81,14 @@ capabilities:
     name: Story image request planning
     summary: Owns story-grounded image prompt revisions and immutable generation request planning.
     keywords: [image, prompt, revision, regeneration, story-span]
-    owner: projects/story-image-agent/story_image_agent/workflow.py
+    owner: projects/README.md
     interfaces: [IFACE-029]
     reuse_rule: Extend prompt planning here; persistent revision/request history is owned by story-storage, while provider access, pricing, retries and run lifecycle remain with existing Rust owners.
   - id: CAP-014
     name: Story video request planning
     summary: Owns provider-neutral video requests that bind immutable image artifacts to story and shot intent.
     keywords: [video, image-to-video, shot, story-span, generation-request]
-    owner: projects/story-video-agent/story_video_agent/workflow.py
+    owner: projects/README.md
     interfaces: [IFACE-030]
     reuse_rule: Extend video request planning here; never add filesystem, shell, credential, storage or provider ownership to Python.
   - id: CAP-015

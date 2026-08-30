@@ -208,8 +208,8 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
   prompt、packaging、runner 拆为 8 个模块；公共 import 保持兼容，结构门禁逐文件通过。
 - sidecar 增加 artifact retention/recovery、跨恢复 token、整轮 deadline、并发失败取消，
   并验证已 terminal 的 run 不会被 `recover_incomplete()` 重新执行。
-- 新增两个独立 workspace：`projects/story-image-agent` 与
-  `projects/story-video-agent`。前者支持 append-only prompt revision 和重新生成 request；
+- 生图与视频 Agent 已迁移为主仓库同级的独立 Git 项目：`D:/github_dgy/story-image-agent`
+  与 `D:/github_dgy/story-video-agent`。前者支持 append-only prompt revision 和重新生成 request；
   后者将 immutable image artifact 与 story span/shot intent 绑定成 typed request。
 - 媒体链路当前通过 provider-neutral gateway 产生并持久化 schema-valid request、durable
   event 与 content-addressed media artifact；测试使用 loopback fake gateway，只证明协议和

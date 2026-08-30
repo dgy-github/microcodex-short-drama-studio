@@ -1570,16 +1570,6 @@
 | Python | `eval/tools/validate_cases.py` | 109 | FunctionDef | `validate_records` |
 | Python | `eval/tools/validate_cases.py` | 177 | FunctionDef | `validate_corpus` |
 | Python | `eval/tools/validate_cases.py` | 233 | FunctionDef | `main` |
-| Python | `projects/story-image-agent/story_image_agent/__init__.py` | 1 | module | `__init__` |
-| Python | `projects/story-image-agent/story_image_agent/capability.py` | 1 | module | `capability` |
-| Python | `projects/story-image-agent/story_image_agent/capability.py` | 9 | ClassDef | `MediaProjectRepository` |
-| Python | `projects/story-image-agent/story_image_agent/capability.py` | 15 | ClassDef | `RustMediaProjectClient` |
-| Python | `projects/story-image-agent/story_image_agent/workflow.py` | 1 | module | `workflow` |
-| Python | `projects/story-image-agent/story_image_agent/workflow.py` | 12 | ClassDef | `PromptRevision` |
-| Python | `projects/story-image-agent/story_image_agent/workflow.py` | 20 | ClassDef | `ImagePromptWorkflow` |
-| Python | `projects/story-video-agent/story_video_agent/__init__.py` | 1 | module | `__init__` |
-| Python | `projects/story-video-agent/story_video_agent/workflow.py` | 1 | module | `workflow` |
-| Python | `projects/story-video-agent/story_video_agent/workflow.py` | 7 | ClassDef | `VideoPromptWorkflow` |
 | Python | `scripts/build_dependency_inventory.py` | 1 | module | `build_dependency_inventory` |
 | Python | `scripts/build_dependency_inventory.py` | 33 | FunctionDef | `cargo_packages` |
 | Python | `scripts/build_dependency_inventory.py` | 70 | FunctionDef | `npm_packages` |

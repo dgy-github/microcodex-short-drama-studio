@@ -31,7 +31,7 @@ interfaces:
     purpose: provider-neutral authenticated media gateway response contract
 implementation:
   - id: BE-201
-    location: projects/story-image-agent/story_image_agent/workflow.py
+    location: ../story-image-agent/story_image_agent/workflow.py
     owner: CAP-013
   - id: BE-203
     location: crates/story-media/src/run.rs
@@ -59,7 +59,7 @@ implementation:
     owner: CAP-008
 tests:
   - id: TEST-401
-    location: projects/story-image-agent/tests/test_workflow.py
+    location: ../story-image-agent/tests/test_workflow.py
     proves: prompt edits and repeated generation append revisions and requests
   - id: TEST-402
     location: projects/story-image-agent/tests/test_workflow.py

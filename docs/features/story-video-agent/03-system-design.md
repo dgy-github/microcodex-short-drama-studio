@@ -2,7 +2,7 @@
 
 Status: G2 contracts ready
 
-`projects/story-video-agent` 是独立 Python orchestration workspace。输入由图片的 content
+`../story-video-agent` 是主仓库同级的独立 Python Git 项目。输入由图片的 content
 address、故事 span 与 shot 参数组成，输出 `video-generation-request/v1`。它不接受本地
 文件路径，也不执行 FFmpeg 或 provider HTTP。
 

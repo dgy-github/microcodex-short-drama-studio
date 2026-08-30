@@ -27,7 +27,7 @@ interfaces:
     purpose: provider-neutral authenticated media gateway response contract
 implementation:
   - id: BE-202
-    location: projects/story-video-agent/story_video_agent/workflow.py
+    location: ../story-video-agent/story_video_agent/workflow.py
     owner: CAP-014
   - id: BE-204
     location: crates/story-media/src/run.rs
@@ -49,7 +49,7 @@ implementation:
     owner: CAP-008
 tests:
   - id: TEST-411
-    location: projects/story-video-agent/tests/test_workflow.py
+    location: ../story-video-agent/tests/test_workflow.py
     proves: request retains immutable image, story spans and shot prompt
   - id: TEST-412
     location: projects/story-video-agent/tests/test_workflow.py

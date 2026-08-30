@@ -2,7 +2,7 @@
 
 Status: G2 contracts ready
 
-`projects/story-image-agent` 是独立 Python orchestration workspace。它拥有图片提示词规划与
+`../story-image-agent` 是主仓库同级的独立 Python Git 项目。它拥有图片提示词规划与
 revision 因果关系，但不拥有 provider、凭据、计价、重试、预算、事件存储或 artifact
 存储。生成请求遵循 `image-generation-request/v1`，由未来的 authenticated Rust media
 capability 执行并返回 `artifact://sha256/...`。

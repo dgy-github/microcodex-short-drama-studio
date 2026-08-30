@@ -97,11 +97,6 @@
 | `eval/tools/seal_holdout.py` | Python |
 | `eval/tools/split_cases.py` | Python |
 | `eval/tools/validate_cases.py` | Python |
-| `projects/story-image-agent/story_image_agent/__init__.py` | Python |
-| `projects/story-image-agent/story_image_agent/capability.py` | Python |
-| `projects/story-image-agent/story_image_agent/workflow.py` | Python |
-| `projects/story-video-agent/story_video_agent/__init__.py` | Python |
-| `projects/story-video-agent/story_video_agent/workflow.py` | Python |
 | `scripts/build_dependency_inventory.py` | Python |
 | `scripts/check_code_structure.py` | Python |
 | `scripts/check_duplicate_owners.py` | Python |

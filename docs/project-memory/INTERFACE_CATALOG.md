@@ -689,11 +689,6 @@
 | `validate_records` | FunctionDef | `eval/tools/validate_cases.py:109` |
 | `validate_corpus` | FunctionDef | `eval/tools/validate_cases.py:177` |
 | `main` | FunctionDef | `eval/tools/validate_cases.py:233` |
-| `MediaProjectRepository` | ClassDef | `projects/story-image-agent/story_image_agent/capability.py:9` |
-| `RustMediaProjectClient` | ClassDef | `projects/story-image-agent/story_image_agent/capability.py:15` |
-| `PromptRevision` | ClassDef | `projects/story-image-agent/story_image_agent/workflow.py:12` |
-| `ImagePromptWorkflow` | ClassDef | `projects/story-image-agent/story_image_agent/workflow.py:20` |
-| `VideoPromptWorkflow` | ClassDef | `projects/story-video-agent/story_video_agent/workflow.py:7` |
 | `cargo_packages` | FunctionDef | `scripts/build_dependency_inventory.py:33` |
 | `npm_packages` | FunctionDef | `scripts/build_dependency_inventory.py:70` |
 | `python_packages` | FunctionDef | `scripts/build_dependency_inventory.py:89` |
