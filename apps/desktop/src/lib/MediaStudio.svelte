@@ -7,7 +7,12 @@
   let sourceSpan = $state("story-package/scene-1");
   let prompt = $state("");
   let endpoint = $state("");
+  let coarseEndpoint = $state("");
+  let fineEndpoint = $state("");
   let secret = $state("");
+  let coarseSecret = $state("");
+  let fineSecret = $state("");
+  let videoTier = $state<"coarse" | "fine">("coarse");
   let imageRef = $state("");
   let history = $state<MediaProjectRecord[]>([]);
   let busy = $state(false);
@@ -33,9 +38,15 @@
   async function saveGateway() {
     busy = true;
     try {
-      await desktopApi.saveMediaGatewaySettings(endpoint);
+      const coarse = coarseEndpoint || endpoint;
+      const fine = fineEndpoint || coarse;
+      await desktopApi.saveMediaGenerationRoutes(coarse, fine);
       if (secret) await desktopApi.storeMediaGatewayCredential(secret);
+      if (coarseSecret) await desktopApi.storeMediaGatewayCredential(coarseSecret, "coarse");
+      if (fineSecret) await desktopApi.storeMediaGatewayCredential(fineSecret, "fine");
       secret = "";
+      coarseSecret = "";
+      fineSecret = "";
       message = "网关已保存；密钥仅存于 Windows Credential Manager";
     } catch (error) {
       message = errorMessage(error);
@@ -88,6 +99,7 @@
       image_artifact_ref: imageRef,
       story_spans: [sourceSpan.trim()],
       prompt: prompt.trim(),
+      generation_tier: videoTier,
     });
   }
 
@@ -117,6 +129,8 @@
   onMount(async () => {
     const saved = await desktopApi.mediaGatewaySettings().catch(() => null);
     endpoint = saved?.endpoint ?? "";
+    coarseEndpoint = saved?.coarse_endpoint ?? saved?.endpoint ?? "";
+    fineEndpoint = saved?.fine_endpoint ?? saved?.endpoint ?? "";
   });
 </script>
 
@@ -128,8 +142,12 @@
 
   <article class="gateway">
     <h3>可信媒体网关</h3>
-    <label>Endpoint<input bind:value={endpoint} placeholder="https://…/v1/media/generate" /></label>
+    <label>兼容默认 Endpoint<input bind:value={endpoint} placeholder="https://…/v1/media/generate" /></label>
+    <label>Wan 粗生成 Endpoint<input bind:value={coarseEndpoint} placeholder="https://…/wan/generate" /></label>
+    <label>Kling 精生成 Endpoint<input bind:value={fineEndpoint} placeholder="https://…/kling/generate" /></label>
     <label>Bearer secret<input bind:value={secret} type="password" autocomplete="off" /></label>
+    <label>Wan secret<input bind:value={coarseSecret} type="password" autocomplete="off" /></label>
+    <label>Kling secret<input bind:value={fineSecret} type="password" autocomplete="off" /></label>
     <button onclick={saveGateway} disabled={busy || !endpoint}>保存可信配置</button>
   </article>
 
@@ -156,6 +174,7 @@
     <div class="section-title"><div><span class="step-number">02</span><h3>故事生视频 Agent</h3></div><span class="provider">Wan 粗生成 · Kling 精生成</span></div>
     <div class="pipeline video" aria-label="生视频流程"><span>Wan 粗生成</span><i>→</i><span>裁剪</span><i>→</i><span>补段</span><i>→</i><span>质量门禁</span><i>→</i><span class="final">Kling 精生成</span></div>
     <label>图片 artifact reference<input bind:value={imageRef} placeholder="artifact://sha256/…" /></label>
+    <label>生成阶段<select bind:value={videoTier}><option value="coarse">Wan 粗生成</option><option value="fine">Kling 精生成</option></select></label>
     <button onclick={generateVideo} disabled={busy || !imageRef}>生成视频</button>
     {#if activeRun}<button class="danger" onclick={cancel}>取消当前任务</button>{/if}
     {#if message}<p role="status">{message}</p>{/if}

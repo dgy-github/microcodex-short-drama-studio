@@ -9,6 +9,10 @@ use crate::CommandError;
 pub struct MediaGatewaySettings {
     pub schema: String,
     pub endpoint: String,
+    #[serde(default)]
+    pub coarse_endpoint: Option<String>,
+    #[serde(default)]
+    pub fine_endpoint: Option<String>,
 }
 
 pub struct MediaGatewaySettingsService {
@@ -43,6 +47,8 @@ impl MediaGatewaySettingsService {
         let value = MediaGatewaySettings {
             schema: "desktop-media-gateway-settings/v1".into(),
             endpoint,
+            coarse_endpoint: None,
+            fine_endpoint: None,
         };
         let partial = self.path.with_extension("json.partial");
         std::fs::write(
@@ -59,11 +65,28 @@ impl MediaGatewaySettingsService {
             .map_err(|_| CommandError::provider_settings_unavailable())?;
         Ok(value)
     }
+
+    pub fn save_routes(&self, coarse_endpoint: String, fine_endpoint: String)
+        -> Result<MediaGatewaySettings, CommandError> {
+        MediaGatewayRoute::validate(&coarse_endpoint).map_err(|_| CommandError::invalid_provider_route())?;
+        MediaGatewayRoute::validate(&fine_endpoint).map_err(|_| CommandError::invalid_provider_route())?;
+        let value = MediaGatewaySettings { schema: "desktop-media-gateway-settings/v1".into(),
+            endpoint: coarse_endpoint.clone(), coarse_endpoint: Some(coarse_endpoint),
+            fine_endpoint: Some(fine_endpoint) };
+        let partial = self.path.with_extension("json.partial");
+        std::fs::write(&partial, serde_json::to_vec_pretty(&value).map_err(|_| CommandError::provider_settings_unavailable())?)
+            .map_err(|_| CommandError::provider_settings_unavailable())?;
+        if self.path.exists() { std::fs::remove_file(&self.path).map_err(|_| CommandError::provider_settings_unavailable())?; }
+        std::fs::rename(partial, &self.path).map_err(|_| CommandError::provider_settings_unavailable())?;
+        Ok(value)
+    }
 }
 
 fn validate(value: &MediaGatewaySettings) -> Result<(), ()> {
     if value.schema != "desktop-media-gateway-settings/v1"
         || MediaGatewayRoute::validate(&value.endpoint).is_err()
+        || value.coarse_endpoint.as_deref().is_some_and(|v| MediaGatewayRoute::validate(v).is_err())
+        || value.fine_endpoint.as_deref().is_some_and(|v| MediaGatewayRoute::validate(v).is_err())
     {
         return Err(());
     }

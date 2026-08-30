@@ -33,6 +33,8 @@ pub struct VideoGenerationRequest {
     pub image_artifact_ref: String,
     pub story_spans: Vec<String>,
     pub prompt: String,
+    #[serde(default)]
+    pub generation_tier: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -148,6 +150,13 @@ pub(crate) fn validate_request(request: &MediaRequest) -> Result<(), MediaExecut
         ),
         MediaRequest::Video(value) => {
             if !valid_artifact_ref(&value.image_artifact_ref) {
+                return Err(MediaExecutionError::InvalidRequest);
+            }
+            if value
+                .generation_tier
+                .as_deref()
+                .is_some_and(|tier| !matches!(tier, "coarse" | "fine"))
+            {
                 return Err(MediaExecutionError::InvalidRequest);
             }
             (
@@ -281,6 +290,7 @@ mod tests {
             image_artifact_ref: image_result.content_ref,
             story_spans: vec!["story-package/scene-1".into()],
             prompt: "镜头缓慢推近".into(),
+            generation_tier: Some("coarse".into()),
         });
         let video_result = executor.execute(video).await.unwrap();
         assert_eq!(video_result.kind, MediaKind::Video);
@@ -303,6 +313,7 @@ mod tests {
             image_artifact_ref: "C:/image.png".into(),
             story_spans: vec![],
             prompt: "".into(),
+            generation_tier: None,
         });
         assert!(matches!(
             executor.execute(request).await,
@@ -320,6 +331,7 @@ mod tests {
             image_artifact_ref: format!("artifact://sha256/{}", "d".repeat(64)),
             story_spans: vec!["story-package/scene-1".into()],
             prompt: "镜头缓慢推近".into(),
+            generation_tier: None,
         });
         assert!(matches!(
             executor.execute(request).await,

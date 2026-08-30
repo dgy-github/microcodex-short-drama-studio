@@ -357,6 +357,8 @@ export type HumanDimensionInput = {
 export type MediaGatewaySettings = {
   schema: "desktop-media-gateway-settings/v1";
   endpoint: string;
+  coarse_endpoint?: string | null;
+  fine_endpoint?: string | null;
 };
 
 export type MediaProjectRecord = {

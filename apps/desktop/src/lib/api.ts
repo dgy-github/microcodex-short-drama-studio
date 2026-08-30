@@ -155,9 +155,13 @@ export const desktopApi = {
     invoke<MediaGatewaySettings | null>("media_gateway_settings"),
   saveMediaGatewaySettings: (endpoint: string) =>
     invoke<MediaGatewaySettings>("save_media_gateway_settings", { endpoint }),
-  storeMediaGatewayCredential: (secret: string) =>
+  saveMediaGenerationRoutes: (coarseEndpoint: string, fineEndpoint: string) =>
+    invoke<MediaGatewaySettings>("save_media_generation_routes", {
+      coarseEndpoint, fineEndpoint,
+    }),
+  storeMediaGatewayCredential: (secret: string, profile = "default") =>
     invoke<CredentialStatus>("store_provider_credential", {
-      provider: "media_gateway", profile: "default", secret,
+      provider: "media_gateway", profile, secret,
     }),
   appendMediaPromptRevision: (revision: ImagePromptRevision) =>
     invoke<MediaProjectRecord>("append_media_prompt_revision", { revision }),

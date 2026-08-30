@@ -53,11 +53,16 @@ impl DesktopMediaRuntime {
         }) {
             return Err(CommandError::invalid_media_project());
         }
-        let endpoint = settings
-            .load()?
-            .ok_or_else(CommandError::media_runtime_unavailable)?
-            .endpoint;
-        let secret = credentials.load("media_gateway", "default")?;
+        let settings = settings.load()?.ok_or_else(CommandError::media_runtime_unavailable)?;
+        let (endpoint, profile) = match &request {
+            MediaRequest::Video(value) if value.generation_tier.as_deref() == Some("fine") =>
+                (settings.fine_endpoint.unwrap_or(settings.endpoint), "fine"),
+            MediaRequest::Video(_) =>
+                (settings.coarse_endpoint.unwrap_or(settings.endpoint), "coarse"),
+            MediaRequest::Image(_) => (settings.endpoint, "default"),
+        };
+        let secret = credentials.load("media_gateway", profile)
+            .or_else(|_| credentials.load("media_gateway", "default"))?;
         let route = MediaGatewayRoute::new(endpoint, secret)
             .map_err(|_| CommandError::media_runtime_unavailable())?;
         self.execute_with_route(run_id, request, resume, route)

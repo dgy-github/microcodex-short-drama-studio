@@ -236,6 +236,13 @@ pub fn save_media_gateway_settings(
 }
 
 #[tauri::command]
+pub fn save_media_generation_routes(
+    state: State<'_, DesktopState>, coarse_endpoint: String, fine_endpoint: String,
+) -> Result<MediaGatewaySettings, CommandError> {
+    state.media_gateway_settings.save_routes(coarse_endpoint, fine_endpoint)
+}
+
+#[tauri::command]
 pub async fn start_media_run(
     state: State<'_, DesktopState>,
     run_id: String,
