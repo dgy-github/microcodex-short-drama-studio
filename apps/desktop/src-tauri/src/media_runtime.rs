@@ -53,9 +53,12 @@ impl DesktopMediaRuntime {
         }) {
             return Err(CommandError::invalid_media_project());
         }
-        let settings = settings.load()?.ok_or_else(CommandError::media_runtime_unavailable)?;
+        let settings = settings
+            .load()?
+            .ok_or_else(CommandError::media_runtime_unavailable)?;
         let (endpoint, profile) = route_for_request(settings, &request);
-        let secret = credentials.load("media_gateway", profile)
+        let secret = credentials
+            .load("media_gateway", profile)
             .or_else(|_| credentials.load("media_gateway", "default"))?;
         let route = MediaGatewayRoute::new(endpoint, secret)
             .map_err(|_| CommandError::media_runtime_unavailable())?;
@@ -129,10 +132,13 @@ fn route_for_request(
     request: &MediaRequest,
 ) -> (String, &'static str) {
     match request {
-        MediaRequest::Video(value) if value.generation_tier.as_deref() == Some("fine") =>
-            (settings.fine_endpoint.unwrap_or(settings.endpoint), "fine"),
-        MediaRequest::Video(_) =>
-            (settings.coarse_endpoint.unwrap_or(settings.endpoint), "coarse"),
+        MediaRequest::Video(value) if value.generation_tier.as_deref() == Some("fine") => {
+            (settings.fine_endpoint.unwrap_or(settings.endpoint), "fine")
+        }
+        MediaRequest::Video(_) => (
+            settings.coarse_endpoint.unwrap_or(settings.endpoint),
+            "coarse",
+        ),
         MediaRequest::Image(_) => (settings.endpoint, "default"),
     }
 }
@@ -197,12 +203,16 @@ mod tests {
             "generation_tier":"fine"
         });
         let fine = parse_request(value.clone()).unwrap();
-        assert_eq!(route_for_request(settings.clone(), &fine),
-                   ("https://media.example/kling".into(), "fine"));
+        assert_eq!(
+            route_for_request(settings.clone(), &fine),
+            ("https://media.example/kling".into(), "fine")
+        );
         value["generation_tier"] = json!("coarse");
         let coarse = parse_request(value).unwrap();
-        assert_eq!(route_for_request(settings, &coarse),
-                   ("https://media.example/wan".into(), "coarse"));
+        assert_eq!(
+            route_for_request(settings, &coarse),
+            ("https://media.example/wan".into(), "coarse")
+        );
     }
 
     #[tokio::test]
