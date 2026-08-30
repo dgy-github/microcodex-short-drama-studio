@@ -635,6 +635,7 @@
 | Web | `apps/desktop/src/lib/types.ts` | 380 | type | `MediaGenerationResult` |
 | Web | `apps/desktop/src/lib/types.ts` | 395 | type | `DesktopMediaRunResult` |
 | Web | `apps/desktop/src/main.ts` | 1 | module | `main` |
+| Web | `apps/desktop/src/main.ts` | 5 | function | `bootstrap` |
 | Web | `apps/desktop/src/test-setup.ts` | 1 | module | `test-setup` |
 | Web | `apps/desktop/src/test-setup.ts` | 11 | const | `localStorageMock` |
 | Web | `apps/desktop/src/test-setup.ts` | 12 | let | `store` |

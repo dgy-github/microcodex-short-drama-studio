@@ -5049,6 +5049,14 @@
   },
   {
     "language": "Web",
+    "path": "apps/desktop/src/main.ts",
+    "kind": "function",
+    "name": "bootstrap",
+    "line": 5,
+    "public": false
+  },
+  {
+    "language": "Web",
     "path": "apps/desktop/src/test-setup.ts",
     "kind": "module",
     "name": "test-setup",

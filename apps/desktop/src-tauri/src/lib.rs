@@ -296,7 +296,12 @@ pub fn run() {
         evaluations,
         revisions,
     };
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+    #[cfg(feature = "wdio")]
+    {
+        builder = builder.plugin(tauri_plugin_wdio::init());
+    }
+    builder
         .manage(state)
         .invoke_handler(tauri::generate_handler![
             commands::validate_story_job,
