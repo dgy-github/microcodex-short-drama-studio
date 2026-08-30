@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/video-generation-pipeline-v1.json",
+  "title": "Video generation pipeline v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "project_id", "stages", "fine_request"],
+  "properties": {
+    "schema": {"const": "video-generation-pipeline/v1"},
+    "project_id": {"type": "string", "minLength": 1},
+    "stages": {"type": "array", "minItems": 4, "maxItems": 4,
+      "prefixItems": [
+        {"type": "object", "required": ["stage", "provider", "model", "request"], "properties": {"stage": {"const": "coarse_generation"}}},
+        {"type": "object", "required": ["stage", "source_request_id", "start_seconds", "end_seconds"], "properties": {"stage": {"const": "crop"}, "start_seconds": {"type": "number", "minimum": 0}, "end_seconds": {"type": "number", "exclusiveMinimum": 0}}},
+        {"type": "object", "required": ["stage", "source_request_id", "segments"], "properties": {"stage": {"const": "supplement"}, "segments": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["segment_id", "purpose", "duration_seconds", "story_spans", "acceptance"], "properties": {"segment_id": {"type": "string", "minLength": 1}, "purpose": {"type": "string", "minLength": 1}, "duration_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 30}, "story_spans": {"type": "array", "items": {"type": "string", "minLength": 1}}, "acceptance": {"type": "string", "minLength": 1}}}}}},
+        {"type": "object", "required": ["stage", "source_request_id", "passed", "metrics", "failures", "retry_stage"], "properties": {"stage": {"const": "quality_assessment"}, "passed": {"type": "boolean"}}}
+      ], "items": false},
+    "fine_request": {"type": ["object", "null"]}
+  }
+}
