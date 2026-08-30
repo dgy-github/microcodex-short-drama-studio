@@ -3931,7 +3931,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "history",
+    "name": "editRef",
     "line": 22,
     "public": false
   },
@@ -3939,7 +3939,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "busy",
+    "name": "editStart",
     "line": 23,
     "public": false
   },
@@ -3947,7 +3947,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "activeRun",
+    "name": "editEnd",
     "line": 24,
     "public": false
   },
@@ -3955,8 +3955,32 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "message",
+    "name": "history",
     "line": 25,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "busy",
+    "line": 26,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "activeRun",
+    "line": 27,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "message",
+    "line": 28,
     "public": false
   },
   {
@@ -3964,14 +3988,6 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "revisions",
-    "line": 27,
-    "public": false
-  },
-  {
-    "language": "Web",
-    "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "latestRevision",
     "line": 30,
     "public": false
   },
@@ -3979,8 +3995,16 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
+    "name": "latestRevision",
+    "line": 33,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
     "name": "videoQualityPassed",
-    "line": 31,
+    "line": 34,
     "public": false
   },
   {
@@ -3988,14 +4012,6 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "newId",
-    "line": 35,
-    "public": false
-  },
-  {
-    "language": "Web",
-    "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "function",
-    "name": "refresh",
     "line": 38,
     "public": false
   },
@@ -4003,15 +4019,15 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
-    "name": "saveGateway",
-    "line": 47,
+    "name": "refresh",
+    "line": 41,
     "public": false
   },
   {
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "coarse",
+    "kind": "function",
+    "name": "saveGateway",
     "line": 50,
     "public": false
   },
@@ -4019,8 +4035,16 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
+    "name": "coarse",
+    "line": 53,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
     "name": "fine",
-    "line": 51,
+    "line": 54,
     "public": false
   },
   {
@@ -4028,7 +4052,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "savePromptRevision",
-    "line": 67,
+    "line": 70,
     "public": false
   },
   {
@@ -4036,7 +4060,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateImage",
-    "line": 87,
+    "line": 90,
     "public": false
   },
   {
@@ -4044,7 +4068,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateVideo",
-    "line": 102,
+    "line": 105,
     "public": false
   },
   {
@@ -4052,7 +4076,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "run",
-    "line": 119,
+    "line": 122,
     "public": false
   },
   {
@@ -4060,7 +4084,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "outcome",
-    "line": 124,
+    "line": 127,
     "public": false
   },
   {
@@ -4068,7 +4092,23 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "cancel",
-    "line": 138,
+    "line": 141,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "function",
+    "name": "validateTimeline",
+    "line": 145,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
+    "name": "request",
+    "line": 146,
     "public": false
   },
   {
@@ -4076,7 +4116,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "saved",
-    "line": 143,
+    "line": 161,
     "public": false
   },
   {

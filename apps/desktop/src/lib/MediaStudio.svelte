@@ -19,6 +19,9 @@
   let continuity = $state(0);
   let artifactFree = $state(0);
   let imageRef = $state("");
+  let editRef = $state("");
+  let editStart = $state(0);
+  let editEnd = $state(3);
   let history = $state<MediaProjectRecord[]>([]);
   let busy = $state(false);
   let activeRun = $state("");
@@ -139,6 +142,21 @@
     if (activeRun) await desktopApi.cancelMediaRun(activeRun);
   }
 
+  async function validateTimeline() {
+    const request = {
+      schema: "desktop-media-timeline-request/v1" as const,
+      project_id: projectId,
+      request_id: newId("edit"),
+      clips: [{ content_ref: editRef, start_seconds: Number(editStart), end_seconds: Number(editEnd) }],
+    };
+    try {
+      await desktopApi.validateMediaTimelineRequest(request);
+      message = "剪辑时间线已通过 Rust 校验，等待可信 FFmpeg 工具配置";
+    } catch (error) {
+      message = errorMessage(error);
+    }
+  }
+
   onMount(async () => {
     const saved = await desktopApi.mediaGatewaySettings().catch(() => null);
     if (!endpoint) endpoint = saved?.endpoint ?? "";
@@ -200,6 +218,13 @@
       </fieldset>
     {/if}
     <button onclick={generateVideo} disabled={busy || !imageRef || (videoTier === "fine" && !videoQualityPassed)}>生成视频</button>
+    <fieldset class="timeline-editor">
+      <legend>裁剪与补段时间线</legend>
+      <label>视频 artifact<input bind:value={editRef} placeholder="artifact://sha256/…" /></label>
+      <label>开始秒数<input type="number" min="0" step="0.1" bind:value={editStart} /></label>
+      <label>结束秒数<input type="number" min="0.1" max="300" step="0.1" bind:value={editEnd} /></label>
+      <button class="ghost" onclick={validateTimeline} disabled={busy || !editRef}>校验剪辑时间线</button>
+    </fieldset>
     {#if activeRun}<button class="danger" onclick={cancel}>取消当前任务</button>{/if}
     {#if message}<p role="status">{message}</p>{/if}
   </article>

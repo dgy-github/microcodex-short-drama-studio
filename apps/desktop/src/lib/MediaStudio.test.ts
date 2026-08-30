@@ -13,6 +13,7 @@ vi.mock("./api", async () => {
       appendMediaGenerationRequest: vi.fn(),
       startMediaRun: vi.fn(),
       cancelMediaRun: vi.fn(),
+      validateMediaTimelineRequest: vi.fn(),
       mediaGatewaySettings: vi.fn(),
       saveMediaGatewaySettings: vi.fn(),
       saveMediaGenerationRoutes: vi.fn(),
@@ -95,6 +96,22 @@ describe("MediaStudio", () => {
     await fireEvent.click(screen.getByRole("button", { name: "生成视频" }));
     await waitFor(() => expect(desktopApi.appendMediaGenerationRequest).toHaveBeenCalledWith(
       expect.objectContaining({ schema: "video-generation-request/v1", generation_tier: "fine" }),
+    ));
+  });
+
+  it("validates an artifact-only editing timeline through Rust", async () => {
+    render(MediaStudio);
+    await fireEvent.input(screen.getByLabelText("视频 artifact"), {
+      target: { value: `artifact://sha256/${"b".repeat(64)}` },
+    });
+    await fireEvent.input(screen.getByLabelText("开始秒数"), { target: { value: "1" } });
+    await fireEvent.input(screen.getByLabelText("结束秒数"), { target: { value: "4" } });
+    await fireEvent.click(screen.getByRole("button", { name: "校验剪辑时间线" }));
+    await waitFor(() => expect(desktopApi.validateMediaTimelineRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schema: "desktop-media-timeline-request/v1",
+        clips: [{ content_ref: `artifact://sha256/${"b".repeat(64)}`, start_seconds: 1, end_seconds: 4 }],
+      }),
     ));
   });
 });

@@ -364,6 +364,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 - `retain_timeline_output` 将成功 MP4 按项目/请求写入 `MediaArtifactStore`，返回 `artifact://sha256/...` 并删除临时输出；长度不匹配时 fail-closed 且保留现场。
 - `MediaArtifactStore::load_project_artifact` 按 project index 验证 artifact 所有权并重新校验 blob SHA-256；桌面编辑命令应只接收 artifact 引用并通过此接口物化输入，不能接收 Svelte 提供的任意路径。
 - 桌面已新增 `validate_media_timeline_request` IPC 和 `DesktopTimelineRequest` 前端类型；当前负责 artifact-only 请求校验，尚未执行 FFmpeg，后续执行命令必须复用 project-scoped artifact load。
+- `MediaStudio.svelte` 已新增 BugleCat 风格“裁剪与补段时间线”面板，提交 artifact 引用和起止时间到上述 IPC；前端测试覆盖成功调用，界面文案明确等待可信 FFmpeg 配置，不冒充已渲染。
 
 - 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。
