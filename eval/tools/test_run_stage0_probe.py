@@ -375,11 +375,15 @@ class RouteTests(unittest.TestCase):
         }
         self.assertEqual(resolve_route(judge)["provider"], "ready")
 
-    def test_local_codex_route_does_not_require_an_api_key(self) -> None:
+    @patch("run_stage0_probe.shutil.which", return_value="/usr/local/bin/codex")
+    def test_local_codex_route_does_not_require_an_api_key(
+        self, which: MagicMock
+    ) -> None:
         judge = load(CODEX_JUDGES)["judges"][0]
         route = resolve_route(judge)
         self.assertEqual(route["provider"], "local_codex_exec")
         self.assertNotIn("api_key_env", route)
+        which.assert_called_once_with("codex")
 
     @patch("run_stage0_probe.subprocess.run")
     def test_codex_exec_is_isolated_read_only_and_structured(

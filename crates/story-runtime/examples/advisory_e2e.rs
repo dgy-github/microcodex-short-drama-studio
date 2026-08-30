@@ -213,3 +213,6 @@ fn write_json(path: &Path, value: &Value) -> Result<(), Box<dyn Error>> {
     std::fs::write(path, serde_json::to_vec_pretty(value)?)?;
     Ok(())
 }
+
+#[cfg(not(windows))]
+fn main() {}

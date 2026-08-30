@@ -7761,6 +7761,14 @@
   },
   {
     "language": "Rust",
+    "path": "crates/story-runtime/examples/advisory_e2e.rs",
+    "kind": "fn",
+    "name": "main",
+    "line": 218,
+    "public": false
+  },
+  {
+    "language": "Rust",
     "path": "crates/story-runtime/src/diagnostics.rs",
     "kind": "module",
     "name": "diagnostics",

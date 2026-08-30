@@ -974,6 +974,7 @@
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 171 | fn | `validate_workflow_result` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 208 | fn | `read_json` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 212 | fn | `write_json` |
+| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 218 | fn | `main` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 1 | module | `diagnostics` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 5 | struct | `StructuredDiagnostic` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 14 | enum | `DiagnosticError` |
