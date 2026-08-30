@@ -362,6 +362,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 - 主项目新增 `story-media/src/tool_manifest.rs` 与 `media-tool-manifest-v1.json`：工具版本、相对路径和 SHA-256 必须登记并匹配后才能解析二进制；覆盖目录穿越、重复 ID、坏哈希和篡改测试。
 - 主项目新增 `story-media/src/editor.rs`：串联 manifest 验证、时间线编译和受监督执行；使用 `-n` 禁止覆盖，只有新生成的非空 MP4 才成功，失败或超时清理 partial。fixture 覆盖失败清理与已有文件保护；尚未用真实 FFmpeg 编码验证。
 - `retain_timeline_output` 将成功 MP4 按项目/请求写入 `MediaArtifactStore`，返回 `artifact://sha256/...` 并删除临时输出；长度不匹配时 fail-closed 且保留现场。
+- `MediaArtifactStore::load_project_artifact` 按 project index 验证 artifact 所有权并重新校验 blob SHA-256；桌面编辑命令应只接收 artifact 引用并通过此接口物化输入，不能接收 Svelte 提供的任意路径。
 
 - 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。

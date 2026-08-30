@@ -108,6 +108,40 @@ impl MediaArtifactStore {
         Ok(bytes)
     }
 
+    /// Load an artifact only after proving it belongs to the requested project.
+    pub fn load_project_artifact(
+        &self,
+        project_id: &str,
+        content_ref: &str,
+    ) -> Result<(MediaArtifactRef, Vec<u8>), MediaStoreError> {
+        if !valid_id(project_id) {
+            return Err(MediaStoreError::InvalidIdentity);
+        }
+        let digest = content_ref
+            .strip_prefix("artifact://sha256/")
+            .filter(|value| valid_digest(value))
+            .ok_or(MediaStoreError::InvalidReference)?;
+        let path = self
+            .root
+            .join("media-projects")
+            .join(project_id)
+            .join("index.json");
+        let value: serde_json::Value = serde_json::from_slice(&fs::read(path)?)?;
+        let entries = value["entries"]
+            .as_array()
+            .ok_or(MediaStoreError::CorruptIndex)?;
+        let entry = entries
+            .iter()
+            .find(|entry| entry["content_ref"] == content_ref)
+            .ok_or(MediaStoreError::InvalidReference)?;
+        let reference = parse_reference(entry)?;
+        if reference.project_id != project_id || reference.content_sha256 != digest {
+            return Err(MediaStoreError::InvalidReference);
+        }
+        let bytes = self.load(&reference)?;
+        Ok((reference, bytes))
+    }
+
     pub fn verify_project_image(
         &self,
         project_id: &str,
@@ -182,6 +216,51 @@ impl MediaArtifactStore {
             .join(&digest[..2])
             .join(digest)
     }
+}
+
+fn parse_reference(value: &serde_json::Value) -> Result<MediaArtifactRef, MediaStoreError> {
+    if value["schema"] != "media-artifact-ref/v1" {
+        return Err(MediaStoreError::CorruptIndex);
+    }
+    let text = |name: &str| {
+        value[name]
+            .as_str()
+            .map(str::to_owned)
+            .ok_or(MediaStoreError::CorruptIndex)
+    };
+    let project_id = text("project_id")?;
+    let request_id = text("request_id")?;
+    let mime_type = text("mime_type")?;
+    let content_ref = text("content_ref")?;
+    let content_sha256 = text("content_sha256")?;
+    let byte_len = value["byte_len"]
+        .as_u64()
+        .and_then(|v| usize::try_from(v).ok())
+        .ok_or(MediaStoreError::CorruptIndex)?;
+    let kind = match value["kind"].as_str() {
+        Some("image") => MediaKind::Image,
+        Some("video") => MediaKind::Video,
+        _ => return Err(MediaStoreError::CorruptIndex),
+    };
+    if !valid_id(&project_id)
+        || !valid_id(&request_id)
+        || !valid_mime(kind, &mime_type)
+        || !valid_digest(&content_sha256)
+        || content_ref != format!("artifact://sha256/{content_sha256}")
+        || byte_len == 0
+    {
+        return Err(MediaStoreError::CorruptIndex);
+    }
+    Ok(MediaArtifactRef {
+        schema: "media-artifact-ref/v1",
+        project_id,
+        request_id,
+        kind,
+        mime_type,
+        content_ref,
+        content_sha256,
+        byte_len,
+    })
 }
 
 fn valid_id(value: &str) -> bool {
@@ -282,6 +361,14 @@ mod tests {
             .unwrap();
         assert!(store
             .verify_project_image("another_project", &first.content_ref)
+            .is_err());
+        let (loaded, bytes) = store
+            .load_project_artifact("project_1", &first.content_ref)
+            .unwrap();
+        assert_eq!(loaded, first);
+        assert_eq!(bytes, b"png-fixture");
+        assert!(store
+            .load_project_artifact("another_project", &first.content_ref)
             .is_err());
     }
 

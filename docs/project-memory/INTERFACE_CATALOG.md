@@ -474,7 +474,8 @@
 | `open` | fn | `crates/story-storage/src/media.rs:55` |
 | `put` | fn | `crates/story-storage/src/media.rs:62` |
 | `load` | fn | `crates/story-storage/src/media.rs:99` |
-| `verify_project_image` | fn | `crates/story-storage/src/media.rs:111` |
+| `load_project_artifact` | fn | `crates/story-storage/src/media.rs:112` |
+| `verify_project_image` | fn | `crates/story-storage/src/media.rs:145` |
 | `MediaRunEvent` | struct | `crates/story-storage/src/media_events.rs:12` |
 | `MediaEventStoreError` | enum | `crates/story-storage/src/media_events.rs:23` |
 | `MediaEventStore` | struct | `crates/story-storage/src/media_events.rs:37` |

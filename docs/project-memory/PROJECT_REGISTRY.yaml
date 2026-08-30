@@ -403,6 +403,15 @@ interfaces:
     outputs: [media-project-record/v1 history]
     errors: [duplicate record, missing parent, invalid record, corrupt history]
     side_effects: [append-only project history write]
+  - id: IFACE-039
+    name: project-scoped media artifact load
+    kind: Rust storage API
+    location: crates/story-storage/src/media.rs
+    purpose: Resolve and load a content-addressed media artifact only after validating its project index ownership and re-hashing bytes.
+    inputs: [project ID, artifact content reference]
+    outputs: [validated media artifact reference, digest-verified bytes]
+    errors: [invalid identity, missing artifact, corrupt index, hash mismatch]
+    side_effects: [bounded index and blob reads]
   - id: IFACE-034
     name: asynchronous media gateway task
     kind: authenticated HTTP and JSON contracts

@@ -10427,8 +10427,16 @@
     "language": "Rust",
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
+    "name": "load_project_artifact",
+    "line": 112,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/media.rs",
+    "kind": "fn",
     "name": "verify_project_image",
-    "line": 111,
+    "line": 145,
     "public": true
   },
   {
@@ -10436,7 +10444,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "append_index",
-    "line": 146,
+    "line": 180,
     "public": false
   },
   {
@@ -10444,7 +10452,15 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "blob_path",
-    "line": 179,
+    "line": 213,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-storage/src/media.rs",
+    "kind": "fn",
+    "name": "parse_reference",
+    "line": 221,
     "public": false
   },
   {
@@ -10452,7 +10468,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "valid_id",
-    "line": 187,
+    "line": 266,
     "public": false
   },
   {
@@ -10460,7 +10476,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "valid_mime",
-    "line": 195,
+    "line": 274,
     "public": false
   },
   {
@@ -10468,7 +10484,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "valid_digest",
-    "line": 202,
+    "line": 281,
     "public": false
   },
   {
@@ -10476,7 +10492,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "sha256_hex",
-    "line": 209,
+    "line": 288,
     "public": false
   },
   {
@@ -10484,7 +10500,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "atomic_create",
-    "line": 216,
+    "line": 295,
     "public": false
   },
   {
@@ -10492,7 +10508,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "atomic_replace",
-    "line": 226,
+    "line": 305,
     "public": false
   },
   {
@@ -10500,7 +10516,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 243,
+    "line": 322,
     "public": false
   },
   {
@@ -10508,7 +10524,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "media_is_content_addressed_append_only_and_digest_verified",
-    "line": 247,
+    "line": 326,
     "public": false
   },
   {
@@ -10516,7 +10532,7 @@
     "path": "crates/story-storage/src/media.rs",
     "kind": "fn",
     "name": "unsafe_identity_wrong_mime_and_empty_media_fail_closed",
-    "line": 289,
+    "line": 376,
     "public": false
   },
   {
