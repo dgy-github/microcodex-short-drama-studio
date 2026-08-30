@@ -366,6 +366,7 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 - 桌面已新增 `validate_media_timeline_request` IPC 和 `DesktopTimelineRequest` 前端类型；当前负责 artifact-only 请求校验，尚未执行 FFmpeg，后续执行命令必须复用 project-scoped artifact load。
 - `MediaStudio.svelte` 已新增 BugleCat 风格“裁剪与补段时间线”面板，提交 artifact 引用和起止时间到上述 IPC；前端测试覆盖成功调用，界面文案明确等待可信 FFmpeg 配置，不冒充已渲染。
 - 桌面新增 `execute_media_timeline` IPC：从 project-scoped artifact 物化输入，读取 `tools/media-tool-manifest.json`，执行并把新 MP4 写入不可变仓库；前端按钮显示实际保留的 artifact。缺工具、非法输入或执行失败均返回错误。
+- timeline edit 已接入同一 `active`/cancel channel 与 `MediaEventStore`：写 accepted、started 和唯一 terminal；首次运行会创建 `edit-tmp`，失败/取消清理受控临时文件并释放 active 锁，重复 request ID fail-closed。
 
 - 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。

@@ -25,7 +25,7 @@ pub struct DesktopMediaRunResult {
     pub result: Option<story_media::MediaGenerationResult>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct DesktopTimelineRequest {
     pub schema: String,
@@ -34,7 +34,7 @@ pub struct DesktopTimelineRequest {
     pub clips: Vec<DesktopTimelineClip>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct DesktopTimelineClip {
     pub content_ref: String,
@@ -172,12 +172,48 @@ impl DesktopMediaRuntime {
         request: DesktopTimelineRequest,
     ) -> Result<MediaArtifactRef, CommandError> {
         request.validate()?;
+        let events = MediaEventStore::open(self.root.join("events.jsonl"))
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
         let store = MediaArtifactStore::open(self.root.join("artifacts"))
             .map_err(|_| CommandError::media_runtime_unavailable())?;
-        let temporary = self.root.join("edit-tmp").join(&request.request_id);
+        let (_, inserted) = events.append_acceptance(&request.project_id, &request.request_id,
+            &request.request_id, serde_json::json!({"timeline_request": request}))
+            .map_err(|_| CommandError::media_run_failed())?;
+        if !inserted { return Err(CommandError::invalid_media_project()); }
+        let edit_root = self.root.join("edit-tmp");
+        std::fs::create_dir_all(&edit_root).map_err(|_| CommandError::media_run_failed())?;
+        let temporary = edit_root.join(&request.request_id);
         std::fs::create_dir(&temporary).map_err(|_| CommandError::media_run_failed())?;
-        let result = self.edit_timeline_inner(&request, &store, &temporary).await;
+        let (cancel, mut receiver) = watch::channel(false);
+        {
+            let mut active = self.active.lock().await;
+            if active.is_some() { cleanup_edit_directory(&temporary, 0); return Err(CommandError::media_run_active()); }
+            *active = Some((request.request_id.clone(), cancel));
+        }
+        if events.append(&request.project_id, &request.request_id, &request.request_id,
+            "run.started", serde_json::json!({"kind":"timeline_edit"})).is_err() {
+            self.active.lock().await.take();
+            cleanup_edit_directory(&temporary, 0);
+            return Err(CommandError::media_run_failed());
+        }
+        let execution = self.edit_timeline_inner(&request, &store, &temporary);
+        tokio::pin!(execution);
+        let result = tokio::select! {
+            value = &mut execution => value,
+            changed = receiver.changed() => {
+                if changed.is_ok() && *receiver.borrow() { Err(CommandError::media_run_failed()) }
+                else { execution.await }
+            }
+        };
+        self.active.lock().await.take();
         cleanup_edit_directory(&temporary, request.clips.len());
+        let (event_type, payload) = match &result {
+            Ok(reference) => ("run.completed", serde_json::to_value(reference).unwrap_or_default()),
+            Err(_) if *receiver.borrow() => ("run.cancelled", serde_json::json!({"reason":"user_requested"})),
+            Err(_) => ("run.failed", serde_json::json!({"error":"timeline_execution_failed"})),
+        };
+        events.append_terminal(&request.project_id, &request.request_id, &request.request_id,
+            event_type, payload).map_err(|_| CommandError::media_run_failed())?;
         result
     }
 
@@ -320,6 +356,24 @@ mod tests {
         unsafe_request = valid;
         unsafe_request.clips[0].end_seconds = 301.0;
         assert!(unsafe_request.validate().is_err());
+    }
+
+    #[tokio::test]
+    async fn first_timeline_run_creates_parent_and_records_terminal_failure() {
+        let directory = tempfile::tempdir().unwrap();
+        let runtime_root = directory.path().join("runtime");
+        let runtime = DesktopMediaRuntime::new(runtime_root.clone());
+        let store = MediaArtifactStore::open(runtime_root.join("artifacts")).unwrap();
+        let video = store.put("project_1", "vid_source", MediaKind::Video, "video/mp4", b"fixture").unwrap();
+        let request = DesktopTimelineRequest { schema: "desktop-media-timeline-request/v1".into(),
+            project_id: "project_1".into(), request_id: format!("edit_{}", "d".repeat(32)),
+            clips: vec![DesktopTimelineClip { content_ref: video.content_ref,
+                start_seconds: 0.0, end_seconds: 1.0 }] };
+        assert!(runtime.edit_timeline(request).await.is_err());
+        assert!(runtime.active.lock().await.is_none());
+        let events = MediaEventStore::open(runtime_root.join("events.jsonl")).unwrap().replay(0).unwrap();
+        assert_eq!(events.last().unwrap().event_type, "run.failed");
+        assert!(std::fs::read_dir(runtime_root.join("edit-tmp")).unwrap().next().is_none());
     }
 
     #[tokio::test]

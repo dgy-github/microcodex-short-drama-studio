@@ -2076,22 +2076,6 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "edit_timeline_inner",
-    "line": 184,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "cleanup_edit_directory",
-    "line": 214,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "route_for_request",
     "line": 220,
     "public": false
   },
@@ -2099,8 +2083,24 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
+    "name": "cleanup_edit_directory",
+    "line": 250,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "route_for_request",
+    "line": 256,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
     "name": "parse_request",
-    "line": 236,
+    "line": 272,
     "public": false
   },
   {
@@ -2108,7 +2108,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "request_identity",
-    "line": 252,
+    "line": 288,
     "public": false
   },
   {
@@ -2116,7 +2116,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 260,
+    "line": 296,
     "public": false
   },
   {
@@ -2124,7 +2124,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "image_request",
-    "line": 269,
+    "line": 305,
     "public": false
   },
   {
@@ -2132,7 +2132,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "generation_tier_selects_the_expected_trusted_route",
-    "line": 281,
+    "line": 317,
     "public": false
   },
   {
@@ -2140,7 +2140,15 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "timeline_request_accepts_only_artifact_refs_and_bounded_ranges",
-    "line": 309,
+    "line": 345,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "first_timeline_run_creates_parent_and_records_terminal_failure",
+    "line": 362,
     "public": false
   },
   {
@@ -2148,7 +2156,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "unpersisted_request_fails_before_gateway_configuration",
-    "line": 326,
+    "line": 380,
     "public": false
   },
   {
@@ -2156,7 +2164,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "cancellation_requires_matching_active_run",
-    "line": 347,
+    "line": 401,
     "public": false
   },
   {
@@ -2164,7 +2172,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "fake_gateway",
-    "line": 357,
+    "line": 411,
     "public": false
   },
   {
@@ -2172,7 +2180,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "desktop_runtime_reaches_http_gateway_and_retains_durable_artifact",
-    "line": 389,
+    "line": 443,
     "public": false
   },
   {
