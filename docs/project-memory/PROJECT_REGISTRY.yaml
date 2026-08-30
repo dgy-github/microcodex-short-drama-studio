@@ -412,6 +412,15 @@ interfaces:
     outputs: [validated media artifact reference, digest-verified bytes]
     errors: [invalid identity, missing artifact, corrupt index, hash mismatch]
     side_effects: [bounded index and blob reads]
+  - id: IFACE-040
+    name: desktop timeline validation IPC
+    kind: Tauri command API and JSON contract
+    location: apps/desktop/src-tauri/src/commands.rs
+    purpose: Validate artifact-only crop timeline requests before trusted media execution.
+    inputs: [desktop-media-timeline-request/v1]
+    outputs: [validation success or safe command error]
+    errors: [invalid project, request ID, artifact reference or time range]
+    side_effects: []
   - id: IFACE-034
     name: asynchronous media gateway task
     kind: authenticated HTTP and JSON contracts

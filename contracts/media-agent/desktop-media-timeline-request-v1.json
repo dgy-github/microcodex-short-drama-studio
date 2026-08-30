@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/desktop-media-timeline-request-v1.json",
+  "title": "Desktop media timeline request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "project_id", "request_id", "clips"],
+  "properties": {
+    "schema": {"const": "desktop-media-timeline-request/v1"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,96}$"},
+    "request_id": {"type": "string", "pattern": "^edit_[0-9a-f]{32}$"},
+    "clips": {"type": "array", "minItems": 1, "maxItems": 32, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["content_ref", "start_seconds", "end_seconds"],
+      "properties": {
+        "content_ref": {"type": "string", "pattern": "^artifact://sha256/[0-9a-f]{64}$"},
+        "start_seconds": {"type": "number", "minimum": 0},
+        "end_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 300}
+      }
+    }}
+  }
+}

@@ -10,7 +10,7 @@ use crate::evaluations::{
     BlindAssignment, EvaluationBatchResult, EvaluationCatalog, HumanDimensionInput,
 };
 use crate::media_gateway_settings::MediaGatewaySettings;
-use crate::media_runtime::DesktopMediaRunResult;
+use crate::media_runtime::{DesktopMediaRunResult, DesktopTimelineRequest};
 use crate::provider_settings::ProviderRouteSettings;
 use crate::provider_soak::ProviderSoakResult;
 use crate::revisions::{ExportReceipt, RevisionWorkspace};
@@ -244,6 +244,13 @@ pub fn save_media_generation_routes(
     state
         .media_gateway_settings
         .save_routes(coarse_endpoint, fine_endpoint)
+}
+
+#[tauri::command]
+pub fn validate_media_timeline_request(
+    request: DesktopTimelineRequest,
+) -> Result<(), CommandError> {
+    request.validate()
 }
 
 #[tauri::command]

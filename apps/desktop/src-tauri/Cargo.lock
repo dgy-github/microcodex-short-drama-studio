@@ -3634,6 +3634,7 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "serde",
  "serde_json",
+ "sha2",
  "story-provider",
  "story-storage",
  "thiserror 2.0.19",

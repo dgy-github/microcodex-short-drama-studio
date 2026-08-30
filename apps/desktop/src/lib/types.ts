@@ -394,6 +394,17 @@ export type MediaGenerationResult = {
   pricing_catalog_id: string;
 };
 
+export type DesktopTimelineRequest = {
+  schema: "desktop-media-timeline-request/v1";
+  project_id: string;
+  request_id: string;
+  clips: Array<{
+    content_ref: string;
+    start_seconds: number;
+    end_seconds: number;
+  }>;
+};
+
 export type DesktopMediaRunResult = {
   schema: "desktop-media-run-result/v1";
   run_id: string;

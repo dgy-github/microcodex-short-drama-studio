@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -22,6 +22,46 @@ pub struct DesktopMediaRunResult {
     pub run_id: String,
     pub status: &'static str,
     pub result: Option<story_media::MediaGenerationResult>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct DesktopTimelineRequest {
+    pub schema: String,
+    pub project_id: String,
+    pub request_id: String,
+    pub clips: Vec<DesktopTimelineClip>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct DesktopTimelineClip {
+    pub content_ref: String,
+    pub start_seconds: f64,
+    pub end_seconds: f64,
+}
+
+impl DesktopTimelineRequest {
+    pub(crate) fn validate(&self) -> Result<(), CommandError> {
+        if self.schema != "desktop-media-timeline-request/v1"
+            || !valid_safe_id(&self.project_id, 96)
+            || !self.request_id.strip_prefix("edit_").is_some_and(|suffix| suffix.len() == 32 && suffix.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)))
+            || self.clips.is_empty() || self.clips.len() > 32
+            || self.clips.iter().any(|clip| !valid_artifact_ref(&clip.content_ref)
+                || !clip.start_seconds.is_finite() || !clip.end_seconds.is_finite()
+                || clip.start_seconds < 0.0 || clip.end_seconds <= clip.start_seconds
+                || clip.end_seconds > 300.0)
+        { return Err(CommandError::invalid_media_project()); }
+        Ok(())
+    }
+}
+
+fn valid_safe_id(value: &str, max: usize) -> bool {
+    !value.is_empty() && value.len() <= max && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-'))
+}
+
+fn valid_artifact_ref(value: &str) -> bool {
+    value.strip_prefix("artifact://sha256/").is_some_and(|digest| digest.len() == 64 && digest.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)))
 }
 
 pub struct DesktopMediaRuntime {
@@ -213,6 +253,23 @@ mod tests {
             route_for_request(settings, &coarse),
             ("https://media.example/wan".into(), "coarse")
         );
+    }
+
+    #[test]
+    fn timeline_request_accepts_only_artifact_refs_and_bounded_ranges() {
+        let valid: DesktopTimelineRequest = serde_json::from_value(json!({
+            "schema":"desktop-media-timeline-request/v1", "project_id":"project_1",
+            "request_id":format!("edit_{}", "a".repeat(32)),
+            "clips":[{"content_ref":format!("artifact://sha256/{}", "b".repeat(64)),
+                "start_seconds":0.0, "end_seconds":3.0}]
+        })).unwrap();
+        assert!(valid.validate().is_ok());
+        let mut unsafe_request = valid.clone();
+        unsafe_request.clips[0].content_ref = "C:/video.mp4".into();
+        assert!(unsafe_request.validate().is_err());
+        unsafe_request = valid;
+        unsafe_request.clips[0].end_seconds = 301.0;
+        assert!(unsafe_request.validate().is_err());
     }
 
     #[tokio::test]
