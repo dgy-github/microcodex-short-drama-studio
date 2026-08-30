@@ -89,6 +89,9 @@ describe("MediaStudio", () => {
       target: { value: `artifact://sha256/${"a".repeat(64)}` },
     });
     await fireEvent.change(screen.getByLabelText("生成阶段"), { target: { value: "fine" } });
+    for (const label of ["故事符合度", "人物一致性", "动作质量", "镜头连续性", "画面无伪影"]) {
+      await fireEvent.input(screen.getByLabelText(label), { target: { value: "0.9" } });
+    }
     await fireEvent.click(screen.getByRole("button", { name: "生成视频" }));
     await waitFor(() => expect(desktopApi.appendMediaGenerationRequest).toHaveBeenCalledWith(
       expect.objectContaining({ schema: "video-generation-request/v1", generation_tier: "fine" }),
