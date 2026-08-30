@@ -4,7 +4,8 @@ use std::path::PathBuf;
 use std::time::Duration;
 use story_media::{
     execute_timeline, retain_timeline_output, GatewayMediaProvider, ImageGenerationRequest,
-    MediaExecutor, MediaRequest, MediaRunOutcome, MediaRunService, MediaToolManifest, TimelineClip,
+    MediaExecutor, MediaRequest, MediaRunOutcome, MediaRunService, MediaToolDiagnostic,
+    MediaToolManifest, TimelineClip,
     VideoGenerationRequest,
 };
 use story_provider::{MediaGatewayClient, MediaGatewayRoute};
@@ -23,6 +24,12 @@ pub struct DesktopMediaRunResult {
     pub run_id: String,
     pub status: &'static str,
     pub result: Option<story_media::MediaGenerationResult>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct DesktopMediaToolStatus {
+    pub schema: &'static str,
+    pub tools: Vec<MediaToolDiagnostic>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -99,6 +106,18 @@ impl DesktopMediaRuntime {
             root,
             active: Mutex::new(None),
         }
+    }
+
+    pub fn diagnose_tools(&self) -> Result<DesktopMediaToolStatus, CommandError> {
+        let tools = self.root.join("tools");
+        let manifest_text = std::fs::read_to_string(tools.join("media-tool-manifest.json"))
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
+        let manifest = MediaToolManifest::parse(&manifest_text)
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
+        Ok(DesktopMediaToolStatus {
+            schema: "desktop-media-tool-status/v1",
+            tools: manifest.diagnose(&tools),
+        })
     }
 
     pub async fn start(

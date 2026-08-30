@@ -24,6 +24,7 @@ import type {
   MediaProjectRecord,
   ImagePromptRevision,
   DesktopMediaRunResult,
+  DesktopMediaToolStatus,
   DesktopTimelineRequest,
   MediaArtifactRef,
 } from "./types";
@@ -181,6 +182,8 @@ export const desktopApi = {
     invoke<void>("validate_media_timeline_request", { request }),
   executeMediaTimeline: (request: DesktopTimelineRequest) =>
     invoke<MediaArtifactRef>("execute_media_timeline", { request }),
+  diagnoseMediaTools: () =>
+    invoke<DesktopMediaToolStatus>("diagnose_media_tools"),
 };
 
 export function errorMessage(error: unknown): string {

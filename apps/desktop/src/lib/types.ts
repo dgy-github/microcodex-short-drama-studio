@@ -422,3 +422,8 @@ export type DesktopMediaRunResult = {
   status: "completed" | "cancelled";
   result: MediaGenerationResult | null;
 };
+
+export type DesktopMediaToolStatus = {
+  schema: "desktop-media-tool-status/v1";
+  tools: Array<{ id: string; version: string; status: "ready" | "missing" | "hash_mismatch" | "invalid_root" }>;
+};

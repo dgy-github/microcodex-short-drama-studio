@@ -10,7 +10,9 @@ use crate::evaluations::{
     BlindAssignment, EvaluationBatchResult, EvaluationCatalog, HumanDimensionInput,
 };
 use crate::media_gateway_settings::MediaGatewaySettings;
-use crate::media_runtime::{DesktopMediaRunResult, DesktopTimelineRequest};
+use crate::media_runtime::{
+    DesktopMediaRunResult, DesktopMediaToolStatus, DesktopTimelineRequest,
+};
 use crate::provider_settings::ProviderRouteSettings;
 use crate::provider_soak::ProviderSoakResult;
 use crate::revisions::{ExportReceipt, RevisionWorkspace};
@@ -259,6 +261,13 @@ pub async fn execute_media_timeline(
     request: DesktopTimelineRequest,
 ) -> Result<story_storage::media::MediaArtifactRef, CommandError> {
     state.media_runtime.edit_timeline(request).await
+}
+
+#[tauri::command]
+pub fn diagnose_media_tools(
+    state: State<'_, DesktopState>,
+) -> Result<DesktopMediaToolStatus, CommandError> {
+    state.media_runtime.diagnose_tools()
 }
 
 #[tauri::command]

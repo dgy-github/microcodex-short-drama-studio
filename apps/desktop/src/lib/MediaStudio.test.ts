@@ -15,6 +15,7 @@ vi.mock("./api", async () => {
       cancelMediaRun: vi.fn(),
       validateMediaTimelineRequest: vi.fn(),
       executeMediaTimeline: vi.fn(),
+      diagnoseMediaTools: vi.fn(),
       mediaGatewaySettings: vi.fn(),
       saveMediaGatewaySettings: vi.fn(),
       saveMediaGenerationRoutes: vi.fn(),
@@ -29,6 +30,15 @@ describe("MediaStudio", () => {
     vi.stubGlobal("crypto", { randomUUID: () => "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" });
     vi.mocked(desktopApi.readMediaProjectHistory).mockResolvedValue([]);
     vi.mocked(desktopApi.mediaGatewaySettings).mockResolvedValue(null);
+    vi.mocked(desktopApi.diagnoseMediaTools).mockResolvedValue({
+      schema: "desktop-media-tool-status/v1",
+      tools: [{ id: "ffmpeg", version: "7.1.1", status: "ready" }],
+    });
+  });
+
+  it("shows the trusted media tool readiness", async () => {
+    render(MediaStudio);
+    expect(await screen.findByText(/ffmpeg 7.1.1 · ready/)).toBeInTheDocument();
   });
 
   it("saves a story-grounded prompt revision", async () => {

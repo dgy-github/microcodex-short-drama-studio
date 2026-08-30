@@ -268,7 +268,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "struct",
     "name": "StoryJobPreview",
-    "line": 24,
+    "line": 26,
     "public": true
   },
   {
@@ -276,7 +276,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "struct",
     "name": "ProviderHealth",
-    "line": 32,
+    "line": 34,
     "public": true
   },
   {
@@ -284,7 +284,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "validate_story_job",
-    "line": 40,
+    "line": 42,
     "public": true
   },
   {
@@ -292,7 +292,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "list_genre_packs",
-    "line": 54,
+    "line": 56,
     "public": true
   },
   {
@@ -300,7 +300,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "credential_status",
-    "line": 61,
+    "line": 63,
     "public": true
   },
   {
@@ -308,7 +308,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "store_provider_credential",
-    "line": 70,
+    "line": 72,
     "public": true
   },
   {
@@ -316,7 +316,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "delete_provider_credential",
-    "line": 80,
+    "line": 82,
     "public": true
   },
   {
@@ -324,7 +324,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "credential_audit",
-    "line": 89,
+    "line": 91,
     "public": true
   },
   {
@@ -332,7 +332,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "provider_route",
-    "line": 96,
+    "line": 98,
     "public": true
   },
   {
@@ -340,7 +340,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "save_provider_route",
-    "line": 104,
+    "line": 106,
     "public": true
   },
   {
@@ -348,7 +348,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "check_provider_health",
-    "line": 116,
+    "line": 118,
     "public": true
   },
   {
@@ -356,7 +356,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "run_provider_soak",
-    "line": 145,
+    "line": 147,
     "public": true
   },
   {
@@ -364,7 +364,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "list_story_runs",
-    "line": 156,
+    "line": 158,
     "public": true
   },
   {
@@ -372,7 +372,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "read_story_run",
-    "line": 164,
+    "line": 166,
     "public": true
   },
   {
@@ -380,7 +380,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "start_story_run",
-    "line": 172,
+    "line": 174,
     "public": true
   },
   {
@@ -388,7 +388,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "sync_story_run",
-    "line": 190,
+    "line": 192,
     "public": true
   },
   {
@@ -396,7 +396,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "cancel_story_run",
-    "line": 195,
+    "line": 197,
     "public": true
   },
   {
@@ -404,7 +404,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "append_media_prompt_revision",
-    "line": 200,
+    "line": 202,
     "public": true
   },
   {
@@ -412,7 +412,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "append_media_generation_request",
-    "line": 208,
+    "line": 210,
     "public": true
   },
   {
@@ -420,7 +420,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "read_media_project_history",
-    "line": 216,
+    "line": 218,
     "public": true
   },
   {
@@ -428,7 +428,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "media_gateway_settings",
-    "line": 224,
+    "line": 226,
     "public": true
   },
   {
@@ -436,7 +436,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "save_media_gateway_settings",
-    "line": 231,
+    "line": 233,
     "public": true
   },
   {
@@ -444,7 +444,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "save_media_generation_routes",
-    "line": 239,
+    "line": 241,
     "public": true
   },
   {
@@ -452,7 +452,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "validate_media_timeline_request",
-    "line": 250,
+    "line": 252,
     "public": true
   },
   {
@@ -460,7 +460,15 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "execute_media_timeline",
-    "line": 257,
+    "line": 259,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/commands.rs",
+    "kind": "fn",
+    "name": "diagnose_media_tools",
+    "line": 267,
     "public": true
   },
   {
@@ -468,7 +476,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "start_media_run",
-    "line": 265,
+    "line": 274,
     "public": true
   },
   {
@@ -476,7 +484,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "resume_media_run",
-    "line": 284,
+    "line": 293,
     "public": true
   },
   {
@@ -484,7 +492,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "cancel_media_run",
-    "line": 303,
+    "line": 312,
     "public": true
   },
   {
@@ -492,14 +500,6 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "open_revision_workspace",
-    "line": 311,
-    "public": true
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/commands.rs",
-    "kind": "fn",
-    "name": "read_revision_span",
     "line": 320,
     "public": true
   },
@@ -507,7 +507,7 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
-    "name": "create_story_revision",
+    "name": "read_revision_span",
     "line": 329,
     "public": true
   },
@@ -515,8 +515,16 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
+    "name": "create_story_revision",
+    "line": 338,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/commands.rs",
+    "kind": "fn",
     "name": "approve_story_revision",
-    "line": 342,
+    "line": 351,
     "public": true
   },
   {
@@ -524,14 +532,6 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "compare_story_revisions",
-    "line": 355,
-    "public": true
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/commands.rs",
-    "kind": "fn",
-    "name": "rollback_story_revision",
     "line": 364,
     "public": true
   },
@@ -539,15 +539,15 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
-    "name": "export_story_revision",
-    "line": 376,
+    "name": "rollback_story_revision",
+    "line": 373,
     "public": true
   },
   {
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
-    "name": "evaluation_catalog",
+    "name": "export_story_revision",
     "line": 385,
     "public": true
   },
@@ -555,8 +555,16 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
+    "name": "evaluation_catalog",
+    "line": 394,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/commands.rs",
+    "kind": "fn",
     "name": "run_automatic_evaluation",
-    "line": 392,
+    "line": 401,
     "public": true
   },
   {
@@ -564,7 +572,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "create_blind_assignments",
-    "line": 409,
+    "line": 418,
     "public": true
   },
   {
@@ -572,7 +580,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "submit_blind_review",
-    "line": 421,
+    "line": 430,
     "public": true
   },
   {
@@ -580,7 +588,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 433,
+    "line": 442,
     "public": false
   },
   {
@@ -588,7 +596,7 @@
     "path": "apps/desktop/src-tauri/src/commands.rs",
     "kind": "fn",
     "name": "story_job_command_reuses_domain_validation",
-    "line": 437,
+    "line": 446,
     "public": false
   },
   {
@@ -1980,14 +1988,14 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "struct",
     "name": "DesktopMediaRunResult",
-    "line": 21,
+    "line": 22,
     "public": true
   },
   {
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "struct",
-    "name": "DesktopTimelineRequest",
+    "name": "DesktopMediaToolStatus",
     "line": 30,
     "public": true
   },
@@ -1995,15 +2003,15 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "struct",
-    "name": "DesktopTimelineClip",
-    "line": 39,
+    "name": "DesktopTimelineRequest",
+    "line": 37,
     "public": true
   },
   {
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "validate",
+    "kind": "struct",
+    "name": "DesktopTimelineClip",
     "line": 46,
     "public": true
   },
@@ -2011,8 +2019,16 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
+    "name": "validate",
+    "line": 53,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
     "name": "valid_safe_id",
-    "line": 60,
+    "line": 79,
     "public": false
   },
   {
@@ -2020,7 +2036,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "valid_artifact_ref",
-    "line": 64,
+    "line": 87,
     "public": false
   },
   {
@@ -2028,7 +2044,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "struct",
     "name": "DesktopMediaRuntime",
-    "line": 68,
+    "line": 98,
     "public": true
   },
   {
@@ -2036,7 +2052,15 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "new",
-    "line": 74,
+    "line": 104,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "diagnose_tools",
+    "line": 111,
     "public": true
   },
   {
@@ -2044,7 +2068,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "start",
-    "line": 81,
+    "line": 123,
     "public": true
   },
   {
@@ -2052,7 +2076,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "execute_with_route",
-    "line": 110,
+    "line": 152,
     "public": false
   },
   {
@@ -2060,7 +2084,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "cancel",
-    "line": 157,
+    "line": 199,
     "public": true
   },
   {
@@ -2068,7 +2092,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "edit_timeline",
-    "line": 170,
+    "line": 212,
     "public": true
   },
   {
@@ -2076,46 +2100,6 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "edit_timeline_inner",
-    "line": 220,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "cleanup_edit_directory",
-    "line": 250,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "route_for_request",
-    "line": 256,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "parse_request",
-    "line": 272,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "request_identity",
-    "line": 288,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "mod",
-    "name": "tests",
     "line": 296,
     "public": false
   },
@@ -2123,23 +2107,15 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
-    "name": "image_request",
-    "line": 305,
+    "name": "cleanup_edit_directory",
+    "line": 337,
     "public": false
   },
   {
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
-    "name": "generation_tier_selects_the_expected_trusted_route",
-    "line": 317,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
-    "kind": "fn",
-    "name": "timeline_request_accepts_only_artifact_refs_and_bounded_ranges",
+    "name": "route_for_request",
     "line": 345,
     "public": false
   },
@@ -2147,8 +2123,56 @@
     "language": "Rust",
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
+    "name": "parse_request",
+    "line": 361,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "request_identity",
+    "line": 377,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "mod",
+    "name": "tests",
+    "line": 385,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "image_request",
+    "line": 394,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "generation_tier_selects_the_expected_trusted_route",
+    "line": 406,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
+    "name": "timeline_request_accepts_only_artifact_refs_and_bounded_ranges",
+    "line": 434,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "apps/desktop/src-tauri/src/media_runtime.rs",
+    "kind": "fn",
     "name": "first_timeline_run_creates_parent_and_records_terminal_failure",
-    "line": 362,
+    "line": 452,
     "public": false
   },
   {
@@ -2156,7 +2180,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "unpersisted_request_fails_before_gateway_configuration",
-    "line": 380,
+    "line": 490,
     "public": false
   },
   {
@@ -2164,7 +2188,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "cancellation_requires_matching_active_run",
-    "line": 401,
+    "line": 511,
     "public": false
   },
   {
@@ -2172,7 +2196,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "fake_gateway",
-    "line": 411,
+    "line": 521,
     "public": false
   },
   {
@@ -2180,7 +2204,7 @@
     "path": "apps/desktop/src-tauri/src/media_runtime.rs",
     "kind": "fn",
     "name": "desktop_runtime_reaches_http_gateway_and_retains_durable_artifact",
-    "line": 443,
+    "line": 553,
     "public": false
   },
   {
@@ -4852,7 +4876,7 @@
     "path": "apps/desktop/src/lib/api.ts",
     "kind": "const",
     "name": "desktopApi",
-    "line": 31,
+    "line": 32,
     "public": true
   },
   {
@@ -4860,7 +4884,7 @@
     "path": "apps/desktop/src/lib/api.ts",
     "kind": "function",
     "name": "errorMessage",
-    "line": 186,
+    "line": 189,
     "public": true
   },
   {
@@ -4868,7 +4892,7 @@
     "path": "apps/desktop/src/lib/api.ts",
     "kind": "const",
     "name": "value",
-    "line": 189,
+    "line": 192,
     "public": false
   },
   {
@@ -5349,6 +5373,14 @@
     "kind": "type",
     "name": "DesktopMediaRunResult",
     "line": 419,
+    "public": true
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/types.ts",
+    "kind": "type",
+    "name": "DesktopMediaToolStatus",
+    "line": 426,
     "public": true
   },
   {
@@ -6308,7 +6340,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "type",
     "name": "ProviderFuture",
-    "line": 23,
+    "line": 25,
     "public": true
   },
   {
@@ -6316,7 +6348,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "ImageGenerationRequest",
-    "line": 28,
+    "line": 30,
     "public": true
   },
   {
@@ -6324,7 +6356,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "VideoGenerationRequest",
-    "line": 39,
+    "line": 41,
     "public": true
   },
   {
@@ -6332,7 +6364,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaRequest",
-    "line": 51,
+    "line": 53,
     "public": true
   },
   {
@@ -6340,7 +6372,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "GeneratedMedia",
-    "line": 57,
+    "line": 59,
     "public": true
   },
   {
@@ -6348,7 +6380,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "trait",
     "name": "MediaProvider",
-    "line": 66,
+    "line": 68,
     "public": true
   },
   {
@@ -6356,7 +6388,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 67,
+    "line": 69,
     "public": false
   },
   {
@@ -6364,7 +6396,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaGenerationResult",
-    "line": 71,
+    "line": 73,
     "public": true
   },
   {
@@ -6372,7 +6404,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaProviderError",
-    "line": 87,
+    "line": 89,
     "public": true
   },
   {
@@ -6380,7 +6412,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "enum",
     "name": "MediaExecutionError",
-    "line": 93,
+    "line": 95,
     "public": true
   },
   {
@@ -6388,7 +6420,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "MediaExecutor",
-    "line": 106,
+    "line": 108,
     "public": true
   },
   {
@@ -6396,7 +6428,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "new",
-    "line": 112,
+    "line": 114,
     "public": true
   },
   {
@@ -6404,7 +6436,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "execute",
-    "line": 116,
+    "line": 118,
     "public": true
   },
   {
@@ -6412,7 +6444,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_request",
-    "line": 152,
+    "line": 154,
     "public": true
   },
   {
@@ -6420,7 +6452,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "validate_output",
-    "line": 204,
+    "line": 206,
     "public": false
   },
   {
@@ -6428,7 +6460,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "identity",
-    "line": 215,
+    "line": 217,
     "public": true
   },
   {
@@ -6436,7 +6468,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_id",
-    "line": 222,
+    "line": 224,
     "public": false
   },
   {
@@ -6444,7 +6476,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_prefixed_id",
-    "line": 230,
+    "line": 232,
     "public": false
   },
   {
@@ -6452,7 +6484,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "valid_artifact_ref",
-    "line": 239,
+    "line": 241,
     "public": false
   },
   {
@@ -6460,7 +6492,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 250,
+    "line": 252,
     "public": false
   },
   {
@@ -6468,7 +6500,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "struct",
     "name": "FixtureProvider",
-    "line": 254,
+    "line": 256,
     "public": false
   },
   {
@@ -6476,7 +6508,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 257,
+    "line": 259,
     "public": false
   },
   {
@@ -6484,7 +6516,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "executor",
-    "line": 275,
+    "line": 277,
     "public": false
   },
   {
@@ -6492,7 +6524,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "image_and_video_execute_through_provider_and_immutable_store",
-    "line": 282,
+    "line": 284,
     "public": false
   },
   {
@@ -6500,7 +6532,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "unsafe_or_unproven_inputs_fail_before_provider_execution",
-    "line": 317,
+    "line": 319,
     "public": false
   },
   {
@@ -6508,7 +6540,7 @@
     "path": "crates/story-media/src/lib.rs",
     "kind": "fn",
     "name": "video_rejects_a_well_formed_but_unretained_image_reference",
-    "line": 335,
+    "line": 337,
     "public": false
   },
   {
@@ -6867,8 +6899,16 @@
     "language": "Rust",
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "struct",
+    "name": "MediaToolDiagnostic",
+    "line": 17,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool_manifest.rs",
+    "kind": "struct",
     "name": "MediaToolManifest",
-    "line": 18,
+    "line": 25,
     "public": true
   },
   {
@@ -6876,7 +6916,7 @@
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "struct",
     "name": "MediaToolEntry",
-    "line": 25,
+    "line": 32,
     "public": true
   },
   {
@@ -6884,7 +6924,7 @@
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "fn",
     "name": "parse",
-    "line": 33,
+    "line": 40,
     "public": true
   },
   {
@@ -6892,7 +6932,15 @@
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "fn",
     "name": "resolve_verified",
-    "line": 53,
+    "line": 60,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool_manifest.rs",
+    "kind": "fn",
+    "name": "diagnose",
+    "line": 78,
     "public": true
   },
   {
@@ -6900,30 +6948,6 @@
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "fn",
     "name": "valid_id",
-    "line": 72,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "crates/story-media/src/tool_manifest.rs",
-    "kind": "fn",
-    "name": "valid_digest",
-    "line": 80,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "crates/story-media/src/tool_manifest.rs",
-    "kind": "fn",
-    "name": "unsafe_relative_path",
-    "line": 87,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "crates/story-media/src/tool_manifest.rs",
-    "kind": "mod",
-    "name": "tests",
     "line": 102,
     "public": false
   },
@@ -6931,8 +6955,32 @@
     "language": "Rust",
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "fn",
+    "name": "valid_digest",
+    "line": 110,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool_manifest.rs",
+    "kind": "fn",
+    "name": "unsafe_relative_path",
+    "line": 117,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool_manifest.rs",
+    "kind": "mod",
+    "name": "tests",
+    "line": 132,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-media/src/tool_manifest.rs",
+    "kind": "fn",
     "name": "resolves_only_hash_verified_binaries_inside_the_tool_root",
-    "line": 106,
+    "line": 136,
     "public": false
   },
   {
@@ -6940,7 +6988,7 @@
     "path": "crates/story-media/src/tool_manifest.rs",
     "kind": "fn",
     "name": "rejects_traversal_duplicates_and_invalid_hashes",
-    "line": 126,
+    "line": 156,
     "public": false
   },
   {

@@ -13,6 +13,13 @@ pub enum ToolManifestError {
     HashMismatch,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct MediaToolDiagnostic {
+    pub id: String,
+    pub version: String,
+    pub status: &'static str,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MediaToolManifest {
@@ -66,6 +73,29 @@ impl MediaToolManifest {
             return Err(ToolManifestError::HashMismatch);
         }
         Ok(path)
+    }
+
+    pub fn diagnose(&self, root: &Path) -> Vec<MediaToolDiagnostic> {
+        self.tools
+            .iter()
+            .map(|tool| {
+                let status = if !root.is_absolute() {
+                    "invalid_root"
+                } else {
+                    match self.resolve_verified(root, &tool.id) {
+                        Ok(_) => "ready",
+                        Err(ToolManifestError::Missing) => "missing",
+                        Err(ToolManifestError::HashMismatch) => "hash_mismatch",
+                        Err(ToolManifestError::Invalid) => "invalid_root",
+                    }
+                };
+                MediaToolDiagnostic {
+                    id: tool.id.clone(),
+                    version: tool.version.clone(),
+                    status,
+                }
+            })
+            .collect()
     }
 }
 
