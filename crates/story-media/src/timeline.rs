@@ -23,7 +23,12 @@ pub fn compile_concat_plan(
     }
     let mut args = Vec::with_capacity(clips.len() * 6 + 4);
     for clip in clips {
+        let input = Path::new(&clip.input);
         if clip.input.trim().is_empty()
+            || !input.is_absolute()
+            || input
+                .components()
+                .any(|component| matches!(component, std::path::Component::ParentDir))
             || !clip.start_seconds.is_finite()
             || !clip.end_seconds.is_finite()
             || clip.start_seconds < 0.0
@@ -69,12 +74,12 @@ mod tests {
             &PathBuf::from("C:\\tools\\ffmpeg.exe"),
             &[
                 TimelineClip {
-                    input: "coarse.mp4".into(),
+                    input: "C:\\input\\coarse.mp4".into(),
                     start_seconds: 1.0,
                     end_seconds: 4.0,
                 },
                 TimelineClip {
-                    input: "supplement.mp4".into(),
+                    input: "C:\\input\\supplement.mp4".into(),
                     start_seconds: 0.0,
                     end_seconds: 2.0,
                 },
@@ -90,7 +95,7 @@ mod tests {
     #[test]
     fn rejects_invalid_ranges_and_relative_tool_paths() {
         let clip = TimelineClip {
-            input: "coarse.mp4".into(),
+            input: "C:\\input\\coarse.mp4".into(),
             start_seconds: 3.0,
             end_seconds: 2.0,
         };
@@ -106,6 +111,19 @@ mod tests {
             compile_concat_plan(
                 &PathBuf::from("C:\\ffmpeg.exe"),
                 &[clip],
+                &PathBuf::from("C:\\out.mp4")
+            ),
+            Err(MediaToolError::InvalidArgument)
+        );
+        let relative = TimelineClip {
+            input: "coarse.mp4".into(),
+            start_seconds: 0.0,
+            end_seconds: 1.0,
+        };
+        assert_eq!(
+            compile_concat_plan(
+                &PathBuf::from("C:\\ffmpeg.exe"),
+                &[relative],
                 &PathBuf::from("C:\\out.mp4")
             ),
             Err(MediaToolError::InvalidArgument)
