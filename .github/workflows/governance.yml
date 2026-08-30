@@ -138,9 +138,10 @@ jobs:
         shell: powershell
         run: |
           $webviewProfile = Join-Path $env:RUNNER_TEMP "microcodex-webview2-profile"
+          $webviewProfile = Join-Path $webviewProfile $env:GITHUB_RUN_ID
           New-Item -ItemType Directory -Force -Path $webviewProfile | Out-Null
           $env:WEBVIEW2_USER_DATA_FOLDER = $webviewProfile
-          $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--no-first-run --disable-gpu"
+          $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--user-data-dir=$webviewProfile --no-first-run --disable-gpu --disable-software-rasterizer --no-sandbox"
           npm run test:e2e:tauri
         working-directory: apps/desktop
       - run: python scripts/check_release_configuration.py

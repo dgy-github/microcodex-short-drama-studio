@@ -28,6 +28,8 @@ export const config = {
         `--user-data-dir=${e2eProfile}`,
         "--no-first-run",
         "--disable-gpu",
+        "--disable-software-rasterizer",
+        "--no-sandbox",
       ],
     },
     "tauri:options": {
