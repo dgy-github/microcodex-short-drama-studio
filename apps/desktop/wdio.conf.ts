@@ -44,7 +44,7 @@ export const config = {
   logLevel: "info",
   bail: 0,
   waitforTimeout: 15_000,
-  connectionRetryTimeout: 120_000,
+  connectionRetryTimeout: 30_000,
   connectionRetryCount: 1,
   framework: "mocha",
   reporters: ["spec"],

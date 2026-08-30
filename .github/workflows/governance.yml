@@ -96,6 +96,7 @@ jobs:
 
   desktop-windows:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -133,6 +134,7 @@ jobs:
       - run: cargo test
         working-directory: apps/desktop/src-tauri
       - name: Real Tauri binary acceptance
+        timeout-minutes: 8
         shell: powershell
         run: |
           $webviewProfile = Join-Path $env:RUNNER_TEMP "microcodex-webview2-profile"
