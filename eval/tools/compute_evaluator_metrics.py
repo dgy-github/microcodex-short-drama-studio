@@ -155,7 +155,7 @@ def measure_pair(pair_dir: Path, dimension_ids: list[str]) -> dict[str, Any]:
     )
     return {
         "pair_dir": pair_identifier(pair_dir),
-        "result_paths": {
+        "_result_paths": {
             entry["source"]: pair_dir / entry["source"] for entry in per_judge
         },
         "pair_id": pair["pair_id"],
@@ -197,7 +197,7 @@ def pooled_agreement(
             entry = next(
                 e for e in measured["primary"] if e["judge_model"] == model
             )
-            summary = load(measured["result_paths"][entry["source"]])["summary"]
+            summary = load(measured["_result_paths"][entry["source"]])["summary"]
             row.extend(summary["baseline_scores"][d] for d in dimension_ids)
             row.extend(summary["negative_scores"][d] for d in dimension_ids)
         rows.append(row)
@@ -254,7 +254,7 @@ def build_report(manifest: dict[str, Any], metrics: dict[str, Any], pairs: list[
         },
         "judges_counted": sorted({judge["judge_model"] for pair in pairs for judge in pair["primary"]}),
         "inter_model_agreement": pooled_agreement(pairs, dimension_ids),
-        "per_pair": [{k: v for k, v in pair.items() if k != "primary"} | {"per_judge": [{k: v for k, v in judge.items() if k != "detail"} for judge in pair["primary"]]} for pair in pairs],
+        "per_pair": [{k: v for k, v in pair.items() if k != "primary" and not k.startswith("_")} | {"per_judge": [{k: v for k, v in judge.items() if k != "detail"} for judge in pair["primary"]]} for pair in pairs],
         "not_computable_here": {"spot_check_agreement": "needs the internal human spot check, which has never been run"},
     }
 

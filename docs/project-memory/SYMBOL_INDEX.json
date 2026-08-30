@@ -7716,7 +7716,7 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "required_secret",
-    "line": 107,
+    "line": 111,
     "public": false
   },
   {
@@ -7724,7 +7724,7 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "required_config",
-    "line": 117,
+    "line": 121,
     "public": false
   },
   {
@@ -7732,7 +7732,7 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "story_job",
-    "line": 126,
+    "line": 130,
     "public": false
   },
   {
@@ -7740,7 +7740,7 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "wait_for_terminal",
-    "line": 145,
+    "line": 149,
     "public": false
   },
   {
@@ -7748,7 +7748,7 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "validate_workflow_result",
-    "line": 171,
+    "line": 175,
     "public": false
   },
   {
@@ -7756,14 +7756,6 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "read_json",
-    "line": 208,
-    "public": false
-  },
-  {
-    "language": "Rust",
-    "path": "crates/story-runtime/examples/advisory_e2e.rs",
-    "kind": "fn",
-    "name": "write_json",
     "line": 212,
     "public": false
   },
@@ -7771,8 +7763,8 @@
     "language": "Rust",
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
-    "name": "main",
-    "line": 221,
+    "name": "write_json",
+    "line": 216,
     "public": false
   },
   {
@@ -7780,7 +7772,15 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "main",
-    "line": 226,
+    "line": 224,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/examples/advisory_e2e.rs",
+    "kind": "fn",
+    "name": "main",
+    "line": 229,
     "public": false
   },
   {

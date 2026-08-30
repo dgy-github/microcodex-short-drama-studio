@@ -336,6 +336,7 @@
 | `PricingError` | enum | `crates/story-provider/src/pricing.rs:34` |
 | `from_json` | fn | `crates/story-provider/src/pricing.rs:44` |
 | `quote` | fn | `crates/story-provider/src/pricing.rs:68` |
+| `run` | fn | `crates/story-runtime/examples/advisory_e2e.rs:18` |
 | `StructuredDiagnostic` | struct | `crates/story-runtime/src/diagnostics.rs:5` |
 | `DiagnosticError` | enum | `crates/story-runtime/src/diagnostics.rs:14` |
 | `new` | fn | `crates/story-runtime/src/diagnostics.rs:20` |

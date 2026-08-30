@@ -62,12 +62,7 @@
       ],
       "reruns_excluded_from_headline": [
         "judge-glm-5.2.stability-rerun.result.json"
-      ],
-      "result_paths": {
-        "judge-glm-5.2.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-glm-5.2.result.json",
-        "judge-glm-5.2.stability-rerun.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-glm-5.2.stability-rerun.result.json",
-        "judge-qwen3-vl-plus.result.json": "D:\\github_dgy\\microcodex-short-drama-studio\\eval\\adversarial\\stage0\\motive-explicit\\judge-qwen3-vl-plus.result.json"
-      }
+      ]
     }
   ],
   "resolution_note": "Both headline figures are defined over pairs; with 1 pair(s) the granularity is 1/1. A single pair can only attain 0.0 or 1.0 — not an estimate.",
