@@ -121,15 +121,21 @@
 </script>
 
 <section class="studio">
-  <article>
-    <h2>媒体网关</h2>
+  <header class="hero">
+    <div><span class="eyebrow">MEDIA AGENT WORKSPACE</span><h2>故事媒体工坊</h2><p>从故事证据到候选、评估与精生成，全程保留不可改写记录。</p></div>
+    <span class="status-dot">● {busy ? "运行中" : "就绪"}</span>
+  </header>
+
+  <article class="gateway">
+    <h3>可信媒体网关</h3>
     <label>Endpoint<input bind:value={endpoint} placeholder="https://…/v1/media/generate" /></label>
     <label>Bearer secret<input bind:value={secret} type="password" autocomplete="off" /></label>
     <button onclick={saveGateway} disabled={busy || !endpoint}>保存可信配置</button>
   </article>
 
-  <article>
-    <h2>故事后续生图</h2>
+  <article class="image-flow">
+    <div class="section-title"><div><span class="step-number">01</span><h3>故事生图 Agent</h3></div><span class="provider">候选 → 评估 → 定稿</span></div>
+    <div class="pipeline" aria-label="生图流程"><span>镜头拆解</span><i>→</i><span>候选生成</span><i>→</i><span>一致性评估</span><i>→</i><span>局部修订</span><i>→</i><span class="final">定稿</span></div>
     <label>项目 ID<input bind:value={projectId} /></label>
     <label>故事位置<input bind:value={sourceSpan} /></label>
     <label>图片提示词<textarea bind:value={prompt} rows="5"></textarea></label>
@@ -146,8 +152,9 @@
     </ol>
   </article>
 
-  <article>
-    <h2>图片和故事生成视频</h2>
+  <article class="video-flow">
+    <div class="section-title"><div><span class="step-number">02</span><h3>故事生视频 Agent</h3></div><span class="provider">Wan 粗生成 · Kling 精生成</span></div>
+    <div class="pipeline video" aria-label="生视频流程"><span>Wan 粗生成</span><i>→</i><span>裁剪</span><i>→</i><span>补段</span><i>→</i><span>质量门禁</span><i>→</i><span class="final">Kling 精生成</span></div>
     <label>图片 artifact reference<input bind:value={imageRef} placeholder="artifact://sha256/…" /></label>
     <button onclick={generateVideo} disabled={busy || !imageRef}>生成视频</button>
     {#if activeRun}<button class="danger" onclick={cancel}>取消当前任务</button>{/if}
@@ -156,5 +163,5 @@
 </section>
 
 <style>
-  .studio{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}article{padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}h2{margin-top:0}label{display:grid;gap:7px;margin:12px 0}input,textarea{box-sizing:border-box;width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);color:var(--text)}button{padding:10px 14px;border:0;border-radius:10px;background:var(--accent);color:#fff}button:disabled{opacity:.45}.actions{display:flex;flex-wrap:wrap;gap:8px}.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.danger{margin-left:8px;background:#a33}p{color:var(--muted)}.history{padding-left:20px;font-size:.78rem;color:var(--muted);overflow-wrap:anywhere}.history li{margin:5px 0}
+  .studio{display:grid;grid-template-columns:1fr 1fr;gap:16px}.hero{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border:1px solid var(--border);border-radius:18px;background:radial-gradient(700px 180px at 10% 0,rgba(88,166,255,.18),transparent),var(--surface)}.hero h2{margin:4px 0;font-size:1.55rem}.hero p{margin:0}.eyebrow{font:600 .68rem ui-monospace;color:#58a6ff;letter-spacing:.14em}.status-dot{padding:7px 11px;border:1px solid rgba(126,231,135,.3);border-radius:999px;color:#7ee787;background:rgba(126,231,135,.07);font-size:.78rem}article{padding:20px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,rgba(88,166,255,.035),rgba(126,231,135,.02)),var(--surface)}.gateway{grid-column:1/-1}.section-title,.section-title>div{display:flex;align-items:center;justify-content:space-between;gap:9px}.section-title h3{margin:0}.step-number{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:#58a6ff;color:#07111d;font-weight:800}.provider{font-size:.72rem;color:#7ee787}.pipeline{display:flex;align-items:center;gap:6px;margin:16px 0;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);overflow:auto}.pipeline span{white-space:nowrap;padding:6px 8px;border-radius:7px;border:1px solid var(--border);font-size:.7rem}.pipeline i{color:var(--muted);font-style:normal}.pipeline .final{border-color:rgba(126,231,135,.45);color:#7ee787}h3{margin-top:0}label{display:grid;gap:7px;margin:12px 0;font-size:.8rem;color:var(--muted)}input,textarea{box-sizing:border-box;width:100%;padding:11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text)}button{padding:10px 14px;border:0;border-radius:9px;background:#58a6ff;color:#07111d;font-weight:650}button:disabled{opacity:.45}.actions{display:flex;flex-wrap:wrap;gap:8px}.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}.danger{margin-left:8px;background:#f0883e;color:#1b0d02}p{color:var(--muted)}.history{padding-left:20px;font-size:.72rem;color:var(--muted);overflow-wrap:anywhere}.history li{margin:5px 0}@media(max-width:850px){.studio{grid-template-columns:1fr}.hero,.gateway{grid-column:auto}.hero{align-items:flex-start;gap:16px}.pipeline{padding-bottom:13px}}
 </style>

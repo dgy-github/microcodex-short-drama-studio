@@ -7,6 +7,18 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ## 最新改进 (2026-08-30) · 结构清理继续
 
+### 媒体 Agent 生产流水线（2026-08-30）
+
+- 独立生图 Agent 已增加候选批量生成、质量评估门禁和定稿请求：`d2a1037`。
+- 独立生视频 Agent 已增加粗生成、裁剪、补段、质量评估、精生成计划：`f29b08d`。
+- 推荐路由为 Wan（阿里云）负责低成本粗生成，Kling/可灵负责评估通过后的精生成。
+- provider 凭据、费用、重试、执行和产物保留仍由 Rust trusted capability 所有；Python
+  仅输出类型化计划。
+- Desktop 媒体工作区已按 BugleCat 的深色面板、蓝绿强调色、状态徽标和流程节点风格
+  重构；`svelte-check` 0 errors / 0 warnings，Vitest 141 passed。
+- 尚未完成的外部联调：真实 Wan/Kling provider、视频裁剪/拼接执行、质量模型校准和
+  真实费用 soak，需要 provider 凭据及 Rust provider 接入后验收。
+
 - 修复项目记忆与结构门禁对本地工具环境的误扫描：`.release-venv`、`.mimosa`、
   `.workbuddy`、`.zcode` 及打包 sidecar 依赖树现在明确排除；新增项目记忆回归
   覆盖。项目记忆测试 25/25、`generate_project_memory.py --check` 和全量结构检查
