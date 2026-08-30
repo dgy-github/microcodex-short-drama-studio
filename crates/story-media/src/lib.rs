@@ -9,10 +9,12 @@ mod gateway;
 mod run;
 mod timeline;
 mod tool;
+mod tool_manifest;
 pub use gateway::GatewayMediaProvider;
 pub use run::{MediaRunOutcome, MediaRunService};
 pub use timeline::{compile_concat_plan, FfmpegPlan, TimelineClip};
 pub use tool::{run_tool, validate_tool_path, MediaToolError, MediaToolOutput, MediaToolSpec};
+pub use tool_manifest::{MediaToolEntry, MediaToolManifest, ToolManifestError};
 
 pub type ProviderFuture<'a> =
     Pin<Box<dyn Future<Output = Result<GeneratedMedia, MediaProviderError>> + Send + 'a>>;

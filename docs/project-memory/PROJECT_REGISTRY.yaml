@@ -430,3 +430,12 @@ interfaces:
     outputs: [ordered filter_complex FFmpeg argument plan]
     errors: [invalid path, empty clip list, invalid range, oversized clip]
     side_effects: []
+  - id: IFACE-037
+    name: verified media tool manifest
+    kind: JSON contract and Rust API
+    location: crates/story-media/src/tool_manifest.rs
+    purpose: Resolve only versioned media binaries whose relative path and SHA-256 are admitted by the trusted manifest.
+    inputs: [media-tool-manifest/v1, absolute tool root, tool ID]
+    outputs: [hash-verified executable path]
+    errors: [invalid manifest, missing binary, traversal, duplicate ID, hash mismatch]
+    side_effects: [bounded file read]

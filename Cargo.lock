@@ -1399,6 +1399,7 @@ dependencies = [
  "jsonschema",
  "serde",
  "serde_json",
+ "sha2",
  "story-provider",
  "story-storage",
  "tempfile",

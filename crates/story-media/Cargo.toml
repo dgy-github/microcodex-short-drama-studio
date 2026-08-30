@@ -12,6 +12,7 @@ story-storage = { path = "../story-storage" }
 story-provider = { path = "../story-provider" }
 thiserror.workspace = true
 tokio.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
 jsonschema.workspace = true
