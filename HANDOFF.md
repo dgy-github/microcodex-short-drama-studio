@@ -22,6 +22,9 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
   重构；`svelte-check` 0 errors / 0 warnings，Vitest 141 passed。
 - 尚未完成的外部联调：真实 Wan/Kling provider、视频裁剪/拼接执行、质量模型校准和
   真实费用 soak，需要 provider 凭据及 Rust provider 接入后验收。
+- 两个独立 Agent 的 GitHub Actions 已修正发布配置：显式限制 setuptools 包发现，
+  并安装 `.[test]` 测试依赖；最新 CI 修复提交分别为生图 `e9491bc`、生视频
+  `bddbaf8`，等待新 run 结果确认。
 
 - 修复项目记忆与结构门禁对本地工具环境的误扫描：`.release-venv`、`.mimosa`、
   `.workbuddy`、`.zcode` 及打包 sidecar 依赖树现在明确排除；新增项目记忆回归
