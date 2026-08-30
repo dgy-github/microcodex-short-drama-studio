@@ -7,10 +7,9 @@ describe("真实 Tauri WebView 桌面验收", () => {
   });
 
   beforeEach(async () => {
-    await browser.reloadSession();
     await browser.waitUntil(
       async () => (await browser.getTitle()) === "MicrocodeX 短剧工作室",
-      { timeout: 30_000, timeoutMsg: "Tauri WebView 重启后未完成初始化" },
+      { timeout: 30_000, timeoutMsg: "Tauri WebView 未完成初始化" },
     );
   });
 
