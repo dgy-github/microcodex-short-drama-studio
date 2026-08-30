@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://microcodex.local/schemas/media-gateway-task-status-v1.json",
+  "title": "Media gateway asynchronous task status v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status"],
+  "properties": {
+    "schema": {"const": "media-gateway-task-status/v1"},
+    "status": {"enum": ["queued", "running", "succeeded", "failed", "cancelled"]},
+    "result": {"$ref": "media-gateway-v1.json"},
+    "error": {"type": "string", "minLength": 1}
+  },
+  "allOf": [{"if": {"properties": {"status": {"const": "succeeded"}}}, "then": {"required": ["result"]}}]
+}

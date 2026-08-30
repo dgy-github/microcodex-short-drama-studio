@@ -19,7 +19,7 @@ capabilities:
     summary: Owns credentials, validated provider routes, versioned pricing and cost quotes, bounded live-provider evidence, OpenAI-compatible model calls and the authenticated typed capability host.
     keywords: [authorization, configuration, endpoint, model, retry, provider, pricing, cost, soak]
     owner: crates/story-provider/src/lib.rs
-    interfaces: [IFACE-003, IFACE-011, IFACE-022, IFACE-023, IFACE-031]
+    interfaces: [IFACE-003, IFACE-011, IFACE-022, IFACE-023, IFACE-031, IFACE-034]
     reuse_rule: All production provider access goes through story-provider.
   - id: CAP-004
     name: Campaign sidecar protocol
@@ -403,3 +403,12 @@ interfaces:
     outputs: [media-project-record/v1 history]
     errors: [duplicate record, missing parent, invalid record, corrupt history]
     side_effects: [append-only project history write]
+  - id: IFACE-034
+    name: asynchronous media gateway task
+    kind: authenticated HTTP and JSON contracts
+    location: crates/story-provider/src/media_gateway.rs
+    purpose: Submit provider-neutral media generation tasks and boundedly poll same-origin terminal results.
+    inputs: [media-gateway-request/v1, polling interval and limit, launch secret]
+    outputs: [media-gateway-task/v1, media-gateway-task-status/v1, validated media bytes]
+    errors: [invalid route, unauthorized request, provider failure, invalid response, timeout]
+    side_effects: [provider network request, bounded polling]

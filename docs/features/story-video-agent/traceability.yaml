@@ -25,6 +25,14 @@ interfaces:
     location: contracts/media-agent/media-gateway-v1.json
     status: BACKEND_IMPLEMENTED
     purpose: provider-neutral authenticated media gateway response contract
+  - id: API-206
+    location: contracts/media-agent/media-gateway-task-v1.json
+    status: BACKEND_IMPLEMENTED
+    purpose: authenticated asynchronous media task submission handle
+  - id: API-207
+    location: contracts/media-agent/media-gateway-task-status-v1.json
+    status: BACKEND_IMPLEMENTED
+    purpose: bounded polling status and terminal media result
 implementation:
   - id: BE-202
     location: ../story-video-agent/story_video_agent/workflow.py
@@ -44,6 +52,9 @@ implementation:
   - id: BE-210
     location: apps/desktop/src-tauri/src/media_runtime.rs
     owner: CAP-015
+  - id: BE-211
+    location: crates/story-provider/src/media_gateway.rs
+    owner: CAP-003
   - id: FE-211
     location: apps/desktop/src/lib/MediaStudio.svelte
     owner: CAP-008
@@ -75,3 +86,6 @@ tests:
   - id: TEST-419
     location: apps/desktop/src/lib/MediaStudio.test.ts
     proves: desktop media workspace keeps generation requests in trusted append-only history before execution
+  - id: TEST-420
+    location: crates/story-provider/src/media_gateway.rs
+    proves: asynchronous media task polling handles success, failure, timeout and rejects cross-origin status URLs

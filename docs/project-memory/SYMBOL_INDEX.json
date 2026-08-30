@@ -7355,8 +7355,32 @@
     "language": "Rust",
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "struct",
+    "name": "MediaTaskHandle",
+    "line": 72,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "struct",
+    "name": "GatewayTaskResponse",
+    "line": 79,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "struct",
+    "name": "GatewayTaskStatus",
+    "line": 87,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "struct",
     "name": "GatewayRequest",
-    "line": 70,
+    "line": 97,
     "public": false
   },
   {
@@ -7364,7 +7388,7 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "struct",
     "name": "GatewayResponse",
-    "line": 77,
+    "line": 104,
     "public": false
   },
   {
@@ -7372,7 +7396,7 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "fn",
     "name": "new",
-    "line": 88,
+    "line": 115,
     "public": true
   },
   {
@@ -7380,15 +7404,47 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 99,
+    "line": 126,
     "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "generate_async",
+    "line": 191,
+    "public": true
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "poll_task",
+    "line": 228,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "valid_task_id",
+    "line": 288,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "decode_gateway_output",
+    "line": 296,
+    "public": false
   },
   {
     "language": "Rust",
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "mod",
     "name": "tests",
-    "line": 154,
+    "line": 319,
     "public": false
   },
   {
@@ -7396,7 +7452,31 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "fn",
     "name": "generate",
-    "line": 160,
+    "line": 326,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "submit_task",
+    "line": 347,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "task_status",
+    "line": 356,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "task_fixture",
+    "line": 373,
     "public": false
   },
   {
@@ -7404,7 +7484,31 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "fn",
     "name": "authenticated_loopback_gateway_exercises_real_http_contract",
-    "line": 182,
+    "line": 392,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "asynchronous_gateway_polls_success_and_fails_closed",
+    "line": 414,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "asynchronous_gateway_rejects_cross_origin_poll_url",
+    "line": 452,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-provider/src/media_gateway.rs",
+    "kind": "fn",
+    "name": "malicious",
+    "line": 453,
     "public": false
   },
   {
@@ -7412,7 +7516,7 @@
     "path": "crates/story-provider/src/media_gateway.rs",
     "kind": "fn",
     "name": "route_requires_https_and_redacts_url_credentials",
-    "line": 204,
+    "line": 482,
     "public": false
   },
   {

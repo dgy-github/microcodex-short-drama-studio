@@ -318,8 +318,10 @@
 | `MediaGatewayClient` | struct | `crates/story-provider/src/media_gateway.rs:45` |
 | `MediaGatewayOutput` | struct | `crates/story-provider/src/media_gateway.rs:50` |
 | `MediaGatewayError` | enum | `crates/story-provider/src/media_gateway.rs:60` |
-| `new` | fn | `crates/story-provider/src/media_gateway.rs:88` |
-| `generate` | fn | `crates/story-provider/src/media_gateway.rs:99` |
+| `MediaTaskHandle` | struct | `crates/story-provider/src/media_gateway.rs:72` |
+| `new` | fn | `crates/story-provider/src/media_gateway.rs:115` |
+| `generate` | fn | `crates/story-provider/src/media_gateway.rs:126` |
+| `generate_async` | fn | `crates/story-provider/src/media_gateway.rs:191` |
 | `ProviderRoute` | struct | `crates/story-provider/src/openai_compatible.rs:9` |
 | `ProviderRouteError` | enum | `crates/story-provider/src/openai_compatible.rs:17` |
 | `validate` | fn | `crates/story-provider/src/openai_compatible.rs:27` |
