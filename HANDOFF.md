@@ -348,6 +348,16 @@ cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 
 ## 尚未完成
 
+### 媒体 Agent 进展（2026-08-30）
+
+- 主项目 `889c3a9`：`story-provider` 新增异步媒体网关任务提交和有限轮询；
+  支持成功、失败、取消、超时，并拒绝跨源或不在 `/v1/media/tasks/` 下的状态 URL。
+- 主项目 `83b1363`：同步 `video-generation-pipeline-v1.json`，严格约束粗生成→裁剪→补段→质量评估四阶段。
+- `story-image-agent` `e4d9e13`：prompt 增加人物、构图、光线、情绪、连续性和负面约束，5 项测试通过。
+- `story-video-agent` `0fd28ed`、`f1da043`、`b1fbba3`：补段计划类型化、文档同步、流水线 Schema 收紧；最近 7 项测试通过。
+- 两个独立 Agent 的 GitHub Actions 均已成功；主项目 `33295696978` 在查询时仍为 `in_progress`，且更新时间停滞，不能作为最新绿色证据。
+- 当前仍未完成：Wan/Kling 官方 API 的真实部署侧适配、Rust 实际裁剪/拼接/补段执行器、真实视频质量模型和 clean VM 验收。
+
 - 在完整故事阅读器人工检查本次六集正文，重点确认角色对白可明显区分。
 - clean Windows VM：安装→配置→完整故事→批准导出→升级→回滚。
 - 推送并取得 `windows-release-smoke` clean runner 绿灯。
