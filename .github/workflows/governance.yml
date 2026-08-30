@@ -132,7 +132,13 @@ jobs:
       - run: cargo test
         working-directory: apps/desktop/src-tauri
       - name: Real Tauri binary acceptance
-        run: npm run test:e2e:tauri
+        shell: powershell
+        run: |
+          $webviewProfile = Join-Path $env:RUNNER_TEMP "microcodex-webview2-profile"
+          New-Item -ItemType Directory -Force -Path $webviewProfile | Out-Null
+          $env:WEBVIEW2_USER_DATA_FOLDER = $webviewProfile
+          $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--no-first-run --disable-gpu"
+          npm run test:e2e:tauri
         working-directory: apps/desktop
       - run: python scripts/check_release_configuration.py
 
