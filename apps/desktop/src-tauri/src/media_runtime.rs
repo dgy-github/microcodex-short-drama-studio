@@ -54,13 +54,7 @@ impl DesktopMediaRuntime {
             return Err(CommandError::invalid_media_project());
         }
         let settings = settings.load()?.ok_or_else(CommandError::media_runtime_unavailable)?;
-        let (endpoint, profile) = match &request {
-            MediaRequest::Video(value) if value.generation_tier.as_deref() == Some("fine") =>
-                (settings.fine_endpoint.unwrap_or(settings.endpoint), "fine"),
-            MediaRequest::Video(_) =>
-                (settings.coarse_endpoint.unwrap_or(settings.endpoint), "coarse"),
-            MediaRequest::Image(_) => (settings.endpoint, "default"),
-        };
+        let (endpoint, profile) = route_for_request(settings, &request);
         let secret = credentials.load("media_gateway", profile)
             .or_else(|_| credentials.load("media_gateway", "default"))?;
         let route = MediaGatewayRoute::new(endpoint, secret)
@@ -130,6 +124,19 @@ impl DesktopMediaRuntime {
     }
 }
 
+fn route_for_request(
+    settings: crate::media_gateway_settings::MediaGatewaySettings,
+    request: &MediaRequest,
+) -> (String, &'static str) {
+    match request {
+        MediaRequest::Video(value) if value.generation_tier.as_deref() == Some("fine") =>
+            (settings.fine_endpoint.unwrap_or(settings.endpoint), "fine"),
+        MediaRequest::Video(_) =>
+            (settings.coarse_endpoint.unwrap_or(settings.endpoint), "coarse"),
+        MediaRequest::Image(_) => (settings.endpoint, "default"),
+    }
+}
+
 fn parse_request(value: Value) -> Result<MediaRequest, CommandError> {
     match value["schema"].as_str() {
         Some("image-generation-request/v1") => {
@@ -172,6 +179,30 @@ mod tests {
             "prompt":"雨夜站台",
             "source_spans":["story-package/scene-1"]
         })
+    }
+
+    #[test]
+    fn generation_tier_selects_the_expected_trusted_route() {
+        let settings = crate::media_gateway_settings::MediaGatewaySettings {
+            schema: "desktop-media-gateway-settings/v1".into(),
+            endpoint: "https://media.example/default".into(),
+            coarse_endpoint: Some("https://media.example/wan".into()),
+            fine_endpoint: Some("https://media.example/kling".into()),
+        };
+        let mut value = json!({
+            "schema":"video-generation-request/v1",
+            "request_id":format!("vid_{}", "f".repeat(32)), "project_id":"project_1",
+            "image_artifact_ref":format!("artifact://sha256/{}", "a".repeat(64)),
+            "story_spans":["story-package/scene-1"], "prompt":"精生成",
+            "generation_tier":"fine"
+        });
+        let fine = parse_request(value.clone()).unwrap();
+        assert_eq!(route_for_request(settings.clone(), &fine),
+                   ("https://media.example/kling".into(), "fine"));
+        value["generation_tier"] = json!("coarse");
+        let coarse = parse_request(value).unwrap();
+        assert_eq!(route_for_request(settings, &coarse),
+                   ("https://media.example/wan".into(), "coarse"));
     }
 
     #[tokio::test]
