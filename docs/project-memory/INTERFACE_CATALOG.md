@@ -192,7 +192,7 @@
 | `ImagePromptRevision` | type | `apps/desktop/src/lib/types.ts:371` |
 | `MediaGenerationResult` | type | `apps/desktop/src/lib/types.ts:380` |
 | `DesktopMediaRunResult` | type | `apps/desktop/src/lib/types.ts:395` |
-| `config` | const | `apps/desktop/wdio.conf.ts:9` |
+| `config` | const | `apps/desktop/wdio.conf.ts:17` |
 | `GenreMode` | enum | `crates/story-core/src/lib.rs:8` |
 | `StoryFormat` | struct | `crates/story-core/src/lib.rs:14` |
 | `StoryBudget` | struct | `crates/story-core/src/lib.rs:20` |

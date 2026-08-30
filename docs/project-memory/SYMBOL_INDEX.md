@@ -641,8 +641,9 @@
 | Web | `apps/desktop/src/vite-env.d.ts` | 1 | module | `vite-env.d` |
 | Web | `apps/desktop/vite.config.ts` | 1 | module | `vite.config` |
 | Web | `apps/desktop/wdio.conf.ts` | 1 | module | `wdio.conf` |
-| Web | `apps/desktop/wdio.conf.ts` | 2 | const | `appBinaryPath` |
-| Web | `apps/desktop/wdio.conf.ts` | 9 | const | `config` |
+| Web | `apps/desktop/wdio.conf.ts` | 4 | const | `e2eProfile` |
+| Web | `apps/desktop/wdio.conf.ts` | 10 | const | `appBinaryPath` |
+| Web | `apps/desktop/wdio.conf.ts` | 17 | const | `config` |
 | Rust | `crates/story-core/src/lib.rs` | 1 | module | `lib` |
 | Rust | `crates/story-core/src/lib.rs` | 8 | enum | `GenreMode` |
 | Rust | `crates/story-core/src/lib.rs` | 14 | struct | `StoryFormat` |

@@ -1,4 +1,12 @@
 import { resolve } from "node:path";
+import { mkdirSync } from "node:fs";
+
+const e2eProfile = resolve(
+  process.env.RUNNER_TEMP ?? "target-e2e",
+  `wdio-webview2-${process.pid}`,
+);
+mkdirSync(e2eProfile, { recursive: true });
+
 const appBinaryPath = resolve(
   "src-tauri",
   "target-e2e",
@@ -12,6 +20,16 @@ export const config = {
   maxInstances: 1,
   capabilities: [{
     browserName: "tauri",
+    // WebView2 uses the Edge driver on Windows. A private profile prevents
+    // the runner's default profile from racing with another browser process
+    // and avoids the DevToolsActivePort startup failure in CI.
+    "ms:edgeOptions": {
+      args: [
+        `--user-data-dir=${e2eProfile}`,
+        "--no-first-run",
+        "--disable-gpu",
+      ],
+    },
     "tauri:options": {
       application: appBinaryPath,
     },

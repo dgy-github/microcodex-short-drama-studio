@@ -5099,8 +5099,16 @@
     "language": "Web",
     "path": "apps/desktop/wdio.conf.ts",
     "kind": "const",
+    "name": "e2eProfile",
+    "line": 4,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/wdio.conf.ts",
+    "kind": "const",
     "name": "appBinaryPath",
-    "line": 2,
+    "line": 10,
     "public": false
   },
   {
@@ -5108,7 +5116,7 @@
     "path": "apps/desktop/wdio.conf.ts",
     "kind": "const",
     "name": "config",
-    "line": 9,
+    "line": 17,
     "public": true
   },
   {
