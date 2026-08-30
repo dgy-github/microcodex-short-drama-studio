@@ -5,8 +5,7 @@ use std::time::Duration;
 use story_media::{
     execute_timeline, retain_timeline_output, GatewayMediaProvider, ImageGenerationRequest,
     MediaExecutor, MediaRequest, MediaRunOutcome, MediaRunService, MediaToolDiagnostic,
-    MediaToolManifest, TimelineClip,
-    VideoGenerationRequest,
+    MediaToolManifest, TimelineClip, VideoGenerationRequest,
 };
 use story_provider::{MediaGatewayClient, MediaGatewayRoute};
 use story_storage::media::{MediaArtifactRef, MediaArtifactStore, MediaKind};
