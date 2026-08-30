@@ -296,11 +296,9 @@ pub fn run() {
         evaluations,
         revisions,
     };
-    let mut builder = tauri::Builder::default();
+    let builder = tauri::Builder::default();
     #[cfg(feature = "wdio")]
-    {
-        builder = builder.plugin(tauri_plugin_wdio::init());
-    }
+    let builder = builder.plugin(tauri_plugin_wdio::init());
     builder
         .manage(state)
         .invoke_handler(tauri::generate_handler![

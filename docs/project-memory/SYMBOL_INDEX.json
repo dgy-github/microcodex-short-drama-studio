@@ -12628,7 +12628,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "npm_packages",
-    "line": 64,
+    "line": 70,
     "public": true
   },
   {
@@ -12636,7 +12636,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "python_packages",
-    "line": 83,
+    "line": 89,
     "public": true
   },
   {
@@ -12644,7 +12644,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "pinned_dependencies",
-    "line": 116,
+    "line": 122,
     "public": true
   },
   {
@@ -12652,7 +12652,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "pinned_git_dependencies",
-    "line": 145,
+    "line": 151,
     "public": true
   },
   {
@@ -12660,7 +12660,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "load_license_policy",
-    "line": 153,
+    "line": 159,
     "public": true
   },
   {
@@ -12668,7 +12668,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "validate_license_policy",
-    "line": 163,
+    "line": 169,
     "public": true
   },
   {
@@ -12676,7 +12676,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "build_inventory",
-    "line": 228,
+    "line": 234,
     "public": true
   },
   {
@@ -12684,7 +12684,7 @@
     "path": "scripts/build_dependency_inventory.py",
     "kind": "FunctionDef",
     "name": "main",
-    "line": 268,
+    "line": 274,
     "public": true
   },
   {

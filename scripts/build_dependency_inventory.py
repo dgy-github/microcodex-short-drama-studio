@@ -32,15 +32,21 @@ PIN_FIELDS = {
 
 def cargo_packages() -> list[dict[str, str]]:
     document = tomllib.loads((ROOT / "Cargo.lock").read_text(encoding="utf-8"))
-    metadata = json.loads(
-        subprocess.run(
+    result = None
+    for _ in range(3):
+        result = subprocess.run(
             ["cargo", "metadata", "--locked", "--format-version", "1"],
             cwd=ROOT,
-            check=True,
             capture_output=True,
             text=True,
-        ).stdout
-    )
+        )
+        if result.returncode == 0:
+            break
+    assert result is not None
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "no cargo output"
+        raise RuntimeError(f"cargo metadata failed after 3 attempts: {detail}")
+    metadata = json.loads(result.stdout)
     licenses = {
         (package["name"], package["version"]): package.get("license") or "UNKNOWN"
         for package in metadata["packages"]

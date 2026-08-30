@@ -18,6 +18,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DependencyInventoryTests(unittest.TestCase):
+    @patch("build_dependency_inventory.subprocess.run")
+    def test_cargo_metadata_retries_and_reports_stderr(self, run) -> None:
+        from build_dependency_inventory import cargo_packages
+
+        run.return_value.returncode = 1
+        run.return_value.stderr = "registry temporarily unavailable"
+        run.return_value.stdout = ""
+        with self.assertRaisesRegex(
+            RuntimeError, "failed after 3 attempts: registry temporarily unavailable"
+        ):
+            cargo_packages()
+        self.assertEqual(run.call_count, 3)
+
     def test_inventory_is_lockfile_backed_and_deterministic(self) -> None:
         inventory = build_inventory()
         self.assertEqual(inventory["schema"], "dependency-inventory/v1")
