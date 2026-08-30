@@ -25,6 +25,7 @@ import type {
   ImagePromptRevision,
   DesktopMediaRunResult,
   DesktopTimelineRequest,
+  MediaArtifactRef,
 } from "./types";
 
 export const desktopApi = {
@@ -178,6 +179,8 @@ export const desktopApi = {
     invoke<void>("cancel_media_run", { runId }),
   validateMediaTimelineRequest: (request: DesktopTimelineRequest) =>
     invoke<void>("validate_media_timeline_request", { request }),
+  executeMediaTimeline: (request: DesktopTimelineRequest) =>
+    invoke<MediaArtifactRef>("execute_media_timeline", { request }),
 };
 
 export function errorMessage(error: unknown): string {

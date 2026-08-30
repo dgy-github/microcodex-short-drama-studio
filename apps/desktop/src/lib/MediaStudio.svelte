@@ -157,6 +157,22 @@
     }
   }
 
+  async function executeTimeline() {
+    const request = {
+      schema: "desktop-media-timeline-request/v1" as const,
+      project_id: projectId,
+      request_id: newId("edit"),
+      clips: [{ content_ref: editRef, start_seconds: Number(editStart), end_seconds: Number(editEnd) }],
+    };
+    try {
+      const artifact = await desktopApi.executeMediaTimeline(request);
+      await refresh();
+      message = `剪辑完成并已保留：${artifact.content_ref}`;
+    } catch (error) {
+      message = errorMessage(error);
+    }
+  }
+
   onMount(async () => {
     const saved = await desktopApi.mediaGatewaySettings().catch(() => null);
     if (!endpoint) endpoint = saved?.endpoint ?? "";
@@ -224,6 +240,7 @@
       <label>开始秒数<input type="number" min="0" step="0.1" bind:value={editStart} /></label>
       <label>结束秒数<input type="number" min="0.1" max="300" step="0.1" bind:value={editEnd} /></label>
       <button class="ghost" onclick={validateTimeline} disabled={busy || !editRef}>校验剪辑时间线</button>
+      <button onclick={executeTimeline} disabled={busy || !editRef}>执行裁剪与拼接</button>
     </fieldset>
     {#if activeRun}<button class="danger" onclick={cancel}>取消当前任务</button>{/if}
     {#if message}<p role="status">{message}</p>{/if}

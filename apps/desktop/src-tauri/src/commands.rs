@@ -254,6 +254,14 @@ pub fn validate_media_timeline_request(
 }
 
 #[tauri::command]
+pub async fn execute_media_timeline(
+    state: State<'_, DesktopState>,
+    request: DesktopTimelineRequest,
+) -> Result<story_storage::media::MediaArtifactRef, CommandError> {
+    state.media_runtime.edit_timeline(request).await
+}
+
+#[tauri::command]
 pub async fn start_media_run(
     state: State<'_, DesktopState>,
     run_id: String,

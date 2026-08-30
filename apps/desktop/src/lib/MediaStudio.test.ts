@@ -14,6 +14,7 @@ vi.mock("./api", async () => {
       startMediaRun: vi.fn(),
       cancelMediaRun: vi.fn(),
       validateMediaTimelineRequest: vi.fn(),
+      executeMediaTimeline: vi.fn(),
       mediaGatewaySettings: vi.fn(),
       saveMediaGatewaySettings: vi.fn(),
       saveMediaGenerationRoutes: vi.fn(),
@@ -113,5 +114,20 @@ describe("MediaStudio", () => {
         clips: [{ content_ref: `artifact://sha256/${"b".repeat(64)}`, start_seconds: 1, end_seconds: 4 }],
       }),
     ));
+  });
+
+  it("executes the timeline through Rust and reports the retained artifact", async () => {
+    vi.mocked(desktopApi.executeMediaTimeline).mockResolvedValue({
+      schema: "media-artifact-ref/v1", project_id: "media_project_1", request_id: "edit_1",
+      kind: "video", mime_type: "video/mp4", content_ref: `artifact://sha256/${"c".repeat(64)}`,
+      content_sha256: "c".repeat(64), byte_len: 12,
+    });
+    render(MediaStudio);
+    await fireEvent.input(screen.getByLabelText("视频 artifact"), {
+      target: { value: `artifact://sha256/${"b".repeat(64)}` },
+    });
+    await fireEvent.click(screen.getByRole("button", { name: "执行裁剪与拼接" }));
+    await waitFor(() => expect(desktopApi.executeMediaTimeline).toHaveBeenCalled());
+    expect(screen.getByRole("status")).toHaveTextContent(/剪辑完成并已保留/);
   });
 });

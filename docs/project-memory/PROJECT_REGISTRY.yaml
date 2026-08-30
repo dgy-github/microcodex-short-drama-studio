@@ -416,11 +416,11 @@ interfaces:
     name: desktop timeline validation IPC
     kind: Tauri command API and JSON contract
     location: apps/desktop/src-tauri/src/commands.rs
-    purpose: Validate artifact-only crop timeline requests before trusted media execution.
+    purpose: Validate artifact-only crop timeline requests and expose the trusted edit execution boundary.
     inputs: [desktop-media-timeline-request/v1]
-    outputs: [validation success or safe command error]
+    outputs: [validation success or safe command error, immutable video artifact reference from execution command]
     errors: [invalid project, request ID, artifact reference or time range]
-    side_effects: []
+    side_effects: [trusted tool execution and immutable media retention]
   - id: IFACE-034
     name: asynchronous media gateway task
     kind: authenticated HTTP and JSON contracts

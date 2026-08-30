@@ -3,11 +3,12 @@ use serde_json::Value;
 use std::path::PathBuf;
 use std::time::Duration;
 use story_media::{
-    GatewayMediaProvider, ImageGenerationRequest, MediaExecutor, MediaRequest, MediaRunOutcome,
-    MediaRunService, VideoGenerationRequest,
+    execute_timeline, retain_timeline_output, GatewayMediaProvider, ImageGenerationRequest,
+    MediaExecutor, MediaRequest, MediaRunOutcome, MediaRunService, MediaToolManifest, TimelineClip,
+    VideoGenerationRequest,
 };
 use story_provider::{MediaGatewayClient, MediaGatewayRoute};
-use story_storage::media::MediaArtifactStore;
+use story_storage::media::{MediaArtifactRef, MediaArtifactStore, MediaKind};
 use story_storage::media_events::MediaEventStore;
 use tokio::sync::{watch, Mutex};
 
@@ -165,6 +166,55 @@ impl DesktopMediaRuntime {
             .send(true)
             .map_err(|_| CommandError::media_run_failed())
     }
+
+    pub async fn edit_timeline(
+        &self,
+        request: DesktopTimelineRequest,
+    ) -> Result<MediaArtifactRef, CommandError> {
+        request.validate()?;
+        let store = MediaArtifactStore::open(self.root.join("artifacts"))
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
+        let temporary = self.root.join("edit-tmp").join(&request.request_id);
+        std::fs::create_dir(&temporary).map_err(|_| CommandError::media_run_failed())?;
+        let result = self.edit_timeline_inner(&request, &store, &temporary).await;
+        cleanup_edit_directory(&temporary, request.clips.len());
+        result
+    }
+
+    async fn edit_timeline_inner(
+        &self,
+        request: &DesktopTimelineRequest,
+        store: &MediaArtifactStore,
+        temporary: &std::path::Path,
+    ) -> Result<MediaArtifactRef, CommandError> {
+        let mut clips = Vec::with_capacity(request.clips.len());
+        for (index, clip) in request.clips.iter().enumerate() {
+            let (reference, bytes) = store.load_project_artifact(&request.project_id, &clip.content_ref)
+                .map_err(|_| CommandError::invalid_media_project())?;
+            if reference.kind != MediaKind::Video || reference.mime_type != "video/mp4" {
+                return Err(CommandError::invalid_media_project());
+            }
+            let path = temporary.join(format!("input-{index}.mp4"));
+            std::fs::write(&path, bytes).map_err(|_| CommandError::media_run_failed())?;
+            clips.push(TimelineClip { input: path.to_string_lossy().into_owned(),
+                start_seconds: clip.start_seconds, end_seconds: clip.end_seconds });
+        }
+        let tools = self.root.join("tools");
+        let manifest_text = std::fs::read_to_string(tools.join("media-tool-manifest.json"))
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
+        let manifest = MediaToolManifest::parse(&manifest_text)
+            .map_err(|_| CommandError::media_runtime_unavailable())?;
+        let receipt = execute_timeline(&manifest, &tools, &clips, &temporary.join("output.mp4"),
+            Duration::from_secs(300)).await.map_err(|_| CommandError::media_run_failed())?;
+        retain_timeline_output(store, &request.project_id, &request.request_id, receipt)
+            .map_err(|_| CommandError::media_run_failed())
+    }
+}
+
+fn cleanup_edit_directory(directory: &std::path::Path, clip_count: usize) {
+    for index in 0..clip_count { let _ = std::fs::remove_file(directory.join(format!("input-{index}.mp4"))); }
+    let _ = std::fs::remove_file(directory.join("output.mp4"));
+    let _ = std::fs::remove_dir(directory);
 }
 
 fn route_for_request(

@@ -324,6 +324,7 @@ pub fn run() {
             commands::save_media_gateway_settings,
             commands::save_media_generation_routes,
             commands::validate_media_timeline_request,
+            commands::execute_media_timeline,
             commands::start_media_run,
             commands::resume_media_run,
             commands::cancel_media_run,

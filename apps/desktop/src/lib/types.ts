@@ -405,6 +405,17 @@ export type DesktopTimelineRequest = {
   }>;
 };
 
+export type MediaArtifactRef = {
+  schema: "media-artifact-ref/v1";
+  project_id: string;
+  request_id: string;
+  kind: "image" | "video";
+  mime_type: string;
+  content_ref: string;
+  content_sha256: string;
+  byte_len: number;
+};
+
 export type DesktopMediaRunResult = {
   schema: "desktop-media-run-result/v1";
   run_id: string;
