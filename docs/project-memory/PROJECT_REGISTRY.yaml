@@ -421,3 +421,12 @@ interfaces:
     outputs: [bounded stdout and stderr]
     errors: [relative path, invalid argument, start failure, timeout, non-zero exit, oversized output]
     side_effects: [supervised child process, kill and reap on timeout or cancellation]
+  - id: IFACE-036
+    name: media timeline compilation
+    kind: Rust crate API
+    location: crates/story-media/src/timeline.rs
+    purpose: Compile validated crop and supplement clips into ordered FFmpeg concat arguments without executing them.
+    inputs: [absolute FFmpeg path, bounded clip ranges, absolute output path]
+    outputs: [ordered filter_complex FFmpeg argument plan]
+    errors: [invalid path, empty clip list, invalid range, oversized clip]
+    side_effects: []

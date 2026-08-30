@@ -7,9 +7,11 @@ use story_storage::media::{MediaArtifactStore, MediaKind, MediaStoreError};
 
 mod gateway;
 mod run;
+mod timeline;
 mod tool;
 pub use gateway::GatewayMediaProvider;
 pub use run::{MediaRunOutcome, MediaRunService};
+pub use timeline::{compile_concat_plan, FfmpegPlan, TimelineClip};
 pub use tool::{run_tool, validate_tool_path, MediaToolError, MediaToolOutput, MediaToolSpec};
 
 pub type ProviderFuture<'a> =

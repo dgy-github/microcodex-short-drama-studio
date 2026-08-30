@@ -47,6 +47,7 @@
 | `crates/story-media/src/gateway.rs` | Rust |
 | `crates/story-media/src/lib.rs` | Rust |
 | `crates/story-media/src/run.rs` | Rust |
+| `crates/story-media/src/timeline.rs` | Rust |
 | `crates/story-media/src/tool.rs` | Rust |
 | `crates/story-policy/src/lib.rs` | Rust |
 | `crates/story-provider/src/capability_host.rs` | Rust |
