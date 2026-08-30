@@ -966,7 +966,8 @@
 | Rust | `crates/story-provider/src/pricing.rs` | 132 | fn | `exact_route_is_quoted_and_fractional_fen_rounds_up` |
 | Rust | `crates/story-provider/src/pricing.rs` | 144 | fn | `unknown_or_ambiguous_routes_fail_closed` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 1 | module | `advisory_e2e` |
-| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 18 | fn | `main` |
+| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 2 | mod | `windows` |
+| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 18 | fn | `run` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 107 | fn | `required_secret` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 117 | fn | `required_config` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 126 | fn | `story_job` |
@@ -974,7 +975,8 @@
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 171 | fn | `validate_workflow_result` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 208 | fn | `read_json` |
 | Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 212 | fn | `write_json` |
-| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 218 | fn | `main` |
+| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 221 | fn | `main` |
+| Rust | `crates/story-runtime/examples/advisory_e2e.rs` | 226 | fn | `main` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 1 | module | `diagnostics` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 5 | struct | `StructuredDiagnostic` |
 | Rust | `crates/story-runtime/src/diagnostics.rs` | 14 | enum | `DiagnosticError` |

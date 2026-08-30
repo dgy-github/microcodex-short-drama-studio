@@ -7698,10 +7698,18 @@
   {
     "language": "Rust",
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
-    "kind": "fn",
-    "name": "main",
-    "line": 18,
+    "kind": "mod",
+    "name": "windows",
+    "line": 2,
     "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/examples/advisory_e2e.rs",
+    "kind": "fn",
+    "name": "run",
+    "line": 18,
+    "public": true
   },
   {
     "language": "Rust",
@@ -7764,7 +7772,15 @@
     "path": "crates/story-runtime/examples/advisory_e2e.rs",
     "kind": "fn",
     "name": "main",
-    "line": 218,
+    "line": 221,
+    "public": false
+  },
+  {
+    "language": "Rust",
+    "path": "crates/story-runtime/examples/advisory_e2e.rs",
+    "kind": "fn",
+    "name": "main",
+    "line": 226,
     "public": false
   },
   {

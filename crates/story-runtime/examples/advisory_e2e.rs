@@ -1,4 +1,5 @@
-#![cfg(windows)]
+#[cfg(windows)]
+mod windows {
 
 use jsonschema::Resource;
 use serde_json::{json, Value};
@@ -14,8 +15,7 @@ use story_runtime::{
     CommandAcceptance, IdempotencyKey, SidecarAuthToken, SidecarLaunchConfig, SidecarProcess,
 };
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+pub async fn run() -> Result<(), Box<dyn Error>> {
     let repository = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let repository = repository.canonicalize()?;
     let generation_endpoint = required_config("GENERATOR_ENDPOINT")?;
@@ -212,6 +212,14 @@ fn read_json(path: &Path) -> Result<Value, Box<dyn Error>> {
 fn write_json(path: &Path, value: &Value) -> Result<(), Box<dyn Error>> {
     std::fs::write(path, serde_json::to_vec_pretty(value)?)?;
     Ok(())
+}
+
+}
+
+#[cfg(windows)]
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    windows::run().await
 }
 
 #[cfg(not(windows))]
