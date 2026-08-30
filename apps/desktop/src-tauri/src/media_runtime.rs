@@ -46,23 +46,46 @@ impl DesktopTimelineRequest {
     pub(crate) fn validate(&self) -> Result<(), CommandError> {
         if self.schema != "desktop-media-timeline-request/v1"
             || !valid_safe_id(&self.project_id, 96)
-            || !self.request_id.strip_prefix("edit_").is_some_and(|suffix| suffix.len() == 32 && suffix.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)))
-            || self.clips.is_empty() || self.clips.len() > 32
-            || self.clips.iter().any(|clip| !valid_artifact_ref(&clip.content_ref)
-                || !clip.start_seconds.is_finite() || !clip.end_seconds.is_finite()
-                || clip.start_seconds < 0.0 || clip.end_seconds <= clip.start_seconds
-                || clip.end_seconds > 300.0)
-        { return Err(CommandError::invalid_media_project()); }
+            || !self.request_id.strip_prefix("edit_").is_some_and(|suffix| {
+                suffix.len() == 32
+                    && suffix
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+            })
+            || self.clips.is_empty()
+            || self.clips.len() > 32
+            || self.clips.iter().any(|clip| {
+                !valid_artifact_ref(&clip.content_ref)
+                    || !clip.start_seconds.is_finite()
+                    || !clip.end_seconds.is_finite()
+                    || clip.start_seconds < 0.0
+                    || clip.end_seconds <= clip.start_seconds
+                    || clip.end_seconds > 300.0
+            })
+        {
+            return Err(CommandError::invalid_media_project());
+        }
         Ok(())
     }
 }
 
 fn valid_safe_id(value: &str, max: usize) -> bool {
-    !value.is_empty() && value.len() <= max && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-'))
+    !value.is_empty()
+        && value.len() <= max
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-'))
 }
 
 fn valid_artifact_ref(value: &str) -> bool {
-    value.strip_prefix("artifact://sha256/").is_some_and(|digest| digest.len() == 64 && digest.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)))
+    value
+        .strip_prefix("artifact://sha256/")
+        .is_some_and(|digest| {
+            digest.len() == 64
+                && digest
+                    .bytes()
+                    .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        })
 }
 
 pub struct DesktopMediaRuntime {
@@ -176,10 +199,17 @@ impl DesktopMediaRuntime {
             .map_err(|_| CommandError::media_runtime_unavailable())?;
         let store = MediaArtifactStore::open(self.root.join("artifacts"))
             .map_err(|_| CommandError::media_runtime_unavailable())?;
-        let (_, inserted) = events.append_acceptance(&request.project_id, &request.request_id,
-            &request.request_id, serde_json::json!({"timeline_request": request}))
+        let (_, inserted) = events
+            .append_acceptance(
+                &request.project_id,
+                &request.request_id,
+                &request.request_id,
+                serde_json::json!({"timeline_request": request}),
+            )
             .map_err(|_| CommandError::media_run_failed())?;
-        if !inserted { return Err(CommandError::invalid_media_project()); }
+        if !inserted {
+            return Err(CommandError::invalid_media_project());
+        }
         let edit_root = self.root.join("edit-tmp");
         std::fs::create_dir_all(&edit_root).map_err(|_| CommandError::media_run_failed())?;
         let temporary = edit_root.join(&request.request_id);
@@ -187,11 +217,22 @@ impl DesktopMediaRuntime {
         let (cancel, mut receiver) = watch::channel(false);
         {
             let mut active = self.active.lock().await;
-            if active.is_some() { cleanup_edit_directory(&temporary, 0); return Err(CommandError::media_run_active()); }
+            if active.is_some() {
+                cleanup_edit_directory(&temporary, 0);
+                return Err(CommandError::media_run_active());
+            }
             *active = Some((request.request_id.clone(), cancel));
         }
-        if events.append(&request.project_id, &request.request_id, &request.request_id,
-            "run.started", serde_json::json!({"kind":"timeline_edit"})).is_err() {
+        if events
+            .append(
+                &request.project_id,
+                &request.request_id,
+                &request.request_id,
+                "run.started",
+                serde_json::json!({"kind":"timeline_edit"}),
+            )
+            .is_err()
+        {
             self.active.lock().await.take();
             cleanup_edit_directory(&temporary, 0);
             return Err(CommandError::media_run_failed());
@@ -208,12 +249,28 @@ impl DesktopMediaRuntime {
         self.active.lock().await.take();
         cleanup_edit_directory(&temporary, request.clips.len());
         let (event_type, payload) = match &result {
-            Ok(reference) => ("run.completed", serde_json::to_value(reference).unwrap_or_default()),
-            Err(_) if *receiver.borrow() => ("run.cancelled", serde_json::json!({"reason":"user_requested"})),
-            Err(_) => ("run.failed", serde_json::json!({"error":"timeline_execution_failed"})),
+            Ok(reference) => (
+                "run.completed",
+                serde_json::to_value(reference).unwrap_or_default(),
+            ),
+            Err(_) if *receiver.borrow() => (
+                "run.cancelled",
+                serde_json::json!({"reason":"user_requested"}),
+            ),
+            Err(_) => (
+                "run.failed",
+                serde_json::json!({"error":"timeline_execution_failed"}),
+            ),
         };
-        events.append_terminal(&request.project_id, &request.request_id, &request.request_id,
-            event_type, payload).map_err(|_| CommandError::media_run_failed())?;
+        events
+            .append_terminal(
+                &request.project_id,
+                &request.request_id,
+                &request.request_id,
+                event_type,
+                payload,
+            )
+            .map_err(|_| CommandError::media_run_failed())?;
         result
     }
 
@@ -225,30 +282,43 @@ impl DesktopMediaRuntime {
     ) -> Result<MediaArtifactRef, CommandError> {
         let mut clips = Vec::with_capacity(request.clips.len());
         for (index, clip) in request.clips.iter().enumerate() {
-            let (reference, bytes) = store.load_project_artifact(&request.project_id, &clip.content_ref)
+            let (reference, bytes) = store
+                .load_project_artifact(&request.project_id, &clip.content_ref)
                 .map_err(|_| CommandError::invalid_media_project())?;
             if reference.kind != MediaKind::Video || reference.mime_type != "video/mp4" {
                 return Err(CommandError::invalid_media_project());
             }
             let path = temporary.join(format!("input-{index}.mp4"));
             std::fs::write(&path, bytes).map_err(|_| CommandError::media_run_failed())?;
-            clips.push(TimelineClip { input: path.to_string_lossy().into_owned(),
-                start_seconds: clip.start_seconds, end_seconds: clip.end_seconds });
+            clips.push(TimelineClip {
+                input: path.to_string_lossy().into_owned(),
+                start_seconds: clip.start_seconds,
+                end_seconds: clip.end_seconds,
+            });
         }
         let tools = self.root.join("tools");
         let manifest_text = std::fs::read_to_string(tools.join("media-tool-manifest.json"))
             .map_err(|_| CommandError::media_runtime_unavailable())?;
         let manifest = MediaToolManifest::parse(&manifest_text)
             .map_err(|_| CommandError::media_runtime_unavailable())?;
-        let receipt = execute_timeline(&manifest, &tools, &clips, &temporary.join("output.mp4"),
-            Duration::from_secs(300)).await.map_err(|_| CommandError::media_run_failed())?;
+        let receipt = execute_timeline(
+            &manifest,
+            &tools,
+            &clips,
+            &temporary.join("output.mp4"),
+            Duration::from_secs(300),
+        )
+        .await
+        .map_err(|_| CommandError::media_run_failed())?;
         retain_timeline_output(store, &request.project_id, &request.request_id, receipt)
             .map_err(|_| CommandError::media_run_failed())
     }
 }
 
 fn cleanup_edit_directory(directory: &std::path::Path, clip_count: usize) {
-    for index in 0..clip_count { let _ = std::fs::remove_file(directory.join(format!("input-{index}.mp4"))); }
+    for index in 0..clip_count {
+        let _ = std::fs::remove_file(directory.join(format!("input-{index}.mp4")));
+    }
     let _ = std::fs::remove_file(directory.join("output.mp4"));
     let _ = std::fs::remove_dir(directory);
 }
@@ -348,7 +418,8 @@ mod tests {
             "request_id":format!("edit_{}", "a".repeat(32)),
             "clips":[{"content_ref":format!("artifact://sha256/{}", "b".repeat(64)),
                 "start_seconds":0.0, "end_seconds":3.0}]
-        })).unwrap();
+        }))
+        .unwrap();
         assert!(valid.validate().is_ok());
         let mut unsafe_request = valid.clone();
         unsafe_request.clips[0].content_ref = "C:/video.mp4".into();
@@ -364,16 +435,36 @@ mod tests {
         let runtime_root = directory.path().join("runtime");
         let runtime = DesktopMediaRuntime::new(runtime_root.clone());
         let store = MediaArtifactStore::open(runtime_root.join("artifacts")).unwrap();
-        let video = store.put("project_1", "vid_source", MediaKind::Video, "video/mp4", b"fixture").unwrap();
-        let request = DesktopTimelineRequest { schema: "desktop-media-timeline-request/v1".into(),
-            project_id: "project_1".into(), request_id: format!("edit_{}", "d".repeat(32)),
-            clips: vec![DesktopTimelineClip { content_ref: video.content_ref,
-                start_seconds: 0.0, end_seconds: 1.0 }] };
+        let video = store
+            .put(
+                "project_1",
+                "vid_source",
+                MediaKind::Video,
+                "video/mp4",
+                b"fixture",
+            )
+            .unwrap();
+        let request = DesktopTimelineRequest {
+            schema: "desktop-media-timeline-request/v1".into(),
+            project_id: "project_1".into(),
+            request_id: format!("edit_{}", "d".repeat(32)),
+            clips: vec![DesktopTimelineClip {
+                content_ref: video.content_ref,
+                start_seconds: 0.0,
+                end_seconds: 1.0,
+            }],
+        };
         assert!(runtime.edit_timeline(request).await.is_err());
         assert!(runtime.active.lock().await.is_none());
-        let events = MediaEventStore::open(runtime_root.join("events.jsonl")).unwrap().replay(0).unwrap();
+        let events = MediaEventStore::open(runtime_root.join("events.jsonl"))
+            .unwrap()
+            .replay(0)
+            .unwrap();
         assert_eq!(events.last().unwrap().event_type, "run.failed");
-        assert!(std::fs::read_dir(runtime_root.join("edit-tmp")).unwrap().next().is_none());
+        assert!(std::fs::read_dir(runtime_root.join("edit-tmp"))
+            .unwrap()
+            .next()
+            .is_none());
     }
 
     #[tokio::test]
