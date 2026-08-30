@@ -3827,7 +3827,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "imageRef",
+    "name": "storyAlignment",
     "line": 16,
     "public": false
   },
@@ -3835,7 +3835,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "history",
+    "name": "identityConsistency",
     "line": 17,
     "public": false
   },
@@ -3843,7 +3843,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "busy",
+    "name": "motionQuality",
     "line": 18,
     "public": false
   },
@@ -3851,7 +3851,7 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "activeRun",
+    "name": "continuity",
     "line": 19,
     "public": false
   },
@@ -3859,23 +3859,47 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "let",
-    "name": "message",
+    "name": "artifactFree",
     "line": 20,
     "public": false
   },
   {
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "revisions",
+    "kind": "let",
+    "name": "imageRef",
+    "line": 21,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "history",
     "line": 22,
     "public": false
   },
   {
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
-    "kind": "const",
-    "name": "latestRevision",
+    "kind": "let",
+    "name": "busy",
+    "line": 23,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "activeRun",
+    "line": 24,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "let",
+    "name": "message",
     "line": 25,
     "public": false
   },
@@ -3883,8 +3907,32 @@
     "language": "Web",
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
+    "name": "revisions",
+    "line": 27,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
+    "name": "latestRevision",
+    "line": 30,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
+    "name": "videoQualityPassed",
+    "line": 31,
+    "public": false
+  },
+  {
+    "language": "Web",
+    "path": "apps/desktop/src/lib/MediaStudio.svelte",
+    "kind": "const",
     "name": "newId",
-    "line": 26,
+    "line": 35,
     "public": false
   },
   {
@@ -3892,7 +3940,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "refresh",
-    "line": 29,
+    "line": 38,
     "public": false
   },
   {
@@ -3900,7 +3948,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "saveGateway",
-    "line": 38,
+    "line": 47,
     "public": false
   },
   {
@@ -3908,7 +3956,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "coarse",
-    "line": 41,
+    "line": 50,
     "public": false
   },
   {
@@ -3916,7 +3964,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "fine",
-    "line": 42,
+    "line": 51,
     "public": false
   },
   {
@@ -3924,7 +3972,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "savePromptRevision",
-    "line": 58,
+    "line": 67,
     "public": false
   },
   {
@@ -3932,7 +3980,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateImage",
-    "line": 78,
+    "line": 87,
     "public": false
   },
   {
@@ -3940,7 +3988,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "generateVideo",
-    "line": 93,
+    "line": 102,
     "public": false
   },
   {
@@ -3948,7 +3996,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "run",
-    "line": 106,
+    "line": 119,
     "public": false
   },
   {
@@ -3956,7 +4004,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "outcome",
-    "line": 111,
+    "line": 124,
     "public": false
   },
   {
@@ -3964,7 +4012,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "function",
     "name": "cancel",
-    "line": 125,
+    "line": 138,
     "public": false
   },
   {
@@ -3972,7 +4020,7 @@
     "path": "apps/desktop/src/lib/MediaStudio.svelte",
     "kind": "const",
     "name": "saved",
-    "line": 130,
+    "line": 143,
     "public": false
   },
   {
