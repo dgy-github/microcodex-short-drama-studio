@@ -9,6 +9,10 @@ origin: https://github.com/dgy-github/microcodex-short-drama-studio.git
 
 ### 媒体 Agent 生产流水线（2026-08-30）
 
+- 生图 Agent 最新 `ec350ee`、生视频 Agent 最新 `36346b3` 已将质量门禁改为
+  fail-closed：缺少任一必需指标或低于阈值时禁止定稿/精生成，并返回失败指标及
+  建议回退阶段。
+
 - 独立生图 Agent 已增加候选批量生成、质量评估门禁和定稿请求：`d2a1037`。
 - 独立生视频 Agent 已增加粗生成、裁剪、补段、质量评估、精生成计划：`f29b08d`。
 - 推荐路由为 Wan（阿里云）负责低成本粗生成，Kling/可灵负责评估通过后的精生成。
